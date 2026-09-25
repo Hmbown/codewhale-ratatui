@@ -115,6 +115,7 @@ pub fn ascii_fallback(symbol: &str) -> Option<&'static str> {
         "≈" | "～" => Some("~"),
         "🐳" | "🐋" => Some("w"),
         "…" => Some("."),
+        "▏ " => Some("| "),
         _ => None,
     }
 }
@@ -180,5 +181,36 @@ mod tests {
         );
         assert_eq!(braille_ascii_fallback('\u{2801}'), Some("."));
         assert_eq!(braille_ascii_fallback('A'), None);
+    }
+
+    #[test]
+    fn every_public_mark_has_an_ascii_form() {
+        for mark in [
+            CURRENT,
+            AVAILABLE,
+            SELECTION,
+            USER,
+            TRANSCRIPT_RAIL,
+            DONE,
+            FAILED,
+            ATTENTION,
+            READY,
+            PAUSED,
+            STOPPED,
+            UNKNOWN,
+            ELLIPSIS,
+            ROLE_MANAGER,
+            ROLE_BUILDER,
+            ROLE_REVIEWER,
+            ROLE_VERIFIER,
+            ROLE_SYNTHESIZER,
+            NEUTRAL,
+            selection_marker(true),
+            selection_marker(false),
+        ] {
+            let safe = pick(mark, true);
+            assert!(safe.is_ascii(), "{mark:?} -> {safe:?}");
+            assert_eq!(safe.len(), mark.chars().count(), "{mark:?} keeps its width");
+        }
     }
 }

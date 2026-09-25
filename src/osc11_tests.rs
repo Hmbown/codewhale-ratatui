@@ -2,7 +2,9 @@ use std::io::{Read, Write};
 use std::os::fd::AsRawFd;
 use std::time::Duration;
 
-use super::read_terminal_reply;
+use super::{
+    read_terminal_reply, settle_terminal_reply, take_carried_type_ahead, take_consumed_unreplayable,
+};
 
 #[test]
 fn terminal_reply_reader_leaves_one_burst_typed_suffix_on_the_descriptor() {
@@ -111,4 +113,44 @@ fn terminal_reply_reader_retains_incomplete_control_reply_separately_from_typeah
         carried, prefix,
         "control payload and its Enters must not become user input"
     );
+}
+
+/// The probe hands type-ahead to the event loop, and never hands it an
+/// unterminated control reply. One test owns the process-wide buffers so
+/// parallel tests cannot race on them.
+#[test]
+fn the_probe_parks_type_ahead_for_the_event_loop() {
+    let _ = take_carried_type_ahead();
+    let _ = take_consumed_unreplayable();
+
+    let (reader, mut writer) = std::io::pipe().expect("create isolated input pipe");
+    writer
+        .write_all(b"ls -\x1b]11;rgb:fafa/f8f8/f5f5\x07")
+        .expect("write burst");
+    let reply = settle_terminal_reply(
+        reader.as_raw_fd(),
+        b"\x1b]11;?\x07",
+        Duration::from_secs(1),
+        false,
+    );
+    drop(writer);
+    assert_eq!(
+        reply.as_deref(),
+        Some(b"\x1b]11;rgb:fafa/f8f8/f5f5".as_slice())
+    );
+    assert_eq!(take_carried_type_ahead(), b"ls -");
+    assert!(take_consumed_unreplayable().is_empty());
+
+    let (reader, mut writer) = std::io::pipe().expect("create isolated input pipe");
+    writer.write_all(b"q\x1b]11;rgb:1e").expect("write burst");
+    drop(writer);
+    let reply = settle_terminal_reply(
+        reader.as_raw_fd(),
+        b"\x1b]11;?\x07",
+        Duration::from_secs(1),
+        false,
+    );
+    assert_eq!(reply, None);
+    assert_eq!(take_carried_type_ahead(), b"q");
+    assert_eq!(take_consumed_unreplayable(), b"\x1b]11;rgb:1e");
 }

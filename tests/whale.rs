@@ -72,19 +72,31 @@ fn the_pod_draws_exactly_the_calves_it_is_given() {
         one < two && two < three,
         "calves add dots: {one} {two} {three}"
     );
-    // Out-of-range counts clamp to what the kit can draw; zero is not a pod.
-    assert_eq!(dots(0), one);
+    // The art has room for three calves; more agents draw three. A pod of
+    // none draws plain work: no calf is invented.
     assert_eq!(dots(9), three);
-    for calves in 1..=3 {
-        assert_eq!(
-            WhaleState::Pod { calves }.words(),
-            if calves == 1 {
-                "Working with 1 agent".to_string()
-            } else {
-                format!("Working with {calves} agents")
-            }
-        );
+    let busy = whale::frame(WhaleState::Busy, 32, 16).expect("fits");
+    assert_eq!(
+        whale::frame(WhaleState::Pod { calves: 0 }, 32, 16).expect("fits"),
+        busy
+    );
+    // The words always carry the real count, whatever the art can show.
+    for (calves, words) in [
+        (0, "Working"),
+        (1, "Working with 1 agent"),
+        (2, "Working with 2 agents"),
+        (3, "Working with 3 agents"),
+        (9, "Working with 9 agents"),
+        (255, "Working with 255 agents"),
+    ] {
+        assert_eq!(WhaleState::Pod { calves }.words(), words);
     }
+}
+
+#[test]
+fn frame_handles_any_viewport_without_overflow() {
+    assert!(whale::frame(WhaleState::Rest, 15, 8).is_none());
+    assert!(whale::frame(WhaleState::Rest, u16::MAX, 8).is_some());
 }
 
 #[test]

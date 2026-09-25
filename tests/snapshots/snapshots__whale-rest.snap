@@ -240,59 +240,59 @@ r16 c22..36 bg=Background
 
              ○ Resting
 ---
-r0 c0..36 bg=Background
-r1 c0..36 bg=Background
-r2 c0..36 bg=Background
-r3 c0..10 bg=Background
-r3 c10..21 fg=idx32 bg=Background
-r3 c21..36 bg=Background
-r4 c0..8 bg=Background
-r4 c8..24 fg=idx32 bg=Background
-r4 c24..36 bg=Background
-r5 c0..7 bg=Background
-r5 c7..13 fg=idx32 bg=Background
-r5 c13..17 bg=Background
-r5 c17..23 fg=idx32 bg=Background
-r5 c23..36 bg=Background
-r6 c0..7 bg=Background
-r6 c7..11 fg=idx26 bg=Background
-r6 c11..24 bg=Background
-r6 c24..29 fg=idx26 bg=Background
-r6 c29..36 bg=Background
-r7 c0..7 bg=Background
-r7 c7..11 fg=idx26 bg=Background
-r7 c11..18 bg=Background
-r7 c18..30 fg=idx26 bg=Background
-r7 c30..36 bg=Background
-r8 c0..7 bg=Background
-r8 c7..30 fg=idx26 bg=Background
-r8 c30..36 bg=Background
-r9 c0..7 bg=Background
-r9 c7..24 fg=idx26 bg=Background
-r9 c24..27 bg=Background
-r9 c27..29 fg=idx26 bg=Background
-r9 c29..36 bg=Background
-r10 c0..8 bg=Background
-r10 c8..23 fg=idx26 bg=Background
-r10 c23..26 bg=Background
-r10 c26..28 fg=idx26 bg=Background
-r10 c28..36 bg=Background
-r11 c0..9 bg=Background
-r11 c9..21 fg=Primary bg=Background
-r11 c21..23 bg=Background
-r11 c23..26 fg=Primary bg=Background
-r11 c26..36 bg=Background
-r12 c0..13 bg=Background
-r12 c13..24 fg=Primary bg=Background
-r12 c24..36 bg=Background
-r13 c0..36 bg=Background
-r14 c0..36 bg=Background
-r15 c0..36 bg=Background
-r16 c0..13 bg=Background
-r16 c13..14 fg=Muted bg=Background
-r16 c14..15 bg=Background
-r16 c15..22 fg=Foreground bg=Background
-r16 c22..36 bg=Background
+r0 c0..36 bg=Background|Surface
+r1 c0..36 bg=Background|Surface
+r2 c0..36 bg=Background|Surface
+r3 c0..10 bg=Background|Surface
+r3 c10..21 fg=idx32 bg=Background|Surface
+r3 c21..36 bg=Background|Surface
+r4 c0..8 bg=Background|Surface
+r4 c8..24 fg=idx32 bg=Background|Surface
+r4 c24..36 bg=Background|Surface
+r5 c0..7 bg=Background|Surface
+r5 c7..13 fg=idx32 bg=Background|Surface
+r5 c13..17 bg=Background|Surface
+r5 c17..23 fg=idx32 bg=Background|Surface
+r5 c23..36 bg=Background|Surface
+r6 c0..7 bg=Background|Surface
+r6 c7..11 fg=idx26 bg=Background|Surface
+r6 c11..24 bg=Background|Surface
+r6 c24..29 fg=idx26 bg=Background|Surface
+r6 c29..36 bg=Background|Surface
+r7 c0..7 bg=Background|Surface
+r7 c7..11 fg=idx26 bg=Background|Surface
+r7 c11..18 bg=Background|Surface
+r7 c18..30 fg=idx26 bg=Background|Surface
+r7 c30..36 bg=Background|Surface
+r8 c0..7 bg=Background|Surface
+r8 c7..30 fg=idx26 bg=Background|Surface
+r8 c30..36 bg=Background|Surface
+r9 c0..7 bg=Background|Surface
+r9 c7..24 fg=idx26 bg=Background|Surface
+r9 c24..27 bg=Background|Surface
+r9 c27..29 fg=idx26 bg=Background|Surface
+r9 c29..36 bg=Background|Surface
+r10 c0..8 bg=Background|Surface
+r10 c8..23 fg=idx26 bg=Background|Surface
+r10 c23..26 bg=Background|Surface
+r10 c26..28 fg=idx26 bg=Background|Surface
+r10 c28..36 bg=Background|Surface
+r11 c0..9 bg=Background|Surface
+r11 c9..21 fg=Primary bg=Background|Surface
+r11 c21..23 bg=Background|Surface
+r11 c23..26 fg=Primary bg=Background|Surface
+r11 c26..36 bg=Background|Surface
+r12 c0..13 bg=Background|Surface
+r12 c13..24 fg=Primary bg=Background|Surface
+r12 c24..36 bg=Background|Surface
+r13 c0..36 bg=Background|Surface
+r14 c0..36 bg=Background|Surface
+r15 c0..36 bg=Background|Surface
+r16 c0..13 bg=Background|Surface
+r16 c13..14 fg=Muted bg=Background|Surface
+r16 c14..15 bg=Background|Surface
+r16 c15..22 fg=Foreground bg=Background|Surface
+r16 c22..36 bg=Background|Surface
 
 == ansi-16
 

@@ -318,6 +318,38 @@ mod tests {
         assert_eq!(picker.row_at(area, 5, 7), None);
     }
 
+    /// A disabled row says why, in place of its detail, and recedes.
+    #[test]
+    fn disabled_rows_say_why() {
+        use crate::testing::{Profile, render, text};
+        let items = [
+            PickerItem::new("Workspace").detail("This folder"),
+            PickerItem::new("Git branch")
+                .detail("Current branch")
+                .disabled("Not a git repository"),
+        ];
+        let picker = Picker::new(&items, PickerState::new(0));
+        for profile in Profile::ALL {
+            let theme = profile.theme();
+            let buf = render(48, 2, |area, buf| picker.paint(area, buf, &theme));
+            let shown = text(&buf);
+            let row = shown.lines().nth(1).unwrap_or_default();
+            assert!(
+                row.contains("Not a git repository"),
+                "{}: {row}",
+                profile.name()
+            );
+            assert!(!row.contains("Current branch"), "{}: {row}", profile.name());
+            let label = row.find("Git").expect("label drawn");
+            let cell = &buf[(u16::try_from(label).unwrap_or(0), 1)];
+            assert!(
+                cell.modifier.contains(Modifier::DIM),
+                "{}: disabled label recedes",
+                profile.name()
+            );
+        }
+    }
+
     #[test]
     fn state_wraps_pages_and_keeps_selection_visible() {
         let mut s = PickerState::new(0);

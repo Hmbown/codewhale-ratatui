@@ -38,6 +38,10 @@ fn color_allowed(profile: Profile, color: Color) -> bool {
         (Profile::Ansi16 | Profile::UnknownGround, Color::Rgb(..) | Color::Indexed(_)) => false,
         (Profile::Dark256 | Profile::Light256, Color::Rgb(..)) => false,
         (Profile::Dark256 | Profile::Light256, Color::Indexed(i)) => i >= 16,
+        // Truecolor on a known ground paints exact RGB: tokens, and the
+        // whale's ombre and the horizon's fade blended from them.
+        (Profile::DarkTrue | Profile::LightTrue, c) => matches!(c, Color::Rgb(..)),
+        (Profile::Dark256 | Profile::Light256, _) => false,
         _ => true,
     }
 }

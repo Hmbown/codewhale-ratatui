@@ -10,8 +10,9 @@ Paints Codewhale's terminal interface from one set of
 - **Pairs every state with a mark and a word** (`● Working`, `◆ Needs you`,
   `✕ Failed`), so nothing depends on color alone.
 - **Draws the Codewhale whale in Braille** from the same contours as the
-  desktop pet: resting, working, needs you, done, and a pod with up to three
-  calves when agents work in parallel.
+  desktop pet: resting, working, needs you, done, and a pod whose calves
+  swim with it when agents work in parallel. The art draws up to three
+  calves; the words beneath always give the real count.
 - **Spells keys one way**: `Ctrl+O`, `⌥V` on macOS (`Alt+V` elsewhere),
   `↑↓`, or `Up/Down` in ASCII-safe terminals.
 
@@ -37,6 +38,12 @@ let inner = Panel::new(Depth::Overlay)
 let items = [PickerItem::new("Work").key('1'), PickerItem::new("Plan").key('2')];
 Picker::new(&items, PickerState::new(0)).paint(inner, buf, &theme);
 ```
+
+If nothing measures the terminal's ground (no OSC 11 reply, no
+`COLORFGBG`), the theme uses the terminal's own 16 named colors and paints no
+grounds, rather than guess. Set `CODEWHALE_APPEARANCE=light` or `=dark` to
+tell it, or set `Caps::appearance` from your own theme setting.
+`CODEWHALE_ASCII_SAFE=1` draws every mark in ASCII.
 
 Components name a `Role` (`Muted`, `Live`, `Danger`, …), never a color. The
 `Theme` resolves the role when it paints, so a theme or terminal change
@@ -73,7 +80,9 @@ cargo insta review          # review changed snapshots
 ```
 
 Snapshots record the role each cell was painted with, not its hex value, so
-a token change does not rewrite them but painting the wrong role does.
+a token change does not rewrite them but painting the wrong role does. Where
+two roles look the same at a depth, the snapshot names both
+(`bg=Background|Surface`).
 
 ## Update the tokens
 

@@ -198,8 +198,18 @@ pub fn probe_terminal_background() -> TerminalBackground {
     *TERMINAL_BACKGROUND.get_or_init(|| background)
 }
 
+/// The macOS system setting, read once per process. It is only a hint (see
+/// [`TerminalBackground::appearance`]), and reading it starts a process, so
+/// a host calling [`crate::Theme::detect`] every frame must not pay for it
+/// every frame.
 #[cfg(target_os = "macos")]
 fn detect_macos_appearance() -> Option<Appearance> {
+    static MACOS: OnceLock<Option<Appearance>> = OnceLock::new();
+    *MACOS.get_or_init(read_macos_appearance)
+}
+
+#[cfg(target_os = "macos")]
+fn read_macos_appearance() -> Option<Appearance> {
     let output = Command::new("defaults")
         .args(["read", "-g", "AppleInterfaceStyle"])
         .output()

@@ -121,9 +121,17 @@ pub fn text(buf: &Buffer) -> String {
         .join("\n")
 }
 
+/// The role a color was painted as. Roles that collapse to one color at
+/// this depth are all named (`Background|Surface`), so a collapse shows in
+/// the snapshot instead of hiding behind whichever role comes first.
 fn color_name(color: Color, theme: &Theme, ground: bool) -> String {
-    if let Some(role) = theme.role_of(color, ground) {
-        return format!("{role:?}");
+    let roles = theme.roles_of(color, ground);
+    if !roles.is_empty() {
+        return roles
+            .iter()
+            .map(|r| format!("{r:?}"))
+            .collect::<Vec<_>>()
+            .join("|");
     }
     match color {
         Color::Rgb(r, g, b) => format!("#{r:02x}{g:02x}{b:02x}"),

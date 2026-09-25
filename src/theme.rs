@@ -13,7 +13,10 @@
 //!
 //! When nothing measured the terminal's ground ([`Appearance::Unknown`]), a
 //! truecolor terminal is painted as at ANSI-16: its named colors were chosen
-//! for its own ground, and ours were not.
+//! for its own ground, and ours were not. This is stricter than the engine's
+//! palette, which assumes dark. A host that knows better (a theme setting the
+//! person chose) sets [`Caps::appearance`] itself; a person can force it with
+//! `CODEWHALE_APPEARANCE=light` or `=dark`.
 
 use ratatui::style::{Color, Modifier, Style};
 
@@ -64,12 +67,35 @@ impl Caps {
     /// completed [`crate::detect::probe_terminal_background`].
     #[must_use]
     pub fn detect() -> Self {
-        let ascii = std::env::var_os("CODEWHALE_ASCII_SAFE")
-            .is_some_and(|v| !v.is_empty() && v != "0" && v != "false");
+        Self::detect_with(
+            |key| std::env::var_os(key),
+            || terminal_background().appearance(),
+        )
+    }
+
+    /// [`Caps::detect`] with an injected environment reader and ground
+    /// detector, so every branch is testable without the process state.
+    ///
+    /// `CODEWHALE_APPEARANCE` (`light` or `dark`) overrides detection: the
+    /// person's word beats a measurement, and the detector is not called.
+    #[must_use]
+    pub fn detect_with(
+        get: impl Fn(&str) -> Option<std::ffi::OsString>,
+        detect_ground: impl FnOnce() -> Appearance,
+    ) -> Self {
+        let ascii =
+            get("CODEWHALE_ASCII_SAFE").is_some_and(|v| !v.is_empty() && v != "0" && v != "false");
+        let forced = get("CODEWHALE_APPEARANCE").and_then(|v| {
+            match v.to_string_lossy().trim().to_ascii_lowercase().as_str() {
+                "light" => Some(Appearance::Light),
+                "dark" => Some(Appearance::Dark),
+                _ => None,
+            }
+        });
         Self {
-            depth: ColorDepth::detect(),
+            depth: ColorDepth::detect_with(&get),
             ascii,
-            appearance: terminal_background().appearance(),
+            appearance: forced.unwrap_or_else(detect_ground),
         }
     }
 
@@ -198,20 +224,42 @@ impl Theme {
         self.caps.paints_tokens()
     }
 
-    /// Reverse lookup for snapshots: which role (if any) resolves to this
-    /// color. Grounds are preferred for backgrounds, ink for foregrounds.
+    /// Whether grounds `a` and `b` look different on this terminal. False
+    /// where grounds do not paint, and where the two roles quantize to the
+    /// same color (light 256-color `Surface` and `Background`, for one), so
+    /// a component relying on the difference must draw an edge instead.
     #[must_use]
-    pub fn role_of(&self, color: Color, as_ground: bool) -> Option<Role> {
-        let matches: Vec<Role> = Role::ALL
+    pub fn grounds_differ(&self, a: Role, b: Role) -> bool {
+        self.bg(a) != self.bg(b)
+    }
+
+    /// Whether the base `Background` ground is painted by this theme (false
+    /// without grounds and after [`Theme::without_base_ground`]).
+    #[must_use]
+    pub fn paints_base_ground(&self) -> bool {
+        self.bg(Role::Background).bg.is_some()
+    }
+
+    /// Every role that resolves to `color` here, grounds first for
+    /// backgrounds and ink first for foregrounds. More than one means those
+    /// roles look the same at this depth.
+    #[must_use]
+    pub fn roles_of(&self, color: Color, as_ground: bool) -> Vec<Role> {
+        let (mut preferred, rest): (Vec<Role>, Vec<Role>) = Role::ALL
             .iter()
             .copied()
             .filter(|r| self.color(*r) == Some(color))
-            .collect();
-        matches
-            .iter()
-            .copied()
-            .find(|r| r.is_ground() == as_ground)
-            .or_else(|| matches.first().copied())
+            .partition(|r| r.is_ground() == as_ground);
+        if preferred.is_empty() {
+            preferred = rest;
+        }
+        preferred
+    }
+
+    /// Reverse lookup for snapshots: the first of [`Theme::roles_of`].
+    #[must_use]
+    pub fn role_of(&self, color: Color, as_ground: bool) -> Option<Role> {
+        self.roles_of(color, as_ground).first().copied()
     }
 }
 
@@ -275,6 +323,92 @@ mod tests {
             }
         }
         assert_eq!(t.bg(Role::Selected), Style::default());
+    }
+
+    fn env(pairs: &[(&str, &str)]) -> impl Fn(&str) -> Option<std::ffi::OsString> {
+        let pairs: Vec<(String, String)> = pairs
+            .iter()
+            .map(|(k, v)| ((*k).to_string(), (*v).to_string()))
+            .collect();
+        move |key| pairs.iter().find(|(k, _)| k == key).map(|(_, v)| v.into())
+    }
+
+    #[test]
+    fn caps_read_ascii_safety_from_the_environment() {
+        let on = Caps::detect_with(env(&[("CODEWHALE_ASCII_SAFE", "1")]), || Appearance::Dark);
+        assert!(on.ascii);
+        for off in ["", "0", "false"] {
+            let caps =
+                Caps::detect_with(env(&[("CODEWHALE_ASCII_SAFE", off)]), || Appearance::Dark);
+            assert!(!caps.ascii, "{off:?}");
+        }
+        assert!(!Caps::detect_with(env(&[]), || Appearance::Dark).ascii);
+    }
+
+    #[test]
+    fn a_forced_appearance_beats_detection() {
+        let light = Caps::detect_with(
+            env(&[
+                ("CODEWHALE_APPEARANCE", "Light"),
+                ("COLORTERM", "truecolor"),
+            ]),
+            || panic!("forced appearance must not probe"),
+        );
+        assert_eq!(light.appearance, Appearance::Light);
+        assert!(light.paints_tokens());
+        let dark = Caps::detect_with(env(&[("CODEWHALE_APPEARANCE", "dark")]), || {
+            Appearance::Unknown
+        });
+        assert_eq!(dark.appearance, Appearance::Dark);
+        let junk = Caps::detect_with(env(&[("CODEWHALE_APPEARANCE", "sepia")]), || {
+            Appearance::Unknown
+        });
+        assert_eq!(junk.appearance, Appearance::Unknown);
+    }
+
+    /// Profiles the snapshots do not render separately, because they must
+    /// look exactly like one that is rendered.
+    #[test]
+    fn unsnapshotted_profiles_match_their_twins() {
+        let dark16 = theme(ColorDepth::Ansi16, Appearance::Dark);
+        let light16 = theme(ColorDepth::Ansi16, Appearance::Light);
+        let unknown256 = theme(ColorDepth::Ansi256, Appearance::Unknown);
+        for role in Role::ALL {
+            assert_eq!(light16.fg(role), dark16.fg(role), "{role:?}");
+            assert_eq!(light16.bg(role), Style::default(), "{role:?}");
+            assert_eq!(unknown256.fg(role), dark16.fg(role), "{role:?}");
+            assert_eq!(unknown256.bg(role), Style::default(), "{role:?}");
+        }
+    }
+
+    /// Grounds that quantize to one color at 256 colors. Each one needs an
+    /// edge or a mark wherever a component relies on the difference; a new
+    /// collapse fails here so it gets that review.
+    #[test]
+    fn collapsed_grounds_are_known() {
+        let grounds = [
+            Role::Sidebar,
+            Role::Background,
+            Role::Surface,
+            Role::Hover,
+            Role::Selected,
+        ];
+        let mut collapsed = Vec::new();
+        for appearance in [Appearance::Dark, Appearance::Light] {
+            let t = theme(ColorDepth::Ansi256, appearance);
+            for (i, a) in grounds.iter().enumerate() {
+                for b in &grounds[i + 1..] {
+                    if !t.grounds_differ(*a, *b) {
+                        collapsed.push(format!("{appearance:?} {a:?}={b:?}"));
+                    }
+                }
+            }
+        }
+        assert_eq!(
+            collapsed,
+            ["Dark Surface=Hover", "Light Background=Surface"],
+            "Panel edges raised cards where Surface=Background; nothing paints Hover yet"
+        );
     }
 
     /// Contrast audit at the two depths that paint token colors, with the

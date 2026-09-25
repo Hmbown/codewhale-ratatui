@@ -4,8 +4,9 @@
 //! (`whale-character-v2`), is the one character on every surface. The desktop
 //! app draws it with the v2 rig; the terminal draws the same contours as
 //! Braille dots. Its states carry meaning: resting, working, needs you, done,
-//! and a pod, where one to three calves swim with it while agents work in
-//! parallel. The count is never invented.
+//! and a pod, where calves swim with it while agents work in parallel. The
+//! art has room for three calves; the words always carry the real count, and
+//! a pod of none is drawn as plain work, never with an invented calf.
 //!
 //! `assets/whale-v2.scenes` holds the poster pose of each state as exact
 //! cubic contours, exported from the v2 kit's Director by
@@ -51,7 +52,8 @@ pub enum WhaleState {
     Busy,
     NeedsYou,
     Done,
-    /// Working with agents in parallel. Calves are clamped to 1..=3.
+    /// Working with `calves` agents in parallel. The art draws at most three
+    /// calves (zero draws the working pose); the words use the real count.
     Pod {
         calves: u8,
     },
@@ -62,10 +64,10 @@ impl WhaleState {
     fn scene_key(self) -> (&'static str, u8) {
         match self {
             WhaleState::Rest => ("rest", 0),
-            WhaleState::Busy => ("busy", 0),
+            WhaleState::Busy | WhaleState::Pod { calves: 0 } => ("busy", 0),
             WhaleState::NeedsYou => ("needs", 0),
             WhaleState::Done => ("done", 0),
-            WhaleState::Pod { calves } => ("pod", calves.clamp(1, 3)),
+            WhaleState::Pod { calves } => ("pod", calves.min(3)),
         }
     }
 
@@ -88,10 +90,9 @@ impl WhaleState {
             WhaleState::Busy => "Working".into(),
             WhaleState::NeedsYou => "Needs you".into(),
             WhaleState::Done => "Done".into(),
-            WhaleState::Pod { calves } => {
-                let n = calves.clamp(1, 3);
-                format!("Working with {n} agent{}", if n == 1 { "" } else { "s" }).into()
-            }
+            WhaleState::Pod { calves: 0 } => "Working".into(),
+            WhaleState::Pod { calves: 1 } => "Working with 1 agent".into(),
+            WhaleState::Pod { calves } => format!("Working with {calves} agents").into(),
         }
     }
 }
@@ -325,7 +326,7 @@ pub fn frame(state: WhaleState, cols: u16, rows: u16) -> Option<Grid> {
     if cols < 16 || rows < 8 {
         return None;
     }
-    let size = u32::from(cols * 2).min(u32::from(rows) * 4);
+    let size = (u32::from(cols) * 2).min(u32::from(rows) * 4);
     Some(rasterize(scene(state, size)?, cols, rows, 0.5))
 }
 

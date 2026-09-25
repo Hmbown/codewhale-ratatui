@@ -392,6 +392,18 @@ fn query_terminal_inner(
         out.flush().ok()?;
     }
 
+    settle_terminal_reply(in_fd, query, timeout, stop_at_csi_final)
+}
+
+/// Read the reply to a query already written, park the user's type-ahead for
+/// replay, and account for anything consumed that cannot be replayed.
+#[cfg(unix)]
+fn settle_terminal_reply(
+    in_fd: std::os::fd::RawFd,
+    query: &[u8],
+    timeout: std::time::Duration,
+    stop_at_csi_final: bool,
+) -> Option<Vec<u8>> {
     let (answered, reply, carried) = read_terminal_reply(in_fd, query, timeout, stop_at_csi_final);
     carry_typed_ahead(&carried);
     if !answered {

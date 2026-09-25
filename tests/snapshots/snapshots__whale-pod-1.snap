@@ -234,57 +234,57 @@ r16 c29..36 bg=Background
 
        ● Working with 1 agent
 ---
-r0 c0..36 bg=Background
-r1 c0..36 bg=Background
-r2 c0..36 bg=Background
-r3 c0..4 bg=Background
-r3 c4..8 fg=idx32 bg=Background
-r3 c8..17 bg=Background
-r3 c17..23 fg=idx32 bg=Background
-r3 c23..36 bg=Background
-r4 c0..4 bg=Background
-r4 c4..9 fg=idx32 bg=Background
-r4 c9..14 bg=Background
-r4 c14..23 fg=idx32 bg=Background
-r4 c23..36 bg=Background
-r5 c0..12 bg=Background
-r5 c12..26 fg=idx32 bg=Background
-r5 c26..36 bg=Background
-r6 c0..11 bg=Background
-r6 c11..15 fg=idx26 bg=Background
-r6 c15..36 bg=Background
-r7 c0..11 bg=Background
-r7 c11..15 fg=idx26 bg=Background
-r7 c15..20 bg=Background
-r7 c20..30 fg=idx26 bg=Background
-r7 c30..36 bg=Background
-r8 c0..11 bg=Background
-r8 c11..30 fg=idx26 bg=Background
-r8 c30..36 bg=Background
-r9 c0..11 bg=Background
-r9 c11..26 fg=idx26 bg=Background
-r9 c26..28 bg=Background
-r9 c28..29 fg=idx26 bg=Background
-r9 c29..36 bg=Background
-r10 c0..12 bg=Background
-r10 c12..24 fg=idx26 bg=Background
-r10 c24..26 bg=Background
-r10 c26..28 fg=idx26 bg=Background
-r10 c28..36 bg=Background
-r11 c0..14 bg=Background
-r11 c14..27 fg=Primary bg=Background
-r11 c27..36 bg=Background
-r12 c0..17 bg=Background
-r12 c17..20 fg=Primary bg=Background
-r12 c20..36 bg=Background
-r13 c0..36 bg=Background
-r14 c0..36 bg=Background
-r15 c0..36 bg=Background
-r16 c0..7 bg=Background
-r16 c7..8 fg=Live bg=Background
-r16 c8..9 bg=Background
-r16 c9..29 fg=Foreground bg=Background
-r16 c29..36 bg=Background
+r0 c0..36 bg=Background|Surface
+r1 c0..36 bg=Background|Surface
+r2 c0..36 bg=Background|Surface
+r3 c0..4 bg=Background|Surface
+r3 c4..8 fg=idx32 bg=Background|Surface
+r3 c8..17 bg=Background|Surface
+r3 c17..23 fg=idx32 bg=Background|Surface
+r3 c23..36 bg=Background|Surface
+r4 c0..4 bg=Background|Surface
+r4 c4..9 fg=idx32 bg=Background|Surface
+r4 c9..14 bg=Background|Surface
+r4 c14..23 fg=idx32 bg=Background|Surface
+r4 c23..36 bg=Background|Surface
+r5 c0..12 bg=Background|Surface
+r5 c12..26 fg=idx32 bg=Background|Surface
+r5 c26..36 bg=Background|Surface
+r6 c0..11 bg=Background|Surface
+r6 c11..15 fg=idx26 bg=Background|Surface
+r6 c15..36 bg=Background|Surface
+r7 c0..11 bg=Background|Surface
+r7 c11..15 fg=idx26 bg=Background|Surface
+r7 c15..20 bg=Background|Surface
+r7 c20..30 fg=idx26 bg=Background|Surface
+r7 c30..36 bg=Background|Surface
+r8 c0..11 bg=Background|Surface
+r8 c11..30 fg=idx26 bg=Background|Surface
+r8 c30..36 bg=Background|Surface
+r9 c0..11 bg=Background|Surface
+r9 c11..26 fg=idx26 bg=Background|Surface
+r9 c26..28 bg=Background|Surface
+r9 c28..29 fg=idx26 bg=Background|Surface
+r9 c29..36 bg=Background|Surface
+r10 c0..12 bg=Background|Surface
+r10 c12..24 fg=idx26 bg=Background|Surface
+r10 c24..26 bg=Background|Surface
+r10 c26..28 fg=idx26 bg=Background|Surface
+r10 c28..36 bg=Background|Surface
+r11 c0..14 bg=Background|Surface
+r11 c14..27 fg=Primary bg=Background|Surface
+r11 c27..36 bg=Background|Surface
+r12 c0..17 bg=Background|Surface
+r12 c17..20 fg=Primary bg=Background|Surface
+r12 c20..36 bg=Background|Surface
+r13 c0..36 bg=Background|Surface
+r14 c0..36 bg=Background|Surface
+r15 c0..36 bg=Background|Surface
+r16 c0..7 bg=Background|Surface
+r16 c7..8 fg=Live bg=Background|Surface
+r16 c8..9 bg=Background|Surface
+r16 c9..29 fg=Foreground bg=Background|Surface
+r16 c29..36 bg=Background|Surface
 
 == ansi-16
 

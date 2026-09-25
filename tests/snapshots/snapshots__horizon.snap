@@ -71,14 +71,14 @@ Edited summary.md
 ───────────────────────────────── 12% of context used ──────
 › Ask Codewhale to do something
 ---
-r0 c0..17 fg=Foreground bg=Background
-r0 c17..60 bg=Background
-r1 c0..33 fg=Border bg=Background
-r1 c33..54 fg=Muted bg=Background
-r1 c54..60 fg=Border bg=Background
-r2 c0..2 fg=Primary bg=Background
-r2 c2..31 fg=Muted bg=Background
-r2 c31..60 bg=Background
+r0 c0..17 fg=Foreground bg=Background|Surface
+r0 c17..60 bg=Background|Surface
+r1 c0..33 fg=Border bg=Background|Surface
+r1 c33..54 fg=Muted bg=Background|Surface
+r1 c54..60 fg=Border bg=Background|Surface
+r2 c0..2 fg=Primary bg=Background|Surface
+r2 c2..31 fg=Muted bg=Background|Surface
+r2 c31..60 bg=Background|Surface
 
 == ansi-16
 Edited summary.md

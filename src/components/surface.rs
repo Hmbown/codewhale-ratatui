@@ -2,8 +2,9 @@
 //!
 //! Depth is elevation: raised things sit nearer the surface, the stage and
 //! things put away sit deeper. Where the terminal paints grounds, depth is a
-//! ground; where it cannot (16 colors, `NO_COLOR`, an unmeasured ground),
-//! depth becomes an edge, because a fill nobody can see separates nothing.
+//! ground; where it cannot (16 colors, `NO_COLOR`, an unmeasured ground, or a
+//! depth where two grounds quantize to one color), depth becomes an edge,
+//! because a fill nobody can see separates nothing.
 //!
 //! Replaces the engine's three modal treatments (`render_modal_surface` with
 //! its shadow, `render_underwater_surface` with its two rules, and hand-rolled
@@ -98,7 +99,8 @@ impl<'a> Panel<'a> {
     fn edged(&self, theme: &Theme) -> bool {
         match self.depth {
             Depth::Overlay => true,
-            Depth::Raised => !theme.paints_grounds(),
+            // Light 256-color `Surface` and `Background` are both white.
+            Depth::Raised => !theme.grounds_differ(Role::Surface, Role::Background),
             Depth::Deep | Depth::Stage => false,
         }
     }
@@ -236,7 +238,7 @@ pub fn centered(
 /// The horizon: one full-width rule, drawn once per frame, above the place
 /// where the person types. Sugimoto's seascapes, not a table border.
 ///
-/// On a truecolor ground its ends fade into the ground, so it reads as a
+/// On a truecolor ground we painted, its ends fade into it, so it reads as a
 /// horizon rather than a box edge. Everywhere else it is a plain `Border`
 /// line; ASCII-safe terminals draw `-`.
 #[derive(Clone, Debug, Default)]
@@ -274,7 +276,9 @@ impl Paint for HorizonRule<'_> {
         let row = Rect { height: 1, ..area };
         let rule = glyphs::pick("─", theme.ascii());
         let line_style = theme.fg(Role::Border);
-        let fade = theme.depth() == color::ColorDepth::TrueColor && theme.paints_grounds();
+        // Fade only into a ground we painted: after `without_base_ground` the
+        // ground is the terminal's own, whose color we do not know.
+        let fade = theme.depth() == color::ColorDepth::TrueColor && theme.paints_base_ground();
         let width = row.width;
         let ramp = (width / 8).min(6);
         for i in 0..width {
@@ -324,5 +328,49 @@ mod tests {
         let small = Rect::new(0, 0, 30, 6);
         let r = centered(small, 68, 10, 44, 8);
         assert!(r.width <= 28 && r.height <= 4);
+    }
+
+    /// A raised card must be told from the stage in every profile: by its
+    /// ground where the two grounds differ, by an edge everywhere else.
+    #[test]
+    fn a_raised_panel_is_always_distinguishable() {
+        use crate::testing::{Profile, render, text};
+        for profile in Profile::ALL {
+            for theme in [profile.theme(), profile.theme().without_base_ground()] {
+                let buf = render(12, 4, |area, buf| {
+                    Panel::new(Depth::Raised).draw(area, buf, &theme);
+                });
+                let edged = text(&buf).starts_with(['┌', '+']);
+                let grounded = theme.grounds_differ(Role::Surface, Role::Background);
+                assert!(
+                    edged || grounded,
+                    "{}: raised panel has neither an edge nor its own ground",
+                    profile.name()
+                );
+            }
+        }
+        let light256 = Profile::Light256.theme();
+        assert!(!light256.grounds_differ(Role::Surface, Role::Background));
+    }
+
+    #[test]
+    fn the_horizon_does_not_fade_into_a_ground_it_did_not_paint() {
+        use crate::testing::{Profile, render};
+        let theme = Profile::DarkTrue.theme().without_base_ground();
+        let buf = render(40, 1, |area, buf| {
+            HorizonRule::new().paint(area, buf, &theme)
+        });
+        for x in 0..40 {
+            assert_eq!(
+                buf[(x, 0)].fg,
+                theme.color(Role::Border).unwrap(),
+                "col {x}"
+            );
+        }
+        let painted = Profile::DarkTrue.theme();
+        let buf = render(40, 1, |area, buf| {
+            HorizonRule::new().paint(area, buf, &painted);
+        });
+        assert_ne!(buf[(0, 0)].fg, painted.color(Role::Border).unwrap());
     }
 }
