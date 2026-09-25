@@ -32,6 +32,7 @@ pub mod theme;
 pub mod tokens;
 
 mod components;
+pub mod gallery;
 pub mod testing;
 pub mod whale;
 

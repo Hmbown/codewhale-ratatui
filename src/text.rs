@@ -8,7 +8,8 @@
 
 use std::borrow::Cow;
 
-use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
+use unicode_segmentation::UnicodeSegmentation;
+use unicode_width::UnicodeWidthStr;
 
 use crate::glyphs;
 
@@ -38,9 +39,22 @@ pub fn width(text: &str) -> usize {
 }
 
 /// Fit `text` into `max` cells, ending with `…` (or `.` when ASCII-safe)
-/// when anything was cut. Never splits a wide character.
+/// when anything was cut. Cuts between graphemes, so a wide character or a
+/// combining sequence is never split. Use it for names, paths and IDs.
 #[must_use]
 pub fn truncate(text: &str, max: usize, ascii: bool) -> Cow<'_, str> {
+    cut(text, max, ascii, false)
+}
+
+/// Like [`truncate`], but for prose: the cut lands between words where it
+/// can, because a clipped clause reads as a sentence and a clipped word
+/// reads as a bug. From the engine's `ui_text::semantic_truncate`.
+#[must_use]
+pub fn truncate_words(text: &str, max: usize, ascii: bool) -> Cow<'_, str> {
+    cut(text, max, ascii, true)
+}
+
+fn cut(text: &str, max: usize, ascii: bool, at_word: bool) -> Cow<'_, str> {
     if width(text) <= max {
         return Cow::Borrowed(text);
     }
@@ -48,21 +62,37 @@ pub fn truncate(text: &str, max: usize, ascii: bool) -> Cow<'_, str> {
         return Cow::Borrowed("");
     }
     let ellipsis = glyphs::pick(glyphs::ELLIPSIS, ascii);
-    let budget = max - width(ellipsis);
-    let mut out = String::new();
+    let budget = max.saturating_sub(width(ellipsis));
     let mut used = 0;
-    for c in text.chars() {
-        let w = c.width().unwrap_or(0);
+    let mut end = 0;
+    let mut word_end = None;
+    let mut in_word = false;
+    for (at, g) in text.grapheme_indices(true) {
+        let w = width(g);
         if used + w > budget {
             break;
         }
         used += w;
-        out.push(c);
+        end = at + g.len();
+        if g.chars().all(char::is_whitespace) {
+            if in_word {
+                word_end = Some(at);
+            }
+            in_word = false;
+        } else {
+            in_word = true;
+        }
     }
-    let trimmed = out.trim_end();
-    let mut out = trimmed.to_string();
-    out.push_str(ellipsis);
-    Cow::Owned(out)
+    let body = match word_end {
+        Some(word_end) if at_word => text[..word_end].trim_end(),
+        _ => text[..end].trim_end(),
+    };
+    let body = if body.is_empty() {
+        text[..end].trim_end()
+    } else {
+        body
+    };
+    Cow::Owned(format!("{body}{ellipsis}"))
 }
 
 /// Pad `text` with spaces to exactly `cells` wide (truncating first).
@@ -93,5 +123,22 @@ mod tests {
         // A wide character is never split.
         assert_eq!(truncate("鲸鱼鲸鱼", 5, false), "鲸鱼…");
         assert_eq!(width(&pad("ab", 4, false)), 4);
+        // A combining sequence stays whole.
+        assert_eq!(truncate("cafe\u{301} au lait", 6, false), "cafe\u{301}…");
+    }
+
+    #[test]
+    fn prose_is_cut_between_words() {
+        let hint = "Works in this session; asks before edits and shell commands";
+        assert_eq!(
+            truncate_words(hint, 40, false),
+            "Works in this session; asks before…"
+        );
+        assert_eq!(
+            truncate(hint, 40, false),
+            "Works in this session; asks before edit…"
+        );
+        // One long word still fits by cutting inside it.
+        assert_eq!(truncate_words("supercalifragilistic", 8, false), "superca…");
     }
 }

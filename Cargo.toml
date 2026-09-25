@@ -13,6 +13,7 @@ categories = ["command-line-interface"]
 ratatui = "=0.30.2"
 crossterm = "0.29"
 unicode-width = "0.2"
+unicode-segmentation = "1.12"
 
 [dev-dependencies]
 insta = "1.48.0"

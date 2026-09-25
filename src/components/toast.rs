@@ -50,7 +50,8 @@ impl Toast {
         };
         let fixed = 1 + text::width(glyph) + 1 + text::width(arrow) + 1;
         let body = text::display_safe(&self.text);
-        let body = text::truncate(&body, max.saturating_sub(fixed), theme.ascii()).into_owned();
+        let body =
+            text::truncate_words(&body, max.saturating_sub(fixed), theme.ascii()).into_owned();
         let mut spans = vec![
             Span::raw(" "),
             Span::styled(glyph, theme.fg(self.state.role())),

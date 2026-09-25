@@ -1,0 +1,115 @@
+---
+source: tests/snapshots.rs
+expression: dump(&entry)
+---
+== dark-truecolor
+Edited summary.md
+───────────────────────────────── 12% of context used ──────
+› Ask Codewhale to do something
+---
+r0 c0..17 fg=Foreground bg=Background
+r0 c17..60 bg=Background
+r1 c0..1 fg=#242527 bg=Background
+r1 c1..2 fg=#28292b bg=Background
+r1 c2..3 fg=#2c2d2f bg=Background
+r1 c3..4 fg=#2f3033 bg=Background
+r1 c4..5 fg=#333437 bg=Background
+r1 c5..6 fg=#37383b bg=Background
+r1 c6..33 fg=Border bg=Background
+r1 c33..54 fg=Muted bg=Background
+r1 c54..55 fg=#37383b bg=Background
+r1 c55..56 fg=#333437 bg=Background
+r1 c56..57 fg=#2f3033 bg=Background
+r1 c57..58 fg=#2c2d2f bg=Background
+r1 c58..59 fg=#28292b bg=Background
+r1 c59..60 fg=#242527 bg=Background
+r2 c0..2 fg=Primary bg=Background
+r2 c2..31 fg=Muted bg=Background
+r2 c31..60 bg=Background
+
+== light-truecolor
+Edited summary.md
+───────────────────────────────── 12% of context used ──────
+› Ask Codewhale to do something
+---
+r0 c0..17 fg=Foreground bg=Background
+r0 c17..60 bg=Background
+r1 c0..1 fg=#f5f3f0 bg=Background
+r1 c1..2 fg=#f1eeea bg=Background
+r1 c2..3 fg=#ece9e5 bg=Background
+r1 c3..4 fg=#e7e4df bg=Background
+r1 c4..5 fg=#e2dfda bg=Background
+r1 c5..6 fg=#dedad4 bg=Background
+r1 c6..33 fg=Border bg=Background
+r1 c33..54 fg=Muted bg=Background
+r1 c54..55 fg=#dedad4 bg=Background
+r1 c55..56 fg=#e2dfda bg=Background
+r1 c56..57 fg=#e7e4df bg=Background
+r1 c57..58 fg=#ece9e5 bg=Background
+r1 c58..59 fg=#f1eeea bg=Background
+r1 c59..60 fg=#f5f3f0 bg=Background
+r2 c0..2 fg=Primary bg=Background
+r2 c2..31 fg=Muted bg=Background
+r2 c31..60 bg=Background
+
+== dark-256
+Edited summary.md
+───────────────────────────────── 12% of context used ──────
+› Ask Codewhale to do something
+---
+r0 c0..17 fg=Foreground bg=Background
+r0 c17..60 bg=Background
+r1 c0..33 fg=Border bg=Background
+r1 c33..54 fg=Muted bg=Background
+r1 c54..60 fg=Border bg=Background
+r2 c0..2 fg=Primary bg=Background
+r2 c2..31 fg=Muted bg=Background
+r2 c31..60 bg=Background
+
+== light-256
+Edited summary.md
+───────────────────────────────── 12% of context used ──────
+› Ask Codewhale to do something
+---
+r0 c0..17 fg=Foreground bg=Background
+r0 c17..60 bg=Background
+r1 c0..33 fg=Border bg=Background
+r1 c33..54 fg=Muted bg=Background
+r1 c54..60 fg=Border bg=Background
+r2 c0..2 fg=Primary bg=Background
+r2 c2..31 fg=Muted bg=Background
+r2 c31..60 bg=Background
+
+== ansi-16
+Edited summary.md
+───────────────────────────────── 12% of context used ──────
+› Ask Codewhale to do something
+---
+r1 c0..60 dim
+r2 c0..2 fg=Primary
+r2 c2..31 dim
+
+== unknown-ground
+Edited summary.md
+───────────────────────────────── 12% of context used ──────
+› Ask Codewhale to do something
+---
+r1 c0..60 dim
+r2 c0..2 fg=Primary
+r2 c2..31 dim
+
+== no-color
+Edited summary.md
+───────────────────────────────── 12% of context used ──────
+› Ask Codewhale to do something
+---
+r1 c0..60 dim
+r2 c2..31 dim
+
+== ascii
+Edited summary.md
+--------------------------------- 12% of context used ------
+> Ask Codewhale to do something
+---
+r1 c0..60 dim
+r2 c2..31 dim

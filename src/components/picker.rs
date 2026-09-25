@@ -229,7 +229,7 @@ impl<'a> Picker<'a> {
                 let detail = text::display_safe(detail);
                 row.push("  ".into(), theme.fg(Role::Muted));
                 row.push(
-                    text::truncate(&detail, room, ascii).into_owned(),
+                    text::truncate_words(&detail, room, ascii).into_owned(),
                     theme.fg(Role::Muted),
                 );
             }
@@ -251,10 +251,11 @@ impl Paint for Picker<'_> {
         }
         let rows = usize::from(area.height);
         let overflow = self.items.len() > rows;
+        // The scrollbar takes the last column and keeps one cell of air.
         let list = Rect {
             width: area
                 .width
-                .saturating_sub(u16::from(overflow && area.width > 2)),
+                .saturating_sub(2 * u16::from(overflow && area.width > 2)),
             ..area
         };
         let offset = self.state.visible_offset(self.items.len(), rows);
