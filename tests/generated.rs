@@ -20,17 +20,33 @@ use ratatui::style::Color;
 
 /// Every role, in enum order: variant, `tokens.json` key, doc comment.
 const ROLES: &[(&str, &str, &str)] = &[
-    ("Sidebar", "sidebar", "The deepest ground: rails and things put away."),
+    (
+        "Sidebar",
+        "sidebar",
+        "The deepest ground: rails and things put away.",
+    ),
     ("Background", "background", "The stage."),
     ("Surface", "surface", "A raised panel."),
     ("Hover", "hover", "A row under the pointer."),
     ("Selected", "selected", "The selected row."),
     ("Foreground", "foreground", "Body ink."),
-    ("Muted", "muted_foreground", "Ink that recedes: details, verbs in hints, asides."),
+    (
+        "Muted",
+        "muted_foreground",
+        "Ink that recedes: details, verbs in hints, asides.",
+    ),
     ("Border", "border", "Quiet lines that separate."),
-    ("BorderStrong", "border_strong", "Edges that identify a control or a decision."),
+    (
+        "BorderStrong",
+        "border_strong",
+        "Edges that identify a control or a decision.",
+    ),
     ("Primary", "primary", "Actions, focus and links."),
-    ("PrimaryForeground", "primary_foreground", "Ink on a `Primary` ground."),
+    (
+        "PrimaryForeground",
+        "primary_foreground",
+        "Ink on a `Primary` ground.",
+    ),
     ("Live", "live", "Work happening now, and work done."),
     ("Attention", "attention", "Needs you."),
     ("Danger", "danger", "Failed or destructive."),
@@ -119,8 +135,10 @@ fn keeps_hue(i: u8, value: u32) -> bool {
 
 /// The 256-color table for one appearance, and a note per adjusted role.
 fn table_256(colors: &BTreeMap<String, u32>, mode: &str) -> (BTreeMap<String, u8>, Vec<String>) {
-    let mut table: BTreeMap<String, u8> =
-        colors.iter().map(|(k, v)| (k.clone(), nearest(*v))).collect();
+    let mut table: BTreeMap<String, u8> = colors
+        .iter()
+        .map(|(k, v)| (k.clone(), nearest(*v)))
+        .collect();
     let mut notes = Vec::new();
     // Inks over grounds first; ink on primary last, so it sees primary's
     // final index.
@@ -152,7 +170,11 @@ fn table_256(colors: &BTreeMap<String, u32>, mode: &str) -> (BTreeMap<String, u8
             .filter(|i| !hue || keeps_hue(*i, value))
             .min_by_key(|i| (dist(indexed_rgb(*i).expect("fixed index"), value), *i))
             .unwrap_or_else(|| panic!("{mode} {key}: no 256-color index holds its contrast"));
-        let why = if holds(start, &table) { "lost its hue" } else { "failed its contrast floor" };
+        let why = if holds(start, &table) {
+            "lost its hue"
+        } else {
+            "failed its contrast floor"
+        };
         notes.push(format!("{mode} {key}: {start} -> {best} (nearest {why})"));
         table.insert(key.to_string(), best);
     }
@@ -161,7 +183,10 @@ fn table_256(colors: &BTreeMap<String, u32>, mode: &str) -> (BTreeMap<String, u8
         .map(|k| table[*k])
         .collect();
     for (i, a) in hues.iter().enumerate() {
-        assert!(!hues[i + 1..].contains(a), "{mode}: two state hues share 256-color index {a}");
+        assert!(
+            !hues[i + 1..].contains(a),
+            "{mode}: two state hues share 256-color index {a}"
+        );
     }
     (table, notes)
 }
@@ -179,7 +204,10 @@ fn render(json: &serde_json::Value) -> String {
             );
         }
         for (_, key, _) in ROLES {
-            assert!(keys.contains(key), "Role token `{key}` is missing from tokens.json {mode}");
+            assert!(
+                keys.contains(key),
+                "Role token `{key}` is missing from tokens.json {mode}"
+            );
         }
         let colors: BTreeMap<String, u32> = obj
             .iter()
@@ -190,16 +218,40 @@ fn render(json: &serde_json::Value) -> String {
 
     let mut out = String::new();
     let w = &mut out;
-    writeln!(w, "// Generated from vendor/codewhale-design/tokens.json {version} by tests/generated.rs.").unwrap();
-    writeln!(w, "// Do not edit. Regenerate: CODEWHALE_BLESS=1 cargo test --test generated").unwrap();
+    writeln!(
+        w,
+        "// Generated from vendor/codewhale-design/tokens.json {version} by tests/generated.rs."
+    )
+    .unwrap();
+    writeln!(
+        w,
+        "// Do not edit. Regenerate: CODEWHALE_BLESS=1 cargo test --test generated"
+    )
+    .unwrap();
     writeln!(w).unwrap();
-    writeln!(w, "/// The design tokens version these roles were generated from.").unwrap();
+    writeln!(
+        w,
+        "/// The design tokens version these roles were generated from."
+    )
+    .unwrap();
     writeln!(w, "pub const TOKENS_VERSION: &str = \"{version}\";").unwrap();
     writeln!(w).unwrap();
-    writeln!(w, "/// What a color is for. Components name roles; they never name colors.").unwrap();
-    writeln!(w, "/// Names follow `tokens.json`, so one vocabulary covers the desktop app,").unwrap();
+    writeln!(
+        w,
+        "/// What a color is for. Components name roles; they never name colors."
+    )
+    .unwrap();
+    writeln!(
+        w,
+        "/// Names follow `tokens.json`, so one vocabulary covers the desktop app,"
+    )
+    .unwrap();
     writeln!(w, "/// the web and the terminal.").unwrap();
-    writeln!(w, "#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]").unwrap();
+    writeln!(
+        w,
+        "#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]"
+    )
+    .unwrap();
     writeln!(w, "pub enum Role {{").unwrap();
     for (variant, _, doc) in ROLES {
         writeln!(w, "    /// {doc}").unwrap();
@@ -225,7 +277,11 @@ fn render(json: &serde_json::Value) -> String {
     writeln!(w, "        }}").unwrap();
     writeln!(w, "    }}").unwrap();
     writeln!(w).unwrap();
-    writeln!(w, "    /// Position in [`Role::ALL`] and in the color tables.").unwrap();
+    writeln!(
+        w,
+        "    /// Position in [`Role::ALL`] and in the color tables."
+    )
+    .unwrap();
     writeln!(w, "    #[must_use]").unwrap();
     writeln!(w, "    pub const fn index(self) -> usize {{").unwrap();
     writeln!(w, "        self as usize").unwrap();
@@ -236,7 +292,11 @@ fn render(json: &serde_json::Value) -> String {
         let colors = &modes[mode];
         let upper = mode.to_uppercase();
         writeln!(w).unwrap();
-        writeln!(w, "/// {mode} token colors, `0xRRGGBB`, indexed by [`Role::index`].").unwrap();
+        writeln!(
+            w,
+            "/// {mode} token colors, `0xRRGGBB`, indexed by [`Role::index`]."
+        )
+        .unwrap();
         writeln!(w, "pub(crate) const {upper}: [u32; Role::COUNT] = [").unwrap();
         for (variant, key, _) in ROLES {
             writeln!(w, "    0x{:06x}, // {variant}", colors[*key]).unwrap();
@@ -244,8 +304,16 @@ fn render(json: &serde_json::Value) -> String {
         writeln!(w, "];").unwrap();
         let (table, notes) = table_256(colors, mode);
         writeln!(w).unwrap();
-        writeln!(w, "/// {mode} xterm 256-color indices (16..=255 only; 0..=15 belong to the").unwrap();
-        writeln!(w, "/// user's profile). Nearest index, except where contrast needed a move:").unwrap();
+        writeln!(
+            w,
+            "/// {mode} xterm 256-color indices (16..=255 only; 0..=15 belong to the"
+        )
+        .unwrap();
+        writeln!(
+            w,
+            "/// user's profile). Nearest index, except where contrast needed a move:"
+        )
+        .unwrap();
         if notes.is_empty() {
             writeln!(w, "/// none in this table.").unwrap();
         }
@@ -299,7 +367,11 @@ fn vendored_tokens_rs_agrees_with_roles() {
 fn vendored_folder_passes_its_own_check() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
     let script = root.join("vendor/codewhale-design/generate.py");
-    match std::process::Command::new("python3").arg(&script).arg("--check").output() {
+    match std::process::Command::new("python3")
+        .arg(&script)
+        .arg("--check")
+        .output()
+    {
         Ok(out) => assert!(
             out.status.success(),
             "generate.py --check failed:\n{}{}",

@@ -231,9 +231,15 @@ mod tests {
     #[test]
     fn truecolor_reads_the_token_tables() {
         let dark = theme(ColorDepth::TrueColor, Appearance::Dark);
-        assert_eq!(dark.color(Role::Primary), Some(rgb(crate::tokens::DARK.primary)));
+        assert_eq!(
+            dark.color(Role::Primary),
+            Some(rgb(crate::tokens::DARK.primary))
+        );
         let light = theme(ColorDepth::TrueColor, Appearance::Light);
-        assert_eq!(light.color(Role::Danger), Some(rgb(crate::tokens::LIGHT.danger)));
+        assert_eq!(
+            light.color(Role::Danger),
+            Some(rgb(crate::tokens::LIGHT.danger))
+        );
     }
 
     #[test]
@@ -276,7 +282,13 @@ mod tests {
     /// (4.5:1) on every ground it can sit on, and the strong border 3:1.
     #[test]
     fn contrast_holds_at_truecolor_and_ansi256() {
-        let grounds = [Role::Background, Role::Surface, Role::Sidebar, Role::Hover, Role::Selected];
+        let grounds = [
+            Role::Background,
+            Role::Surface,
+            Role::Sidebar,
+            Role::Hover,
+            Role::Selected,
+        ];
         let mut failures = Vec::new();
         for appearance in [Appearance::Dark, Appearance::Light] {
             for depth in [ColorDepth::TrueColor, ColorDepth::Ansi256] {
@@ -312,6 +324,10 @@ mod tests {
                 }
             }
         }
-        assert!(failures.is_empty(), "contrast failures:\n{}", failures.join("\n"));
+        assert!(
+            failures.is_empty(),
+            "contrast failures:\n{}",
+            failures.join("\n")
+        );
     }
 }

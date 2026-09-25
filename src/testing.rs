@@ -112,7 +112,9 @@ fn cells(buf: &Buffer, mut visit: impl FnMut(u16, u16, &str, Style)) {
 #[must_use]
 pub fn text(buf: &Buffer) -> String {
     let mut rows = vec![String::new(); usize::from(buf.area.height)];
-    cells(buf, |_, y, symbol, _| rows[usize::from(y - buf.area.y)].push_str(symbol));
+    cells(buf, |_, y, symbol, _| {
+        rows[usize::from(y - buf.area.y)].push_str(symbol)
+    });
     rows.iter()
         .map(|r| r.trim_end())
         .collect::<Vec<_>>()

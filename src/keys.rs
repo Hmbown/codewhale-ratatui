@@ -192,7 +192,9 @@ mod tests {
         assert!(has_control_like_modifier(KeyModifiers::SUPER, MAC));
         assert!(!has_control_like_modifier(KeyModifiers::SUPER, LINUX));
         assert!(alt_nav_modifiers(KeyModifiers::ALT | KeyModifiers::SHIFT));
-        assert!(!alt_nav_modifiers(KeyModifiers::ALT | KeyModifiers::CONTROL));
+        assert!(!alt_nav_modifiers(
+            KeyModifiers::ALT | KeyModifiers::CONTROL
+        ));
         assert!(is_ctrl_h_backspace(&KeyEvent::new(
             KeyCode::Char('h'),
             KeyModifiers::CONTROL
