@@ -1,4 +1,5 @@
-//! The Braille whale matches the v2 kit's own stills, dot for dot.
+//! The Braille whale matches the v2 kit's own stills, dot for dot, for all
+//! 17 actions at both sizes the widget draws.
 //!
 //! `tests/whale-stills/*.txt` are copied unchanged from codewhale-app
 //! `vendor/whale-character-v2/braille/` (branch `beta/batch-20260925`,
@@ -33,17 +34,35 @@ fn rendered(state: WhaleState, cols: u16, rows: u16) -> Vec<String> {
         .collect()
 }
 
-const STATES: [(&str, WhaleState); 5] = [
-    ("rest", WhaleState::Rest),
-    ("busy", WhaleState::Busy),
-    ("needs", WhaleState::NeedsYou),
-    ("done", WhaleState::Done),
-    ("pod", WhaleState::Pod { calves: 3 }),
-];
+/// Every action in the kit, by its still's name.
+fn states() -> impl Iterator<Item = (&'static str, WhaleState)> {
+    WhaleState::ALL.into_iter().map(|s| (s.key(), s))
+}
+
+#[test]
+fn the_kit_has_seventeen_actions_and_we_draw_them_all() {
+    assert_eq!(WhaleState::ALL.len(), 17);
+    let dir = format!("{}/tests/whale-stills", env!("CARGO_MANIFEST_DIR"));
+    let mut keys: Vec<String> = std::fs::read_dir(&dir)
+        .expect("stills")
+        .filter_map(|e| {
+            let name = e.ok()?.file_name().into_string().ok()?;
+            Some(name.strip_suffix("-32x16.txt")?.to_string())
+        })
+        .collect();
+    keys.sort();
+    let mut ours: Vec<&str> = states().map(|(k, _)| k).collect();
+    ours.sort_unstable();
+    assert_eq!(keys, ours, "one WhaleState per kit still");
+    for (key, state) in states() {
+        assert_eq!(WhaleState::from_key(key), Some(state));
+        assert!(!state.words().is_empty());
+    }
+}
 
 #[test]
 fn every_state_matches_the_kit_at_32x16() {
-    for (name, state) in STATES {
+    for (name, state) in states() {
         let expected = art(&still(&format!("{name}-32x16")), 16);
         assert_eq!(rendered(state, 32, 16), expected, "{name} 32x16");
     }
@@ -51,7 +70,7 @@ fn every_state_matches_the_kit_at_32x16() {
 
 #[test]
 fn every_state_matches_the_kit_at_20x10() {
-    for (name, state) in STATES {
+    for (name, state) in states() {
         let expected = art(&still(&format!("{name}-20x10")), 10);
         assert_eq!(rendered(state, 20, 10), expected, "{name} 20x10");
     }
@@ -102,14 +121,18 @@ fn frame_handles_any_viewport_without_overflow() {
 #[test]
 fn every_exported_scene_parses_and_is_distinct() {
     let scenes = whale::scenes();
-    assert_eq!(scenes.len(), 14, "7 poses x 2 optical sizes");
-    let rest = rendered(WhaleState::Rest, 32, 16);
-    for (name, state) in STATES.iter().skip(1) {
-        assert_ne!(
-            rendered(*state, 32, 16),
-            rest,
-            "{name} must differ from rest"
-        );
+    assert_eq!(
+        scenes.len(),
+        38,
+        "(16 actions + pods of 1, 2 and 3) x 2 optical sizes"
+    );
+    let mut seen: Vec<(&str, Vec<String>)> = Vec::new();
+    for (name, state) in states() {
+        let art = rendered(state, 32, 16);
+        if let Some((twin, _)) = seen.iter().find(|(_, a)| *a == art) {
+            panic!("{name} draws exactly like {twin}");
+        }
+        seen.push((name, art));
     }
     assert!(
         whale::frame(WhaleState::Rest, 15, 8).is_none(),

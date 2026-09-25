@@ -5,7 +5,8 @@
 //
 // The whale-character-v2 kit (acting.js + rig.js + props.js) is the executable
 // oracle for the whale's pose. This script runs its Director exactly the way
-// braille-demo.cjs does for a still (seed 11, reduced motion), evaluates the
+// braille-demo.cjs does for a still (seed 11, reduced motion), for all 17
+// actions in catalogue.js, evaluates the
 // scene at each exported optical size, resolves compound holes with
 // WhaleRig.holesFor, and writes every visible contour at full precision.
 // Rounding is not safe: a 0.001 shift moves scanline crossings and changes
@@ -27,11 +28,12 @@ for (const n of ['mark-data', 'rig', 'props', 'acting', 'catalogue', 'braille'])
 }
 const { WhaleActing: A, WhaleRig: R, WhaleCatalogue: C } = globalThis;
 
-// state key, calves. Pod always draws its calves; 1-3 are the only honest counts.
-const SCENES = [
-  ['rest', 0], ['busy', 0], ['needs', 0], ['done', 0],
-  ['pod', 1], ['pod', 2], ['pod', 3],
-];
+// Every action in the kit's catalogue (17), each with calves 0, except the
+// pod, which always draws its calves: 1-3 are the only honest counts.
+const SCENES = C.CASES.flatMap(([key]) =>
+  key === 'pod' ? [['pod', 1], ['pod', 2], ['pod', 3]] : [[key, 0]],
+);
+if (SCENES.length !== 19) throw new Error(`expected 17 actions, got ${C.CASES.length}`);
 // Optical sizes: 40 = 20x10 cells (compact), 64 = 32x16 cells (default).
 const SIZES = [40, 64];
 
@@ -41,7 +43,8 @@ function director(key, calves) {
   d.set(
     chosen[2],
     chosen[3] ? { kind: chosen[3], observed: chosen[3] !== 'unknown', parallel: calves || 3 } : null,
-    { freshness: 'Live', turnId: 'terminal-demo', status: 'completed', nowMs: 1000, failedAtMs: 0 },
+    // `hmm` (Stuck) needs a genuinely failed turn, as braille-demo.cjs passes.
+    { freshness: 'Live', turnId: 'terminal-demo', status: key === 'hmm' ? 'failed' : 'completed', nowMs: 1000, failedAtMs: 0 },
   );
   return d;
 }
@@ -63,12 +66,21 @@ for (const [key, calves] of SCENES) {
     for (const shape of scene.shapes) {
       if (shape.opacity < 0.5 || shape.role === 'hole' || shape.role === 'cutout') continue;
       out.push(`shape ${shape.id} ${shape.role}`);
-      for (const p of [shape.path, ...R.holesFor(shape.id, scene.shapes, true)]) {
-        const sig = p.map((c) => c[0]).join('');
-        if (!/^MC*Z$/.test(sig)) throw new Error(`unexpected path shape ${sig} in ${shape.id}`);
-        const nums = [...p[0].slice(1)];
-        for (const c of p.slice(1, -1)) nums.push(...c.slice(1));
-        out.push('path ' + nums.map(num).join(' '));
+      for (const whole of [shape.path, ...R.holesFor(shape.id, scene.shapes, true)]) {
+        // A prop may hold several closed subpaths (M…Z M…Z); each is one
+        // contour. braille.js draws no edge between them, and neither do we.
+        const subpaths = [];
+        for (const c of whole) {
+          if (c[0] === 'M') subpaths.push([]);
+          subpaths[subpaths.length - 1].push(c);
+        }
+        for (const p of subpaths) {
+          const sig = p.map((c) => c[0]).join('');
+          if (!/^MC*Z$/.test(sig)) throw new Error(`unexpected path shape ${sig} in ${shape.id}`);
+          const nums = [...p[0].slice(1)];
+          for (const c of p.slice(1, -1)) nums.push(...c.slice(1));
+          out.push('path ' + nums.map(num).join(' '));
+        }
       }
     }
   }

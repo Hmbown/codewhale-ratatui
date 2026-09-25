@@ -205,6 +205,47 @@ pub fn contrast_ratio(fg: Color, bg: Color) -> Option<f32> {
     Some((hi + 0.05) / (lo + 0.05))
 }
 
+/// `hex` moved `amount` of the way toward `toward`, then rescaled so its
+/// WCAG relative luminance stays `hex`'s. Contrast depends only on
+/// luminance, so every contrast pair audited for `hex` holds for the result
+/// (within rounding, which the audits check). Colors are `0xRRGGBB`.
+#[must_use]
+pub fn tint_keeping_luminance(hex: u32, toward: u32, amount: f64) -> u32 {
+    fn split(v: u32) -> [f64; 3] {
+        [(v >> 16) & 0xff, (v >> 8) & 0xff, v & 0xff].map(|c| f64::from(c) / 255.0)
+    }
+    fn lin(c: f64) -> f64 {
+        if c <= 0.039_28 {
+            c / 12.92
+        } else {
+            ((c + 0.055) / 1.055).powf(2.4)
+        }
+    }
+    fn unlin(v: f64) -> u32 {
+        let v = v.clamp(0.0, 1.0);
+        let s = if v <= 0.003_130_8 {
+            v * 12.92
+        } else {
+            1.055 * v.powf(1.0 / 2.4) - 0.055
+        };
+        (s * 255.0).round().clamp(0.0, 255.0) as u32
+    }
+    let lum = |c: [f64; 3]| 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    let amount = amount.clamp(0.0, 1.0);
+    let from = split(hex);
+    let to = split(toward);
+    let mixed: [f64; 3] = std::array::from_fn(|i| {
+        let a = (from[i] * 255.0).round();
+        let b = (to[i] * 255.0).round();
+        lin((a + (b - a) * amount).round() / 255.0)
+    });
+    let want = lum(from.map(lin));
+    let have = lum(mixed);
+    let k = if have > 0.0 { want / have } else { 1.0 };
+    let [r, g, b] = mixed.map(|c| unlin(c * k));
+    (r << 16) | (g << 8) | b
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

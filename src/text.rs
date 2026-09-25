@@ -38,7 +38,7 @@ pub fn width(text: &str) -> usize {
     UnicodeWidthStr::width(text)
 }
 
-/// Fit `text` into `max` cells, ending with `…` (or `.` when ASCII-safe)
+/// Fit `text` into `max` cells, ending with `…` (`...` when ASCII-safe)
 /// when anything was cut. Cuts between graphemes, so a wide character or a
 /// combining sequence is never split. Use it for names, paths and IDs.
 #[must_use]
@@ -61,7 +61,13 @@ fn cut(text: &str, max: usize, ascii: bool, at_word: bool) -> Cow<'_, str> {
     if max == 0 {
         return Cow::Borrowed("");
     }
-    let ellipsis = glyphs::pick(glyphs::ELLIPSIS, ascii);
+    // ASCII has no one-cell ellipsis, and a lone `.` makes a clipped
+    // sentence read as finished. Spend three cells where there are four.
+    let ellipsis = match (ascii, max) {
+        (false, _) => glyphs::ELLIPSIS,
+        (true, 4..) => "...",
+        (true, _) => ".",
+    };
     let budget = max.saturating_sub(width(ellipsis));
     let mut used = 0;
     let mut end = 0;
@@ -119,7 +125,9 @@ mod tests {
     fn truncate_respects_cell_width() {
         assert_eq!(truncate("Shoreline", 20, false), "Shoreline");
         assert_eq!(truncate("Shoreline light", 10, false), "Shoreline…");
-        assert_eq!(truncate("Shoreline light", 10, true), "Shoreline.");
+        // In ASCII a cut says so: `Shoreline.` would read as a full stop.
+        assert_eq!(truncate("Shoreline light", 10, true), "Shoreli...");
+        assert_eq!(truncate("Shoreline light", 3, true), "Sh.");
         // A wide character is never split.
         assert_eq!(truncate("鲸鱼鲸鱼", 5, false), "鲸鱼…");
         assert_eq!(width(&pad("ab", 4, false)), 4);

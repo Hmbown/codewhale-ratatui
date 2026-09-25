@@ -3,7 +3,34 @@ source: tests/snapshots.rs
 expression: dump(&entry)
 ---
 == dark-truecolor
-○ Searching the codebase  (searching)
+◎ Searching the codebase  (searching)
+▅ 3 of 5 phases done  (3 of 5)
+◒ Receipt: edited summary.md  (receipt)
+┊ Divider  (divider)
+---
+r0 c0..1 fg=Live bg=Background
+r0 c1..2 bg=Background
+r0 c2..24 fg=Foreground bg=Background
+r0 c24..37 fg=Muted bg=Background
+r0 c37..50 bg=Background
+r1 c0..1 fg=Live bg=Background
+r1 c1..2 bg=Background
+r1 c2..20 fg=Foreground bg=Background
+r1 c20..30 fg=Muted bg=Background
+r1 c30..50 bg=Background
+r2 c0..1 fg=Muted bg=Background
+r2 c1..2 bg=Background
+r2 c2..28 fg=Foreground bg=Background
+r2 c28..39 fg=Muted bg=Background
+r2 c39..50 bg=Background
+r3 c0..1 fg=Border bg=Background
+r3 c1..2 bg=Background
+r3 c2..9 fg=Foreground bg=Background
+r3 c9..20 fg=Muted bg=Background
+r3 c20..50 bg=Background
+
+== dark-graphite
+◎ Searching the codebase  (searching)
 ▅ 3 of 5 phases done  (3 of 5)
 ◒ Receipt: edited summary.md  (receipt)
 ┊ Divider  (divider)
@@ -30,7 +57,7 @@ r3 c9..20 fg=Muted bg=Background
 r3 c20..50 bg=Background
 
 == light-truecolor
-○ Searching the codebase  (searching)
+◎ Searching the codebase  (searching)
 ▅ 3 of 5 phases done  (3 of 5)
 ◒ Receipt: edited summary.md  (receipt)
 ┊ Divider  (divider)
@@ -57,7 +84,7 @@ r3 c9..20 fg=Muted bg=Background
 r3 c20..50 bg=Background
 
 == dark-256
-○ Searching the codebase  (searching)
+◎ Searching the codebase  (searching)
 ▅ 3 of 5 phases done  (3 of 5)
 ◒ Receipt: edited summary.md  (receipt)
 ┊ Divider  (divider)
@@ -84,7 +111,7 @@ r3 c9..20 fg=Muted bg=Background
 r3 c20..50 bg=Background
 
 == light-256
-○ Searching the codebase  (searching)
+◎ Searching the codebase  (searching)
 ▅ 3 of 5 phases done  (3 of 5)
 ◒ Receipt: edited summary.md  (receipt)
 ┊ Divider  (divider)
@@ -111,7 +138,7 @@ r3 c9..20 fg=Muted bg=Background|Surface
 r3 c20..50 bg=Background|Surface
 
 == ansi-16
-○ Searching the codebase  (searching)
+◎ Searching the codebase  (searching)
 ▅ 3 of 5 phases done  (3 of 5)
 ◒ Receipt: edited summary.md  (receipt)
 ┊ Divider  (divider)
@@ -126,7 +153,7 @@ r3 c0..1 dim
 r3 c9..20 dim
 
 == unknown-ground
-○ Searching the codebase  (searching)
+◎ Searching the codebase  (searching)
 ▅ 3 of 5 phases done  (3 of 5)
 ◒ Receipt: edited summary.md  (receipt)
 ┊ Divider  (divider)
@@ -141,7 +168,7 @@ r3 c0..1 dim
 r3 c9..20 dim
 
 == no-color
-○ Searching the codebase  (searching)
+◎ Searching the codebase  (searching)
 ▅ 3 of 5 phases done  (3 of 5)
 ◒ Receipt: edited summary.md  (receipt)
 ┊ Divider  (divider)
@@ -154,7 +181,7 @@ r3 c0..1 dim
 r3 c9..20 dim
 
 == ascii
-o Searching the codebase  (searching)
+) Searching the codebase  (searching)
 - 3 of 5 phases done  (3 of 5)
 = Receipt: edited summary.md  (receipt)
 | Divider  (divider)

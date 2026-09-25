@@ -7,12 +7,20 @@ Paints Codewhale's terminal interface from one set of
   desktop app and the website read, and resolves it for the terminal in
   front of it: truecolor, 256 colors, 16 colors or `NO_COLOR`, on a light or
   dark ground.
+- **Paints dark terminals in the blue ombre** by default: deep navy grounds
+  rising toward the logo's blue, at the same luminance as the token grounds,
+  so every contrast the tokens pass still passes. It shows at truecolor;
+  256-color terminals keep the token grounds, because the color cube has no
+  navy fine enough. `Theme::ground(Ground::Graphite)` keeps the token
+  grounds everywhere.
 - **Pairs every state with a mark and a word** (`● Working`, `◆ Needs you`,
   `✕ Failed`), so nothing depends on color alone.
 - **Draws the Codewhale whale in Braille** from the same contours as the
-  desktop pet: resting, working, needs you, done, and a pod whose calves
-  swim with it when agents work in parallel. The art draws up to three
-  calves; the words beneath always give the real count.
+  desktop pet, in all 17 of its actions: resting, listening, thinking,
+  reading, searching, editing, running, browsing, replying, using the
+  computer, calling a connected app, needs you, done, stuck, asleep, and a
+  pod whose calves swim with it when agents work in parallel. The art draws
+  up to three calves; the words beneath always give the real count.
 - **Spells keys one way**: `Ctrl+O`, `⌥V` on macOS (`Alt+V` elsewhere),
   `↑↓`, or `Up/Down` in ASCII-safe terminals.
 
@@ -45,6 +53,10 @@ grounds, rather than guess. Set `CODEWHALE_APPEARANCE=light` or `=dark` to
 tell it, or set `Caps::appearance` from your own theme setting.
 `CODEWHALE_ASCII_SAFE=1` draws every mark in ASCII.
 
+A host that already detects the terminal (the Codewhale engine does) builds
+the theme from what it knows instead of probing twice:
+`Theme::new(Caps { depth, ascii, appearance }).ground(Ground::Graphite)`.
+
 Components name a `Role` (`Muted`, `Live`, `Danger`, …), never a color. The
 `Theme` resolves the role when it paints, so a theme or terminal change
 reaches every component on the next frame.
@@ -58,8 +70,8 @@ reaches every component on the next frame.
 | `Picker` | choose-one and checklist rows; selection is a marker, bold and a ground |
 | `Toasts` | one-line notices at the bottom right |
 | `Spinner` | appears after 400 ms, holds still under reduced motion, shows measured time |
-| `Icon` | sonar, tide, shell and kelp, one cell each, with words and ASCII forms |
-| `Whale` | the v2 whale in Braille with its state in words beneath |
+| `Icon` | sonar, tide, shell and kelp, one cell each, with words and ASCII forms; none borrows a state's mark |
+| `Whale` | the v2 whale in Braille, any of its 17 actions, with its state in words beneath |
 
 ## See every component
 
@@ -69,8 +81,9 @@ cargo run --example gallery -- --print dark-256    # print one profile to stdout
 cargo run --example gallery -- --dump out/         # write .ans and .txt for every profile
 ```
 
-Profiles: `dark-truecolor`, `light-truecolor`, `dark-256`, `light-256`,
-`ansi-16`, `unknown-ground`, `no-color`, `ascii`.
+Profiles: `dark-truecolor` (the blue ombre), `dark-graphite`,
+`light-truecolor`, `dark-256`, `light-256`, `ansi-16`, `unknown-ground`,
+`no-color`, `ascii`.
 
 ## Test it
 
@@ -94,23 +107,28 @@ and regenerate the roles:
 CODEWHALE_BLESS=1 cargo test --test generated
 ```
 
-`src/roles.rs` holds the roles, the truecolor tables and a 256-color table.
-The 256-color table starts from the nearest fixed index and moves an ink
-only where quantizing breaks the design's contrast floors or turns a state
-hue gray. `cargo test` fails if `roles.rs` no longer matches `tokens.json`.
+`src/roles.rs` holds the roles, the truecolor tables, a 256-color table and
+the blue ombre table. The 256-color table starts from the nearest fixed
+index and moves an ink only where quantizing breaks the design's contrast
+floors or turns a state hue gray. The ombre tints the dark grounds and the
+quiet line toward the logo's `#0B48BB` and restores each one's luminance,
+and the generator fails if any contrast floor breaks. `cargo test` fails if
+`roles.rs` no longer matches `tokens.json`.
 
 ## Update the whale
 
-`assets/whale-v2.scenes` holds each state's poster contours, exported from
-the whale-character-v2 kit:
+`assets/whale-v2.scenes` holds the poster contours of all 17 actions (the
+pod with one, two and three calves), exported from the whale-character-v2
+kit:
 
 ```sh
 node tools/export-whale.cjs <path-to-whale-character-v2>          # rewrite
 node tools/export-whale.cjs <path-to-whale-character-v2> --check  # verify
 ```
 
-`tests/whale.rs` checks every state against the kit's own 32×16 and 20×10
-stills, dot for dot.
+`tests/whale.rs` checks every action against the kit's own 32×16 and 20×10
+stills, dot for dot, and fails if the kit gains an action this crate cannot
+draw.
 
 ## Where it came from
 

@@ -23,9 +23,18 @@ fn dump(entry: &gallery::Entry) -> String {
     out
 }
 
+/// Entries whose every cell is pinned elsewhere. `whale-actions` is the 17
+/// whales `tests/whale.rs` checks dot for dot against the kit's stills; a
+/// 4,000-line copy here would bury real diffs. The rule checks below still
+/// run over it in every profile.
+const PINNED_ELSEWHERE: &[&str] = &["whale-actions"];
+
 #[test]
 fn gallery_snapshots() {
     for entry in gallery::entries() {
+        if PINNED_ELSEWHERE.contains(&entry.name) {
+            continue;
+        }
         insta::assert_snapshot!(entry.name, dump(&entry));
     }
 }
@@ -40,7 +49,9 @@ fn color_allowed(profile: Profile, color: Color) -> bool {
         (Profile::Dark256 | Profile::Light256, Color::Indexed(i)) => i >= 16,
         // Truecolor on a known ground paints exact RGB: tokens, and the
         // whale's ombre and the horizon's fade blended from them.
-        (Profile::DarkTrue | Profile::LightTrue, c) => matches!(c, Color::Rgb(..)),
+        (Profile::DarkTrue | Profile::DarkGraphite | Profile::LightTrue, c) => {
+            matches!(c, Color::Rgb(..))
+        }
         (Profile::Dark256 | Profile::Light256, _) => false,
         _ => true,
     }
@@ -55,7 +66,8 @@ fn every_frame_keeps_the_rules() {
             let buf = gallery::render(&entry, &theme);
             let text = testing::text(&buf);
             let at = format!("{} · {}", entry.name, profile.name());
-            if text.contains("...") {
+            // ASCII has no `…`; there `...` is the honest ellipsis.
+            if profile != Profile::Ascii && text.contains("...") {
                 broken.push(format!("{at}: `...` where the one ellipsis is `…`"));
             }
             if profile == Profile::Ascii && !text.is_ascii() {

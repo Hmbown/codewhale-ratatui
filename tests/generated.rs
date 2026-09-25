@@ -15,7 +15,10 @@ use std::collections::BTreeMap;
 use std::fmt::Write as _;
 use std::path::Path;
 
-use codewhale_ratatui::color::{contrast_ratio, indexed_rgb, rgb, rgb_to_ansi256};
+use codewhale_ratatui::color::{
+    contrast_ratio, indexed_rgb, rgb, rgb_to_ansi256, tint_keeping_luminance,
+};
+use codewhale_ratatui::theme::{LOGO_BOTTOM, OCEAN_TINT};
 use ratatui::style::Color;
 
 /// Every role, in enum order: variant, `tokens.json` key, doc comment.
@@ -191,6 +194,43 @@ fn table_256(colors: &BTreeMap<String, u32>, mode: &str) -> (BTreeMap<String, u8
     (table, notes)
 }
 
+/// Roles the blue ombre tints: the grounds and the quiet line.
+const OCEAN_TINTED: &[&str] = &[
+    "sidebar",
+    "background",
+    "surface",
+    "hover",
+    "selected",
+    "border",
+];
+
+/// The dark table with its grounds and quiet line tinted toward the logo's
+/// deep blue at their own luminance. Every truecolor contrast floor must
+/// still hold; a failure here means the tint needs review, not a new ink.
+fn ocean(dark: &BTreeMap<String, u32>) -> BTreeMap<String, u32> {
+    let table: BTreeMap<String, u32> = dark
+        .iter()
+        .map(|(k, v)| {
+            let v = if OCEAN_TINTED.contains(&k.as_str()) {
+                tint_keeping_luminance(*v, LOGO_BOTTOM, OCEAN_TINT)
+            } else {
+                *v
+            };
+            (k.clone(), v)
+        })
+        .collect();
+    for (_, ink, _) in ROLES {
+        for (ground, floor) in floors(ink) {
+            let ratio = contrast_ratio(rgb(table[*ink]), rgb(table[ground])).expect("rgb");
+            assert!(
+                ratio >= floor,
+                "ocean {ink} on {ground}: {ratio:.2} < {floor}"
+            );
+        }
+    }
+    table
+}
+
 fn render(json: &serde_json::Value) -> String {
     let version = json["version"].as_str().expect("version");
     let mut modes = BTreeMap::new();
@@ -326,6 +366,29 @@ fn render(json: &serde_json::Value) -> String {
         }
         writeln!(w, "];").unwrap();
     }
+
+    let ocean = ocean(&modes["dark"]);
+    writeln!(w).unwrap();
+    writeln!(
+        w,
+        "/// The blue ombre (`Ground::Ocean`): the dark table with its grounds and"
+    )
+    .unwrap();
+    writeln!(
+        w,
+        "/// quiet line tinted {OCEAN_TINT} toward `LOGO_BOTTOM` at their own luminance,"
+    )
+    .unwrap();
+    writeln!(
+        w,
+        "/// so every contrast floor holds. Truecolor only; 256 colors use `DARK_256`."
+    )
+    .unwrap();
+    writeln!(w, "pub(crate) const OCEAN: [u32; Role::COUNT] = [").unwrap();
+    for (variant, key, _) in ROLES {
+        writeln!(w, "    0x{:06x}, // {variant}", ocean[*key]).unwrap();
+    }
+    writeln!(w, "];").unwrap();
     out
 }
 

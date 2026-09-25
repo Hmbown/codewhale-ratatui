@@ -5,7 +5,29 @@ expression: dump(&entry)
 == dark-truecolor
 › Running cargo test
 ⣦ Running cargo test · 1 s
-⣤ Running cargo test · 4m 06s
+● Running cargo test · 4m 06s
+---
+r0 c0..1 fg=Live bg=Background
+r0 c1..2 bg=Background
+r0 c2..20 fg=Foreground bg=Background
+r0 c20..40 bg=Background
+r1 c0..1 fg=Live bg=Background
+r1 c1..2 bg=Background
+r1 c2..20 fg=Foreground bg=Background
+r1 c20..23 fg=Border bg=Background
+r1 c23..26 fg=Muted bg=Background
+r1 c26..40 bg=Background
+r2 c0..1 fg=Live bg=Background
+r2 c1..2 bg=Background
+r2 c2..20 fg=Foreground bg=Background
+r2 c20..23 fg=Border bg=Background
+r2 c23..29 fg=Muted bg=Background
+r2 c29..40 bg=Background
+
+== dark-graphite
+› Running cargo test
+⣦ Running cargo test · 1 s
+● Running cargo test · 4m 06s
 ---
 r0 c0..1 fg=Live bg=Background
 r0 c1..2 bg=Background
@@ -27,7 +49,7 @@ r2 c29..40 bg=Background
 == light-truecolor
 › Running cargo test
 ⣦ Running cargo test · 1 s
-⣤ Running cargo test · 4m 06s
+● Running cargo test · 4m 06s
 ---
 r0 c0..1 fg=Live bg=Background
 r0 c1..2 bg=Background
@@ -49,7 +71,7 @@ r2 c29..40 bg=Background
 == dark-256
 › Running cargo test
 ⣦ Running cargo test · 1 s
-⣤ Running cargo test · 4m 06s
+● Running cargo test · 4m 06s
 ---
 r0 c0..1 fg=Live bg=Background
 r0 c1..2 bg=Background
@@ -71,7 +93,7 @@ r2 c29..40 bg=Background
 == light-256
 › Running cargo test
 ⣦ Running cargo test · 1 s
-⣤ Running cargo test · 4m 06s
+● Running cargo test · 4m 06s
 ---
 r0 c0..1 fg=Live bg=Background|Surface
 r0 c1..2 bg=Background|Surface
@@ -93,7 +115,7 @@ r2 c29..40 bg=Background|Surface
 == ansi-16
 › Running cargo test
 ⣦ Running cargo test · 1 s
-⣤ Running cargo test · 4m 06s
+● Running cargo test · 4m 06s
 ---
 r0 c0..1 fg=Live
 r1 c0..1 fg=Live
@@ -104,7 +126,7 @@ r2 c20..29 dim
 == unknown-ground
 › Running cargo test
 ⣦ Running cargo test · 1 s
-⣤ Running cargo test · 4m 06s
+● Running cargo test · 4m 06s
 ---
 r0 c0..1 fg=Live
 r1 c0..1 fg=Live
@@ -115,15 +137,15 @@ r2 c20..29 dim
 == no-color
 › Running cargo test
 ⣦ Running cargo test · 1 s
-⣤ Running cargo test · 4m 06s
+● Running cargo test · 4m 06s
 ---
 r1 c20..26 dim
 r2 c20..29 dim
 
 == ascii
 > Running cargo test
-* Running cargo test - 1 s
-* Running cargo test - 4m 06s
+\ Running cargo test - 1 s
+. Running cargo test - 4m 06s
 ---
 r1 c20..26 dim
 r2 c20..29 dim

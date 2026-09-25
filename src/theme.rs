@@ -11,6 +11,13 @@
 //! | Ansi16 | none (the terminal owns its ground) | `Reset`; `Muted` adds `DIM` | Blue, Green, Yellow, Red |
 //! | Monochrome (`NO_COLOR`) | none | `Reset`; hierarchy by `BOLD`/`DIM` only | `Reset`: the mark and word carry state |
 //!
+//! Dark terminals take the blue ombre by default ([`Ground::Ocean`]): the
+//! token grounds and quiet lines tinted toward the logo's deep blue at the
+//! same luminance, so every contrast the tokens audit still holds. It shows
+//! at truecolor only; the 256-color cube has no navy fine enough, so 256
+//! colors keep the token grounds. [`Ground::Graphite`] keeps the exact token
+//! grounds everywhere.
+//!
 //! When nothing measured the terminal's ground ([`Appearance::Unknown`]), a
 //! truecolor terminal is painted as at ANSI-16: its named colors were chosen
 //! for its own ground, and ours were not. This is stricter than the engine's
@@ -25,6 +32,35 @@ use crate::detect::{Appearance, terminal_background};
 use crate::roles;
 
 pub use crate::roles::{Role, TOKENS_VERSION};
+
+/// The logo's ombre, top-left to bottom-right (`#1E8FD8` to `#0B48BB`), from
+/// the design direction. The whale wears it; [`Ground::Ocean`] grounds lean
+/// toward its deep end.
+pub const LOGO_TOP: u32 = 0x1e8fd8;
+pub const LOGO_BOTTOM: u32 = 0x0b48bb;
+
+/// How far [`Ground::Ocean`] moves each dark ground and quiet line toward
+/// [`LOGO_BOTTOM`] before restoring its luminance.
+pub const OCEAN_TINT: f64 = 0.5;
+
+/// Which grounds a dark theme paints.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum Ground {
+    /// Deep navy rising into the logo's blue: the preferred look.
+    #[default]
+    Ocean,
+    /// The exact token grounds (graphite), as the desktop app paints them.
+    Graphite,
+}
+
+impl Role {
+    /// Whether [`Ground::Ocean`] tints this role: grounds and quiet lines.
+    /// Ink, state hues and control edges keep their token values.
+    #[must_use]
+    pub const fn ocean_tinted(self) -> bool {
+        self.is_ground() || matches!(self, Role::Border)
+    }
+}
 
 impl Role {
     #[must_use]
@@ -112,6 +148,7 @@ impl Caps {
 pub struct Theme {
     caps: Caps,
     grounds: bool,
+    ground: Ground,
 }
 
 impl Theme {
@@ -120,7 +157,22 @@ impl Theme {
         Self {
             caps,
             grounds: true,
+            ground: Ground::Ocean,
         }
+    }
+
+    /// Choose the dark grounds: the blue ombre (default) or graphite. Light
+    /// terminals always paint the light token grounds.
+    #[must_use]
+    pub const fn ground(mut self, ground: Ground) -> Self {
+        self.ground = ground;
+        self
+    }
+
+    /// The dark grounds this theme was built with.
+    #[must_use]
+    pub const fn ground_kind(&self) -> Ground {
+        self.ground
     }
 
     /// Detect everything from the environment.
@@ -164,12 +216,16 @@ impl Theme {
     pub const fn token_hex(&self, role: Role) -> u32 {
         if self.light() {
             roles::LIGHT[role.index()]
+        } else if matches!(self.ground, Ground::Ocean) {
+            roles::OCEAN[role.index()]
         } else {
             roles::DARK[role.index()]
         }
     }
 
-    /// The exact token color, before depth adaptation.
+    /// The exact token color, before depth adaptation. Under
+    /// [`Ground::Ocean`] on a dark ground, grounds and quiet lines are the
+    /// tinted values; 256 colors still show the token grounds.
     #[must_use]
     pub const fn token(&self, role: Role) -> Color {
         rgb(self.token_hex(role))
@@ -288,6 +344,45 @@ mod tests {
             light.color(Role::Danger),
             Some(rgb(crate::tokens::LIGHT.danger))
         );
+    }
+
+    /// The blue ombre tints dark grounds and the quiet line toward the
+    /// logo's deep blue, keeps every ink, and shows only at truecolor.
+    #[test]
+    fn ocean_tints_dark_grounds_only() {
+        let ocean = theme(ColorDepth::TrueColor, Appearance::Dark);
+        let graphite = ocean.ground(Ground::Graphite);
+        assert_eq!(ocean.ground_kind(), Ground::Ocean, "the preferred look");
+        for role in Role::ALL {
+            let (o, g) = (ocean.token_hex(role), graphite.token_hex(role));
+            if role.ocean_tinted() {
+                let (r, gr, b) = ((o >> 16) & 0xff, (o >> 8) & 0xff, o & 0xff);
+                assert!(b > r && b > gr, "{role:?} #{o:06x} leans blue");
+                let lum = |c| crate::color::relative_luminance(rgb(c)).unwrap();
+                assert!((lum(o) - lum(g)).abs() < 0.002, "{role:?} keeps luminance");
+            } else {
+                assert_eq!(o, g, "{role:?} keeps its token ink");
+            }
+        }
+        for depth in [
+            ColorDepth::Ansi256,
+            ColorDepth::Ansi16,
+            ColorDepth::Monochrome,
+        ] {
+            let o = theme(depth, Appearance::Dark);
+            let g = o.ground(Ground::Graphite);
+            for role in Role::ALL {
+                assert_eq!(o.color(role), g.color(role), "{depth:?} {role:?}");
+            }
+        }
+        let light = theme(ColorDepth::TrueColor, Appearance::Light);
+        for role in Role::ALL {
+            assert_eq!(
+                light.color(role),
+                light.ground(Ground::Graphite).color(role),
+                "light {role:?}"
+            );
+        }
     }
 
     #[test]
@@ -424,9 +519,13 @@ mod tests {
             Role::Selected,
         ];
         let mut failures = Vec::new();
-        for appearance in [Appearance::Dark, Appearance::Light] {
+        for (appearance, ground) in [
+            (Appearance::Dark, Ground::Ocean),
+            (Appearance::Dark, Ground::Graphite),
+            (Appearance::Light, Ground::Ocean),
+        ] {
             for depth in [ColorDepth::TrueColor, ColorDepth::Ansi256] {
-                let t = theme(depth, appearance);
+                let t = theme(depth, appearance).ground(ground);
                 for ground in grounds {
                     let bg = t.color(ground).unwrap();
                     for (ink, floor) in [
@@ -441,7 +540,8 @@ mod tests {
                         let ratio = contrast_ratio(t.color(ink).unwrap(), bg).unwrap();
                         if ratio < floor {
                             failures.push(format!(
-                                "{appearance:?} {depth:?} {ink:?} on {ground:?}: {ratio:.2} < {floor}"
+                                "{appearance:?} {depth:?} {ink:?} on {ground:?} ({:?}): {ratio:.2} < {floor}",
+                                t.ground_kind()
                             ));
                         }
                     }

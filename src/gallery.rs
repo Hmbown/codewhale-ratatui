@@ -284,6 +284,23 @@ fn whale(state: WhaleState) -> impl Fn(Rect, &mut Buffer, &Theme) {
     move |area, buf, theme| Whale::new(state).paint(area, buf, theme)
 }
 
+/// All 17 actions of the v2 whale at the compact size, three to a row.
+fn whale_actions(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    const CELL_W: u16 = 28;
+    const CELL_H: u16 = 11;
+    for (i, state) in WhaleState::ALL.into_iter().enumerate() {
+        let i = u16::try_from(i).unwrap_or(u16::MAX);
+        let cell = Rect {
+            x: area.x + (i % 3) * CELL_W,
+            y: area.y + (i / 3) * CELL_H,
+            width: CELL_W,
+            height: CELL_H,
+        }
+        .intersection(area);
+        Whale::new(state).paint(cell, buf, theme);
+    }
+}
+
 /// Every entry, in gallery order.
 #[must_use]
 pub fn entries() -> Vec<Entry> {
@@ -377,6 +394,12 @@ pub fn entries() -> Vec<Entry> {
             width: 36,
             height: 17,
             draw: |a, b, t| whale(WhaleState::Pod { calves: 3 })(a, b, t),
+        },
+        Entry {
+            name: "whale-actions",
+            width: 84,
+            height: 66,
+            draw: whale_actions,
         },
         Entry {
             name: "whale-compact",

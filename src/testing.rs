@@ -11,12 +11,15 @@ use ratatui::{
     style::{Color, Modifier, Style},
 };
 
-use crate::{Caps, Theme, color::ColorDepth, detect::Appearance, text};
+use crate::{Caps, Theme, color::ColorDepth, detect::Appearance, text, theme::Ground};
 
 /// A terminal to render for.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Profile {
+    /// Truecolor on a dark ground, in the blue ombre (the default).
     DarkTrue,
+    /// Truecolor on a dark ground, with the graphite token grounds.
+    DarkGraphite,
     LightTrue,
     Dark256,
     Light256,
@@ -31,8 +34,9 @@ pub enum Profile {
 }
 
 impl Profile {
-    pub const ALL: [Profile; 8] = [
+    pub const ALL: [Profile; 9] = [
         Profile::DarkTrue,
+        Profile::DarkGraphite,
         Profile::LightTrue,
         Profile::Dark256,
         Profile::Light256,
@@ -46,6 +50,7 @@ impl Profile {
     pub const fn name(self) -> &'static str {
         match self {
             Profile::DarkTrue => "dark-truecolor",
+            Profile::DarkGraphite => "dark-graphite",
             Profile::LightTrue => "light-truecolor",
             Profile::Dark256 => "dark-256",
             Profile::Light256 => "light-256",
@@ -64,7 +69,9 @@ impl Profile {
     #[must_use]
     pub const fn caps(self) -> Caps {
         let (depth, appearance, ascii) = match self {
-            Profile::DarkTrue => (ColorDepth::TrueColor, Appearance::Dark, false),
+            Profile::DarkTrue | Profile::DarkGraphite => {
+                (ColorDepth::TrueColor, Appearance::Dark, false)
+            }
             Profile::LightTrue => (ColorDepth::TrueColor, Appearance::Light, false),
             Profile::Dark256 => (ColorDepth::Ansi256, Appearance::Dark, false),
             Profile::Light256 => (ColorDepth::Ansi256, Appearance::Light, false),
@@ -82,7 +89,11 @@ impl Profile {
 
     #[must_use]
     pub const fn theme(self) -> Theme {
-        Theme::new(self.caps())
+        let theme = Theme::new(self.caps());
+        match self {
+            Profile::DarkGraphite => theme.ground(Ground::Graphite),
+            _ => theme,
+        }
     }
 }
 

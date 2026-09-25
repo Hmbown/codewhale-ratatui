@@ -27,9 +27,13 @@ pub enum Icon {
     Kelp,
 }
 
-const SONAR: [&str; 4] = ["·", "∘", "○", "◎"];
+/// A ping widening: small ring, dotted ring, ring with its centre. None of
+/// these is a state mark (`○` is "ready", `·` a separator).
+const SONAR: [&str; 3] = ["∘", "◌", "◎"];
 const TIDE: [&str; 8] = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
-const TIDE_ASCII: [&str; 5] = ["_", ".", "-", "=", "#"];
+/// `.` and `#` are the ASCII marks for "working" and "stopped", so the
+/// ASCII tide rises through other marks.
+const TIDE_ASCII: [&str; 5] = ["_", ",", "-", "=", "%"];
 
 impl Icon {
     /// A tide mark for `done` of `total`, or `None` when the total is
@@ -69,11 +73,12 @@ impl Icon {
         match *self {
             Icon::Sonar { elapsed, motion } => {
                 if ascii {
-                    "o"
+                    // `o` is "ready" in ASCII; a sound wave is not.
+                    ")"
                 } else if motion.animates() {
                     SONAR[((elapsed.as_millis() / 250) % SONAR.len() as u128) as usize]
                 } else {
-                    SONAR[3]
+                    SONAR[SONAR.len() - 1]
                 }
             }
             Icon::Tide { done, total } => {
@@ -128,16 +133,27 @@ mod tests {
     #[test]
     fn every_icon_has_a_word_and_an_ascii_form() {
         let ascii = Profile::Ascii.theme();
-        let icons = [
-            Icon::Sonar {
-                elapsed: Duration::ZERO,
+        let mut icons: Vec<Icon> = (0..1000)
+            .step_by(250)
+            .map(|ms| Icon::Sonar {
+                elapsed: Duration::from_millis(ms),
                 motion: MotionMode::Full,
-            },
-            Icon::tide(2, 4).unwrap(),
-            Icon::Shell,
-            Icon::Kelp,
-        ];
+            })
+            .collect();
+        icons.extend((0..=4).map(|done| Icon::tide(done, 4).unwrap()));
+        icons.extend([Icon::Shell, Icon::Kelp]);
+        let state_marks: Vec<&str> = crate::State::ALL
+            .iter()
+            .flat_map(|s| [s.glyph(), crate::glyphs::pick(s.glyph(), true)])
+            .collect();
         for icon in icons {
+            for profile in [Profile::DarkTrue, Profile::Ascii] {
+                let glyph = icon.glyph(&profile.theme());
+                assert!(
+                    !state_marks.contains(&glyph),
+                    "{icon:?} borrows the state mark {glyph}"
+                );
+            }
             assert!(!icon.label().is_empty());
             assert!(icon.glyph(&ascii).is_ascii(), "{icon:?}");
             assert_eq!(

@@ -47,8 +47,11 @@ impl MotionMode {
 /// A small swell: rises and recedes through adjacent dot counts, and never
 /// flashes from full to empty.
 pub const FRAMES: [&str; 8] = ["⣀", "⣄", "⣤", "⣦", "⣶", "⣦", "⣤", "⣄"];
-/// Held under reduced motion.
-pub const STILL_FRAME: &str = "⣤";
+/// Held under reduced motion: the charter's mark for current work, so a
+/// still spinner says "working" instead of showing a stopped animation.
+pub const STILL_FRAME: &str = crate::glyphs::CURRENT;
+/// The swell in ASCII-safe terminals. `*` would read as "needs you" there.
+pub const ASCII_FRAMES: [&str; 4] = ["-", "\\", "|", "/"];
 /// Shown before the spinner is earned: fast work lands as a receipt.
 pub const PENDING_FRAME: &str = "›";
 /// Work must survive this long before anything moves.
@@ -59,17 +62,15 @@ pub const FRAME_INTERVAL: Duration = Duration::from_millis(200);
 /// The frame for work that has run for `elapsed`.
 #[must_use]
 pub fn frame(elapsed: Duration, motion: MotionMode, ascii: bool) -> &'static str {
-    if ascii {
-        return if elapsed < EARN_DELAY { ">" } else { "*" };
-    }
     if !motion.animates() {
-        return STILL_FRAME;
+        return crate::glyphs::pick(STILL_FRAME, ascii);
     }
     if elapsed < EARN_DELAY {
-        return PENDING_FRAME;
+        return crate::glyphs::pick(PENDING_FRAME, ascii);
     }
     let steps = (elapsed - EARN_DELAY).as_millis() / FRAME_INTERVAL.as_millis();
-    FRAMES[(steps % FRAMES.len() as u128) as usize]
+    let frames: &[&str] = if ascii { &ASCII_FRAMES } else { &FRAMES };
+    frames[(steps % frames.len() as u128) as usize]
 }
 
 /// When the next frame is due, or `None` when nothing will change: idle and
@@ -160,6 +161,20 @@ mod tests {
         assert_eq!(frame(ms(600), MotionMode::Full, false), FRAMES[1]);
         assert_eq!(frame(ms(5000), MotionMode::Reduced, false), STILL_FRAME);
         assert_eq!(frame(ms(5000), MotionMode::Still, false), STILL_FRAME);
+    }
+
+    #[test]
+    fn ascii_frames_never_borrow_a_state_mark() {
+        let ms = Duration::from_millis;
+        assert_eq!(frame(ms(100), MotionMode::Full, true), ">");
+        assert_eq!(frame(ms(400), MotionMode::Full, true), "-");
+        assert_eq!(frame(ms(600), MotionMode::Full, true), "\\");
+        // Held still, the spinner is the ASCII mark for current work.
+        assert_eq!(frame(ms(5000), MotionMode::Reduced, true), ".");
+        let needs_you = crate::glyphs::pick(crate::glyphs::ATTENTION, true);
+        for t in (0..4000).step_by(100) {
+            assert_ne!(frame(ms(t), MotionMode::Full, true), needs_you);
+        }
     }
 
     #[test]

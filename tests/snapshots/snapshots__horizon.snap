@@ -9,6 +9,31 @@ Edited summary.md
 ---
 r0 c0..17 fg=Foreground bg=Background
 r0 c17..60 bg=Background
+r1 c0..1 fg=#0d234d bg=Background
+r1 c1..2 fg=#102753 bg=Background
+r1 c2..3 fg=#132b59 bg=Background
+r1 c3..4 fg=#152e5e bg=Background
+r1 c4..5 fg=#183264 bg=Background
+r1 c5..6 fg=#1b366a bg=Background
+r1 c6..33 fg=Border bg=Background
+r1 c33..54 fg=Muted bg=Background
+r1 c54..55 fg=#1b366a bg=Background
+r1 c55..56 fg=#183264 bg=Background
+r1 c56..57 fg=#152e5e bg=Background
+r1 c57..58 fg=#132b59 bg=Background
+r1 c58..59 fg=#102753 bg=Background
+r1 c59..60 fg=#0d234d bg=Background
+r2 c0..2 fg=Primary bg=Background
+r2 c2..31 fg=Muted bg=Background
+r2 c31..60 bg=Background
+
+== dark-graphite
+Edited summary.md
+───────────────────────────────── 12% of context used ──────
+› Ask Codewhale to do something
+---
+r0 c0..17 fg=Foreground bg=Background
+r0 c17..60 bg=Background
 r1 c0..1 fg=#242527 bg=Background
 r1 c1..2 fg=#28292b bg=Background
 r1 c2..3 fg=#2c2d2f bg=Background

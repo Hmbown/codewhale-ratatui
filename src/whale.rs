@@ -3,7 +3,8 @@
 //! The C-shaped whale from the Codewhale mark, as the v2 pet
 //! (`whale-character-v2`), is the one character on every surface. The desktop
 //! app draws it with the v2 rig; the terminal draws the same contours as
-//! Braille dots. Its states carry meaning: resting, working, needs you, done,
+//! Braille dots. Its states carry meaning: the kit's 17 actions, from resting
+//! and listening through reading, editing and running to needs you and done,
 //! and a pod, where calves swim with it while agents work in parallel. The
 //! art has room for three calves; the words always carry the real count, and
 //! a pod of none is drawn as plain work, never with an invented calf.
@@ -35,64 +36,167 @@ use ratatui::{
 use crate::{
     Paint, Role, State, StatusMark, Theme,
     color::{ColorDepth, blend, rgb, rgb_to_ansi256},
+    theme::{LOGO_BOTTOM, LOGO_TOP},
 };
 
 /// Dot bits per cell, row-major: `01 08`, `02 10`, `04 20`, `40 80`.
 pub const BITS: [[u8; 2]; 4] = [[0x01, 0x08], [0x02, 0x10], [0x04, 0x20], [0x40, 0x80]];
 
-/// The logo's ombre stops (`#1E8FD8` to `#0B48BB`), from the design
-/// direction. Only the whale wears them.
-const LOGO_TOP: u32 = 0x1e8fd8;
-const LOGO_BOTTOM: u32 = 0x0b48bb;
-
-/// What the whale is doing.
+/// What the whale is doing: the v2 kit's 17 actions (`catalogue.js`).
+///
+/// The host classifies; the whale only draws. Pick the action from the
+/// engine's own presence and activity (the kit's `PORTING.md`), never by
+/// guessing from a command, URL or text.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum WhaleState {
+    /// Idle: nothing to do.
     Rest,
+    /// The person is typing.
+    Listen,
+    /// First output pending, or reasoning reported.
+    Think,
+    /// Working, with no finer activity reported.
     Busy,
-    NeedsYou,
-    Done,
+    /// Reading files.
+    Read,
+    /// Searching.
+    Search,
+    /// Editing files.
+    Write,
+    /// Running a command.
+    Run,
+    /// Browsing the web.
+    Browse,
+    /// Writing the reply.
+    Talk,
     /// Working with `calves` agents in parallel. The art draws at most three
     /// calves (zero draws the working pose); the words use the real count.
-    Pod {
-        calves: u8,
-    },
+    Pod { calves: u8 },
+    /// Waiting on the person.
+    NeedsYou,
+    /// The turn finished.
+    Done,
+    /// The turn genuinely failed moments ago. The kit marks this state a
+    /// proposal: the host shows it only for a failed turn and expires it
+    /// (the kit uses three seconds).
+    Stuck,
+    /// The engine is offline.
+    Asleep,
+    /// Using the computer (computer use).
+    Computer,
+    /// Calling a connected app. Says the call happened, not that it worked.
+    Connect,
 }
 
 impl WhaleState {
+    /// Every action once, in the kit's catalogue order (the pod with three
+    /// calves).
+    pub const ALL: [WhaleState; 17] = [
+        WhaleState::Rest,
+        WhaleState::Listen,
+        WhaleState::Think,
+        WhaleState::Busy,
+        WhaleState::Read,
+        WhaleState::Search,
+        WhaleState::Write,
+        WhaleState::Run,
+        WhaleState::Browse,
+        WhaleState::Talk,
+        WhaleState::Pod { calves: 3 },
+        WhaleState::NeedsYou,
+        WhaleState::Done,
+        WhaleState::Stuck,
+        WhaleState::Asleep,
+        WhaleState::Computer,
+        WhaleState::Connect,
+    ];
+
+    /// The action's name in the v2 kit (`catalogue.js`, `braille/<key>-*.txt`).
+    #[must_use]
+    pub const fn key(self) -> &'static str {
+        match self {
+            WhaleState::Rest => "rest",
+            WhaleState::Listen => "listen",
+            WhaleState::Think => "think",
+            WhaleState::Busy => "busy",
+            WhaleState::Read => "read",
+            WhaleState::Search => "search",
+            WhaleState::Write => "write",
+            WhaleState::Run => "run",
+            WhaleState::Browse => "browse",
+            WhaleState::Talk => "talk",
+            WhaleState::Pod { .. } => "pod",
+            WhaleState::NeedsYou => "needs",
+            WhaleState::Done => "done",
+            WhaleState::Stuck => "hmm",
+            WhaleState::Asleep => "sleep",
+            WhaleState::Computer => "computer",
+            WhaleState::Connect => "connect",
+        }
+    }
+
+    /// The action named `key` in the v2 kit. The pod comes back with three
+    /// calves; set the real count on it.
+    #[must_use]
+    pub fn from_key(key: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|s| s.key() == key)
+    }
+
     /// The key and calf count in `assets/whale-v2.scenes`.
     fn scene_key(self) -> (&'static str, u8) {
         match self {
-            WhaleState::Rest => ("rest", 0),
-            WhaleState::Busy | WhaleState::Pod { calves: 0 } => ("busy", 0),
-            WhaleState::NeedsYou => ("needs", 0),
-            WhaleState::Done => ("done", 0),
+            WhaleState::Pod { calves: 0 } => ("busy", 0),
             WhaleState::Pod { calves } => ("pod", calves.min(3)),
+            other => (other.key(), 0),
         }
     }
 
-    /// The status this pose stands for.
+    /// The status this pose stands for: its mark and hue beside the words.
     #[must_use]
     pub const fn state(self) -> State {
         match self {
-            WhaleState::Rest => State::Ready,
-            WhaleState::Busy | WhaleState::Pod { .. } => State::Working,
+            WhaleState::Rest | WhaleState::Listen => State::Ready,
+            WhaleState::Think
+            | WhaleState::Busy
+            | WhaleState::Read
+            | WhaleState::Search
+            | WhaleState::Write
+            | WhaleState::Run
+            | WhaleState::Browse
+            | WhaleState::Talk
+            | WhaleState::Pod { .. }
+            | WhaleState::Computer
+            | WhaleState::Connect => State::Working,
             WhaleState::NeedsYou => State::NeedsYou,
             WhaleState::Done => State::Done,
+            WhaleState::Stuck => State::Failed,
+            WhaleState::Asleep => State::Stopped,
         }
     }
 
-    /// The English words beside the art.
+    /// The English words beside the art. Hosts pass localized words with
+    /// [`Whale::words`].
     #[must_use]
     pub fn words(self) -> Cow<'static, str> {
         match self {
             WhaleState::Rest => "Resting".into(),
-            WhaleState::Busy => "Working".into(),
-            WhaleState::NeedsYou => "Needs you".into(),
-            WhaleState::Done => "Done".into(),
-            WhaleState::Pod { calves: 0 } => "Working".into(),
+            WhaleState::Listen => "Listening".into(),
+            WhaleState::Think => "Thinking".into(),
+            WhaleState::Busy | WhaleState::Pod { calves: 0 } => "Working".into(),
+            WhaleState::Read => "Reading".into(),
+            WhaleState::Search => "Searching".into(),
+            WhaleState::Write => "Editing".into(),
+            WhaleState::Run => "Running a command".into(),
+            WhaleState::Browse => "Browsing".into(),
+            WhaleState::Talk => "Replying".into(),
             WhaleState::Pod { calves: 1 } => "Working with 1 agent".into(),
             WhaleState::Pod { calves } => format!("Working with {calves} agents").into(),
+            WhaleState::NeedsYou => "Needs you".into(),
+            WhaleState::Done => "Done".into(),
+            WhaleState::Stuck => "Stuck".into(),
+            WhaleState::Asleep => "Asleep".into(),
+            WhaleState::Computer => "Using the computer".into(),
+            WhaleState::Connect => "Calling a connected app".into(),
         }
     }
 }

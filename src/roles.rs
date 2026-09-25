@@ -165,3 +165,23 @@ pub(crate) const LIGHT_256: [u8; Role::COUNT] = [
     58, // Attention
     124, // Danger
 ];
+
+/// The blue ombre (`Ground::Ocean`): the dark table with its grounds and
+/// quiet line tinted 0.5 toward `LOGO_BOTTOM` at their own luminance,
+/// so every contrast floor holds. Truecolor only; 256 colors use `DARK_256`.
+pub(crate) const OCEAN: [u32; Role::COUNT] = [
+    0x06183c, // Sidebar
+    0x0a1f47, // Background
+    0x122957, // Surface
+    0x162f60, // Hover
+    0x1b376b, // Selected
+    0xefeeeb, // Foreground
+    0xb1b1ad, // Muted
+    0x1e3a70, // Border
+    0x828386, // BorderStrong
+    0x90b9ff, // Primary
+    0x15243e, // PrimaryForeground
+    0x9ec7b2, // Live
+    0xe8b077, // Attention
+    0xe39a90, // Danger
+];
