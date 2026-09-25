@@ -33,9 +33,11 @@ pub mod tokens;
 
 mod components;
 pub mod testing;
+pub mod whale;
 
 pub use components::*;
 pub use theme::{Caps, Role, Theme};
+pub use whale::{Whale, WhaleState};
 
 use ratatui::{buffer::Buffer, layout::Rect, widgets::Widget};
 
