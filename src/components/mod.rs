@@ -14,7 +14,7 @@ pub use hints::{KeyHint, KeyHints};
 pub use icons::Icon;
 pub use picker::{Picker, PickerItem, PickerState};
 pub use spinner::{MotionMode, Spinner, duration};
-pub use status::{State, StatusMark};
+pub use status::{State, StateWords, StatusMark};
 pub use surface::{Depth, HorizonRule, Panel, centered};
 pub use toast::{Toast, Toasts};
 
