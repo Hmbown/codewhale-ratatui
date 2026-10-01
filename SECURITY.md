@@ -19,6 +19,6 @@ bounty. Only the current `main` branch is supported.
 ## Scope
 
 The crate paints text to a terminal and probes the terminal's background color
-(OSC 11). It makes no network connections and reads no files at runtime.
+(OSC 11). It makes no network connections and reads no files at runtime (only environment variables such as `COLORFGBG`).
 Reports about terminal-escape handling, such as untrusted text reaching the
 terminal unescaped through a component, are in scope.
