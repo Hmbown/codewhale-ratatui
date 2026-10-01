@@ -4,13 +4,15 @@
 //!   cargo run --example gallery -- --print dark-256     # print every component once
 //!   cargo run --example gallery -- --dump out/          # write every component x profile
 //!
-//! Browsing: ↑↓ choose a component, p / Shift+P change the profile, q quit.
+//! Browsing: ↑↓ choose a component, p / Shift+P change the profile, w /
+//! Shift+W change the width (the component's own, then 40, 80 and 120
+//! columns), q quit. Every area's entries (`src/gallery/*.rs`) are listed.
 //! `--print` writes ANSI to stdout, so you can see a profile in any terminal
 //! without raw mode. `--dump` writes `<component>.<profile>.ans` (view with
 //! `cat`) and `.txt` (glyphs plus the roles each run was painted with).
 //!
-//! Profiles: dark-truecolor, light-truecolor, dark-256, light-256, ansi-16,
-//! unknown-ground, no-color, ascii.
+//! Profiles: dark-truecolor, dark-graphite, light-truecolor, dark-256,
+//! light-256, ansi-16, unknown-ground, no-color, ascii.
 
 use std::io::{self, Write as _};
 use std::path::Path;
@@ -109,15 +111,19 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
     let mut state = PickerState::new(0);
     // `None` is this terminal as detected; otherwise a forced profile.
     let mut profile: Option<usize> = None;
+    // `None` is the component's own width; otherwise one of `testing::WIDTHS`.
+    let mut width: Option<usize> = None;
     loop {
         let theme = profile.map_or_else(Theme::detect, |i| Profile::ALL[i].theme());
         let profile_name = profile.map_or("this terminal", |i| Profile::ALL[i].name());
+        let forced_width = width.map(|i| testing::WIDTHS[i]);
         terminal.draw(|frame| {
             let area = frame.area();
             let buf = frame.buffer_mut();
             let hints = KeyHints::new(vec![
                 KeyHint::new(if theme.ascii() { "Up/Down" } else { "↑↓" }, "choose"),
                 KeyHint::new("p", "next profile"),
+                KeyHint::new("w", "next width"),
                 KeyHint::new("q", "quit"),
             ]);
             let inner = Panel::new(Depth::Stage)
@@ -139,17 +145,31 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
                 ..inner
             };
             let entry = &entries[state.selected];
+            // A forced width gives the component the whole stage height, so
+            // what wraps at 40 columns is not clipped.
+            let (want_w, want_h) = match forced_width {
+                None => (entry.width, entry.height),
+                Some(w) => (w, stage.height.saturating_sub(2)),
+            };
+            let canvas = Rect {
+                y: stage.y + 2,
+                width: want_w.min(stage.width),
+                height: want_h.min(stage.height.saturating_sub(2)),
+                ..stage
+            };
+            let clipped = if canvas.width < want_w {
+                format!(" (this window shows {})", canvas.width)
+            } else {
+                String::new()
+            };
             Line::from(Span::styled(
-                format!("{} · {}x{}", entry.name, entry.width, entry.height),
+                match forced_width {
+                    None => format!("{} · {}x{} (its own size)", entry.name, want_w, want_h),
+                    Some(w) => format!("{} · {w} columns{clipped}", entry.name),
+                },
                 theme.fg(Role::Muted),
             ))
             .render(Rect { height: 1, ..stage }, buf);
-            let canvas = Rect {
-                y: stage.y + 2,
-                width: entry.width.min(stage.width),
-                height: entry.height.min(stage.height.saturating_sub(2)),
-                ..stage
-            };
             (entry.draw)(canvas, buf, &theme);
         })?;
         if let Event::Key(key) = event::read()?
@@ -164,6 +184,20 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
                         None => Some(0),
                         Some(i) if i + 1 < Profile::ALL.len() => Some(i + 1),
                         Some(_) => None,
+                    };
+                }
+                KeyCode::Char('w') if !key.modifiers.contains(KeyModifiers::SHIFT) => {
+                    width = match width {
+                        None => Some(0),
+                        Some(i) if i + 1 < testing::WIDTHS.len() => Some(i + 1),
+                        Some(_) => None,
+                    };
+                }
+                KeyCode::Char('W') | KeyCode::Char('w') => {
+                    width = match width {
+                        None => Some(testing::WIDTHS.len() - 1),
+                        Some(0) => None,
+                        Some(i) => Some(i - 1),
                     };
                 }
                 KeyCode::Char('P') | KeyCode::Char('p') => {

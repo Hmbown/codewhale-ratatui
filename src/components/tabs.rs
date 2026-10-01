@@ -1,0 +1,6 @@
+//! Package Chrome: tabs.
+//!
+//! Reserved and empty. Everything made `pub` here is re-exported from the
+//! crate root by `components/mod.rs` (`pub use tabs::*`), so exported names
+//! must be unique crate-wide: prefix them with the component
+//! (`TabsWords`, not `Words`). See `CONTRIBUTING-COMPONENTS.md`.

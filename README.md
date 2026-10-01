@@ -85,7 +85,7 @@ meaning.
 ## See every component
 
 ```sh
-cargo run --example gallery                        # browse; p changes the profile
+cargo run --example gallery                        # browse; p changes the profile, w the width (40/80/120)
 cargo run --example gallery -- --print dark-256    # print one profile to stdout
 cargo run --example gallery -- --dump out/         # write .ans and .txt for every profile
 ```
