@@ -1,14 +1,17 @@
-//! Gallery: depth (panels) and the horizon rule.
+//! Gallery: depth (panels), the horizon rule, a dialog and a sheet.
 
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
     text::{Line, Span},
-    widgets::Widget,
+    widgets::{Paragraph, Widget, Wrap},
 };
 
 use super::Entry;
-use crate::{Depth, HorizonRule, Paint, Panel, Role, Theme, glyphs};
+use crate::{
+    Depth, Dialog, DialogWidth, HorizonRule, KeyHint, KeyHints, Paint, Panel, Role, Sheet,
+    SheetEdge, Theme, glyphs,
+};
 
 fn depths(area: Rect, buf: &mut Buffer, theme: &Theme) {
     let w = area.width / 4;
@@ -63,8 +66,88 @@ fn horizon(area: Rect, buf: &mut Buffer, theme: &Theme) {
     );
 }
 
+/// Work on the stage, for a dialog or a sheet to sit over.
+fn backdrop(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let lines = [
+        "Edited summary.md",
+        "Ran cargo test: 212 passed",
+        "Read crates/tui/src/tui/views/mod.rs",
+        "Searched the web for ratatui tabs",
+        "Edited settings.rs",
+    ];
+    for (row, line) in lines
+        .iter()
+        .cycle()
+        .take(usize::from(area.height))
+        .enumerate()
+    {
+        buf.set_stringn(
+            area.x,
+            area.y + row as u16,
+            line,
+            usize::from(area.width),
+            theme.fg(Role::Muted),
+        );
+    }
+}
+
+fn dialog(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    backdrop(area, buf, theme);
+    let hints = KeyHints::new(vec![
+        KeyHint::new("y", "stop"),
+        KeyHint::new("n", "keep running"),
+    ]);
+    let body = Dialog::new()
+        .title("Stop the running workflow?")
+        .width(DialogWidth::Narrow)
+        .body_rows(2)
+        .hints(&hints)
+        .draw(area, buf, theme);
+    Paragraph::new("2 agents are still working. Their edits so far are kept.")
+        .style(theme.fg(Role::Foreground))
+        .wrap(Wrap { trim: true })
+        .render(body, buf);
+}
+
+fn sheet(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    backdrop(area, buf, theme);
+    let arrows = super::arrows(theme);
+    let hints = KeyHints::new(vec![
+        KeyHint::new(arrows, "move"),
+        KeyHint::new("Enter", "change"),
+        KeyHint::new("Esc", "close"),
+    ]);
+    let body = Sheet::new()
+        .edge(SheetEdge::Bottom)
+        .title("Settings")
+        .aside("3 changed")
+        .size(10)
+        .max_size(9)
+        .hints(&hints)
+        .draw(area, buf, theme);
+    Paragraph::new(vec![
+        Line::from("Theme       Shoreline"),
+        Line::from("Motion      Reduced"),
+        Line::from("Tool detail Collapsed"),
+    ])
+    .style(theme.fg(Role::Foreground))
+    .render(body, buf);
+}
+
 pub(crate) fn entries() -> Vec<Entry> {
     vec![
+        Entry {
+            name: "dialog",
+            width: 80,
+            height: 12,
+            draw: dialog,
+        },
+        Entry {
+            name: "sheet",
+            width: 80,
+            height: 12,
+            draw: sheet,
+        },
         Entry {
             name: "depth",
             width: 80,
