@@ -1,8 +1,8 @@
-// Generated from vendor/codewhale-design/tokens.json 1.1.1 by tests/generated.rs.
+// Generated from vendor/codewhale-design/tokens.json 1.1.2 by tests/generated.rs.
 // Do not edit. Regenerate: CODEWHALE_BLESS=1 cargo test --test generated
 
 /// The design tokens version these roles were generated from.
-pub const TOKENS_VERSION: &str = "1.1.1";
+pub const TOKENS_VERSION: &str = "1.1.2";
 
 /// What a color is for. Components name roles; they never name colors.
 /// Names follow `tokens.json`, so one vocabulary covers the desktop app,
@@ -94,7 +94,7 @@ pub(crate) const DARK: [u32; Role::COUNT] = [
     0x303134, // Hover
     0x37393d, // Selected
     0xefeeeb, // Foreground
-    0xb1b1ad, // Muted
+    0xc2c1bd, // Muted
     0x3b3c3f, // Border
     0x828386, // BorderStrong
     0x90b9ff, // Primary
@@ -114,7 +114,7 @@ pub(crate) const DARK_256: [u8; Role::COUNT] = [
     236, // Hover
     237, // Selected
     255, // Foreground
-    145, // Muted
+    250, // Muted
     237, // Border
     102, // BorderStrong
     111, // Primary
@@ -132,7 +132,7 @@ pub(crate) const LIGHT: [u32; Role::COUNT] = [
     0xe8e5e0, // Hover
     0xdfdcd6, // Selected
     0x28292b, // Foreground
-    0x5f605d, // Muted
+    0x535451, // Muted
     0xd9d5cf, // Border
     0x807c76, // BorderStrong
     0x245bc7, // Primary
@@ -156,7 +156,7 @@ pub(crate) const LIGHT_256: [u8; Role::COUNT] = [
     254, // Hover
     253, // Selected
     235, // Foreground
-    59, // Muted
+    239, // Muted
     188, // Border
     243, // BorderStrong
     25, // Primary
@@ -176,7 +176,7 @@ pub(crate) const OCEAN: [u32; Role::COUNT] = [
     0x162f60, // Hover
     0x1b376b, // Selected
     0xefeeeb, // Foreground
-    0xb1b1ad, // Muted
+    0xc2c1bd, // Muted
     0x1e3a70, // Border
     0x828386, // BorderStrong
     0x90b9ff, // Primary
