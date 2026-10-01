@@ -61,6 +61,15 @@ Components name a `Role` (`Muted`, `Live`, `Danger`, …), never a color. The
 `Theme` resolves the role when it paints, so a theme or terminal change
 reaches every component on the next frame.
 
+There are 18 roles. Fourteen are `tokens.json` keys. Four are derived from
+them, because the tokens do not name them yet (`Role::is_derived`): `Hint`
+and `Dim` (`muted_foreground` receded toward `background` until it just holds
+4.5:1 and 3:1 on every ground, so the ink ladder runs `Foreground`, `Muted`,
+`Hint`, `Dim`) and `DiffAddedTint` and `DiffRemovedTint` (`live` and `danger`
+at 16% over `background`, behind `Foreground` ink only). Without color, the
+quiet inks recede with `DIM` and the tints are dropped: the glyph carries the
+meaning.
+
 | Component | What it shows |
 |---|---|
 | `KeyHints` | `↑↓ move · Enter select · Esc cancel`; wraps instead of dropping an action |
@@ -108,7 +117,11 @@ CODEWHALE_BLESS=1 cargo test --test generated
 ```
 
 `src/roles.rs` holds the roles, the truecolor tables, a 256-color table and
-the blue ombre table. The 256-color table starts from the nearest fixed
+the blue ombre table, with the four derived roles computed by the generator
+from the tokens (a token change reaches them on the next regenerate). Adding
+a role means adding it to `ROLES` in `tests/generated.rs`; if the new role is
+not yet in `src/roles.rs`, add its variant there by hand once so the
+generator can compile, then bless. The 256-color table starts from the nearest fixed
 index and moves an ink only where quantizing breaks the design's contrast
 floors or turns a state hue gray. The ombre tints the dark grounds and the
 quiet line toward the logo's `#0B48BB` and restores each one's luminance,
