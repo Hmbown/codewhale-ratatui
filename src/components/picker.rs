@@ -13,6 +13,7 @@
 
 use std::borrow::Cow;
 
+use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -134,6 +135,47 @@ impl PickerState {
     /// Store the offset [`Picker`] painted with, so scrolling is stable.
     pub fn scroll_into_view(&mut self, len: usize, rows: u16) {
         self.offset = self.visible_offset(len, usize::from(rows));
+    }
+}
+
+/// What a key did to a [`PickerState`]: the message a host reacts to.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PickerOutcome {
+    /// The key means nothing to a picker; the host may use it.
+    Ignored,
+    /// The selection moved (or tried to); repaint.
+    Moved,
+    /// Enter: row `n` was chosen.
+    Chose(usize),
+    /// Space: row `n` was toggled (a checklist row).
+    Toggled(usize),
+    /// Esc: the picker was dismissed.
+    Cancelled,
+}
+
+impl PickerState {
+    /// Apply a key press to the state for a list of `len` rows shown in
+    /// `rows` rows, and say what happened. Keys: `↑`/`↓` (wrapping), `Home`,
+    /// `End`, `PgUp`, `PgDn`, `Enter`, `Space`, `Esc`. Releases and other
+    /// keys are [`PickerOutcome::Ignored`]; so is every key on an empty list.
+    pub fn handle_key(&mut self, key: KeyEvent, len: usize, rows: u16) -> PickerOutcome {
+        if key.kind == KeyEventKind::Release || len == 0 {
+            return PickerOutcome::Ignored;
+        }
+        match key.code {
+            KeyCode::Up => self.prev(len),
+            KeyCode::Down => self.next(len),
+            KeyCode::Home => self.home(),
+            KeyCode::End => self.end(len),
+            KeyCode::PageUp => self.page(len, rows, false),
+            KeyCode::PageDown => self.page(len, rows, true),
+            KeyCode::Enter => return PickerOutcome::Chose(self.selected),
+            KeyCode::Char(' ') => return PickerOutcome::Toggled(self.selected),
+            KeyCode::Esc => return PickerOutcome::Cancelled,
+            _ => return PickerOutcome::Ignored,
+        }
+        self.scroll_into_view(len, rows);
+        PickerOutcome::Moved
     }
 }
 
@@ -348,6 +390,42 @@ mod tests {
                 profile.name()
             );
         }
+    }
+
+    #[test]
+    fn keys_move_choose_toggle_and_cancel() {
+        let key = |code| KeyEvent::new(code, crossterm::event::KeyModifiers::NONE);
+        let mut s = PickerState::new(0);
+        assert_eq!(s.handle_key(key(KeyCode::Up), 3, 2), PickerOutcome::Moved);
+        assert_eq!(s.selected, 2, "wraps");
+        assert_eq!(s.offset, 1, "keeps the selection in view");
+        assert_eq!(s.handle_key(key(KeyCode::Home), 3, 2), PickerOutcome::Moved);
+        assert_eq!(s.handle_key(key(KeyCode::Down), 3, 2), PickerOutcome::Moved);
+        assert_eq!(
+            s.handle_key(key(KeyCode::Enter), 3, 2),
+            PickerOutcome::Chose(1)
+        );
+        assert_eq!(
+            s.handle_key(key(KeyCode::Char(' ')), 3, 2),
+            PickerOutcome::Toggled(1)
+        );
+        assert_eq!(
+            s.handle_key(key(KeyCode::Esc), 3, 2),
+            PickerOutcome::Cancelled
+        );
+        assert_eq!(
+            s.handle_key(key(KeyCode::Char('x')), 3, 2),
+            PickerOutcome::Ignored
+        );
+        let mut release = key(KeyCode::Down);
+        release.kind = KeyEventKind::Release;
+        assert_eq!(s.handle_key(release, 3, 2), PickerOutcome::Ignored);
+        assert_eq!(s.selected, 1, "a release moves nothing");
+        assert_eq!(
+            PickerState::default().handle_key(key(KeyCode::Enter), 0, 2),
+            PickerOutcome::Ignored,
+            "an empty list chooses nothing"
+        );
     }
 
     #[test]
