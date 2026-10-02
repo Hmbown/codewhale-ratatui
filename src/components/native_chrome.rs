@@ -634,13 +634,6 @@ impl NativeComposerDensity {
             Self::Spacious => 12,
         }
     }
-    const fn floor(self) -> usize {
-        match self {
-            Self::Compact => 1,
-            Self::Comfortable => 2,
-            Self::Spacious => 3,
-        }
-    }
 }
 
 /// Shared render and hit-test geometry. Text never claims the submit target
@@ -721,344 +714,139 @@ impl<'a> NativeComposer<'a> {
         self
     }
     pub fn has_panel(&self, area: Rect) -> bool {
-        self.enclosed && area.width >= 12 && area.height >= 3
+        self.geometry(area).submit.is_some()
     }
     pub fn geometry(&self, area: Rect) -> NativeComposerGeometry {
-        let panel = self.has_panel(area);
-        let (inner, submit) = if panel {
-            let submit = Rect::new(
-                area.x.saturating_add(area.width.saturating_sub(5)),
-                area.y.saturating_add(area.height.saturating_sub(2)),
-                3,
-                1,
-            );
-            let x = area.x.saturating_add(1);
-            (
-                Rect::new(
-                    x,
-                    area.y.saturating_add(1),
-                    submit.x.saturating_sub(1).saturating_sub(x),
-                    area.height.saturating_sub(2),
-                ),
-                Some(submit),
-            )
-        } else if area.height >= 2 {
-            (
-                Rect::new(
-                    area.x,
-                    area.y.saturating_add(1),
-                    area.width,
-                    area.height - 1,
-                ),
-                None,
-            )
-        } else {
-            (area, None)
-        };
-        let inset = if inner.width >= 3 { 2 } else { 0 };
-        NativeComposerGeometry {
-            inner,
-            text: Rect::new(
-                inner.x.saturating_add(inset),
-                inner.y,
-                inner.width.saturating_sub(inset),
-                inner.height,
-            ),
-            submit,
-            prompt_x: (inset > 0).then_some(inner.x),
-        }
+        crate::native_composer_geometry(area, self.enclosed, false)
     }
-    pub fn desired_height(&self, width: u16, available_height: u16) -> u16 {
-        let available = available_height.max(1);
-        let panel = self.enclosed && width >= 12 && available >= 3;
-        let measure = self.geometry(Rect::new(0, 0, width, if panel { 3 } else { 1 }));
-        let content = input_rows(&self.text, usize::from(measure.text.width.max(1)))
-            .len()
-            .max(self.density.floor());
-        let border = if panel {
-            2
-        } else {
-            usize::from(available >= 2)
-        };
-        content
-            .saturating_add(self.menu_rows)
-            .saturating_add(border)
-            .clamp(1, usize::from(available.min(self.density.max_rows())))
-            .try_into()
-            .unwrap_or(1)
+    pub fn desired_height(&self, width: u16, available: u16) -> u16 {
+        self.frame(None, None).desired_height(width, available)
     }
-    /// Cursor geometry uses the same wrapped content, scroll and native
-    /// padding as painting. The terminal host owns showing the actual caret.
     pub fn cursor_position(&self, area: Rect) -> Option<Position> {
-        if !self.focused {
-            return None;
-        }
-        let (geometry, _, row, column, top, padding) = self.layout(area);
-        if geometry.text.width == 0
-            || row < top
-            || row - top + padding >= usize::from(geometry.text.height)
-        {
-            return None;
-        }
-        let x = geometry.text.x.saturating_add(u16::try_from(column).ok()?);
-        let y = geometry
-            .text
-            .y
-            .saturating_add(u16::try_from(row - top + padding).ok()?);
-        geometry
-            .text
-            .contains(Position::new(x, y))
-            .then_some(Position::new(x, y))
+        self.frame(None, None).plan(area).cursor
     }
-    fn layout(
+    fn frame(
         &self,
-        area: Rect,
-    ) -> (
-        NativeComposerGeometry,
-        Vec<InputRow>,
-        usize,
-        usize,
-        usize,
-        usize,
-    ) {
-        let geometry = self.geometry(area);
-        let rows = input_rows(&self.text, usize::from(geometry.text.width.max(1)));
-        let cursor = self
-            .cursor
-            .unwrap_or_else(|| multiline_safe(&self.text).graphemes(true).count());
-        let row = rows
-            .iter()
-            .rposition(|line| cursor >= line.start)
-            .unwrap_or(0);
-        let column = text::width(
-            &rows[row]
-                .text
-                .graphemes(true)
-                .take(cursor.saturating_sub(rows[row].start))
-                .collect::<String>(),
-        );
-        let budget = usize::from(geometry.inner.height)
-            .saturating_sub(self.menu_rows)
-            .max(1);
-        let top = (row + 1).saturating_sub(budget);
-        let visible = rows.len().saturating_sub(top).min(budget).max(1);
-        let padding = budget.saturating_sub(visible) / 2;
-        (geometry, rows, row, column, top, padding)
+        theme: Option<&Theme>,
+        area: Option<Rect>,
+    ) -> crate::NativeComposerFrame<'static> {
+        use crate::{NativeComposerFrame, NativeComposerMenu, NativeComposerStyles};
+        let width = area.map(|area| area.width);
+        let panel = area.is_some_and(|area| self.has_panel(area));
+        let value = multiline_safe(&self.text);
+        let count = self.cursor.unwrap_or_else(|| value.graphemes(true).count());
+        let cursor = value
+            .graphemes(true)
+            .take(count)
+            .map(|g| g.chars().count())
+            .sum();
+        let title = |label: String, room: Option<u16>| match room {
+            Some(room) => {
+                text::truncate_words(&label, usize::from(room), theme.is_some_and(Theme::ascii))
+                    .into_owned()
+            }
+            None => label,
+        };
+        let background = theme
+            .map(|t| t.tui_ground(TuiGround::Composer))
+            .unwrap_or_default();
+        let role = |role| theme.map(|t| t.fg(role)).unwrap_or_default();
+        let border = background.patch(role(if self.focused {
+            Role::Primary
+        } else {
+            Role::Border
+        }));
+        let submit = background.patch(if self.can_submit {
+            theme.map(|t| t.tui_ink(TuiInk::Info)).unwrap_or_default()
+        } else {
+            role(Role::Dim)
+        });
+        NativeComposerFrame {
+            text: Cow::Owned(value),
+            cursor,
+            selection: None,
+            placeholder: Line::styled(
+                multiline_safe(&self.placeholder),
+                background.patch(theme.map(|t| t.tui_ink(TuiInk::Soft)).unwrap_or_default()),
+            ),
+            enclosed: self.enclosed,
+            density: self.density,
+            history_search: false,
+            focused: self.focused,
+            can_submit: self.can_submit,
+            ascii: theme.is_some_and(Theme::ascii),
+            top_title: None,
+            top_right: self.target.as_ref().map(|target| {
+                Line::styled(
+                    title(
+                        format!(" {} ", safe(target)),
+                        width.map(|width| width.saturating_sub(2)),
+                    ),
+                    background
+                        .patch(role(Role::Attention))
+                        .add_modifier(Modifier::BOLD),
+                )
+            }),
+            hint: self
+                .submit_hint
+                .as_ref()
+                .filter(|_| !self.text.trim().is_empty())
+                .map(|hint| {
+                    Line::styled(
+                        title(
+                            format!(" {} ", safe(hint)),
+                            width.map(|width| width.saturating_sub(u16::from(panel) * 2)),
+                        ),
+                        background.patch(role(Role::Primary)),
+                    )
+                }),
+            quiet_hint: self
+                .submit_hint
+                .as_ref()
+                .filter(|_| !self.text.trim().is_empty())
+                .map(|hint| {
+                    Line::styled(
+                        title(
+                            format!(" {} ", safe(hint)),
+                            width.map(|width| width.saturating_sub(u16::from(panel) * 2)),
+                        ),
+                        background.patch(role(Role::Primary)),
+                    )
+                }),
+            styles: NativeComposerStyles {
+                background,
+                border,
+                quiet_border: background.patch(role(Role::Border)),
+                text: background.patch(role(Role::Foreground)),
+                selection: background.patch(role(Role::Foreground)),
+                prompt: background.patch(role(Role::Primary)),
+                submit: if self.can_submit {
+                    submit.add_modifier(Modifier::BOLD)
+                } else {
+                    submit
+                },
+            },
+            menu: NativeComposerMenu {
+                reserved_rows: self.menu_rows,
+                ..Default::default()
+            },
+        }
     }
 }
 impl Paint for NativeComposer<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
         let area = area.intersection(buf.area);
-        if area.is_empty() {
-            return;
-        }
-        let background = theme.tui_ground(TuiGround::Composer);
-        buf.set_style(area, background);
         for y in area.top()..area.bottom() {
             for x in area.left()..area.right() {
                 buf[(x, y)].set_symbol(" ");
             }
         }
-        let panel = self.has_panel(area);
-        let border = if panel && self.focused {
-            Role::Primary
-        } else {
-            Role::Border
-        };
-        let border_style = background.patch(theme.fg(border));
-        if area.height >= 2 {
-            let line = Line::styled(
-                glyphs::pick("─", theme.ascii()).repeat(usize::from(area.width)),
-                border_style,
-            );
-            buf.set_line(area.x, area.y, &line, area.width);
-            if panel {
-                buf.set_line(area.x, area.bottom() - 1, &line, area.width);
-                for y in area.y + 1..area.bottom() - 1 {
-                    buf[(area.x, y)]
-                        .set_symbol(glyphs::pick("│", theme.ascii()))
-                        .set_style(border_style);
-                    buf[(area.right() - 1, y)]
-                        .set_symbol(glyphs::pick("│", theme.ascii()))
-                        .set_style(border_style);
-                }
-                for (x, y, mark) in [
-                    (area.x, area.y, "╭"),
-                    (area.right() - 1, area.y, "╮"),
-                    (area.x, area.bottom() - 1, "╰"),
-                    (area.right() - 1, area.bottom() - 1, "╯"),
-                ] {
-                    buf[(x, y)]
-                        .set_symbol(glyphs::pick(mark, theme.ascii()))
-                        .set_style(border_style);
-                }
-            }
-            if let Some(hint) = &self.submit_hint
-                && !self.text.trim().is_empty()
-            {
-                let y = if panel { area.bottom() - 1 } else { area.y };
-                let label = format!(" {} ", safe(hint));
-                buf.set_stringn(
-                    area.x.saturating_add(u16::from(panel)),
-                    y,
-                    text::truncate_words(
-                        &label,
-                        usize::from(area.width.saturating_sub(u16::from(panel) * 2)),
-                        theme.ascii(),
-                    )
-                    .as_ref(),
-                    usize::from(area.width.saturating_sub(u16::from(panel) * 2)),
-                    background.patch(theme.fg(Role::Primary)),
-                );
-            }
-            if let Some(target) = &self.target {
-                let label = format!(" {} ", safe(target));
-                let room = usize::from(area.width.saturating_sub(2));
-                let label = text::truncate_words(&label, room, theme.ascii());
-                let cells = u16::try_from(text::width(&label)).unwrap_or(0);
-                buf.set_stringn(
-                    area.right().saturating_sub(cells + 1),
-                    area.y,
-                    &label,
-                    usize::from(cells),
-                    background
-                        .patch(theme.fg(Role::Attention))
-                        .add_modifier(Modifier::BOLD),
-                );
-            }
-        }
-        let (geometry, rows, cursor_row, _, top, padding) = self.layout(area);
-        let budget = usize::from(geometry.inner.height)
-            .saturating_sub(self.menu_rows)
-            .max(1);
-        let placeholder = self.text.is_empty();
-        let hint_rows = if placeholder {
-            input_rows(&self.placeholder, usize::from(geometry.text.width.max(1)))
-        } else {
-            Vec::new()
-        };
-        let visible: Vec<_> = if placeholder {
-            hint_rows.iter().collect()
-        } else {
-            rows.iter().skip(top).collect()
-        };
-        for (index, line) in visible
-            .into_iter()
-            .take(budget.saturating_sub(padding))
-            .enumerate()
-        {
-            let offset = padding + index;
-            if offset >= usize::from(geometry.text.height) {
-                break;
-            }
-            let y = geometry.text.y + offset as u16;
-            buf.set_stringn(
-                geometry.text.x,
-                y,
-                &line.text,
-                usize::from(geometry.text.width),
-                background.patch(if placeholder {
-                    theme.tui_ink(TuiInk::Soft)
-                } else {
-                    theme.fg(Role::Foreground)
-                }),
-            );
-        }
-        if let Some(x) = geometry.prompt_x
-            && cursor_row >= top
-        {
-            let offset = cursor_row - top + padding;
-            if offset < usize::from(geometry.inner.height) {
-                buf[(x, geometry.inner.y + offset as u16)]
-                    .set_symbol(glyphs::pick("❯", theme.ascii()))
-                    .set_style(background.patch(theme.fg(Role::Primary)));
-            }
-        }
-        if let Some(submit) = geometry.submit {
-            let mark = match (self.can_submit, theme.ascii()) {
-                (true, false) => "[↵]",
-                (true, true) => "[>]",
-                (false, false) => "[·]",
-                (false, true) => "[.]",
-            };
-            let style = background.patch(if self.can_submit {
-                theme.tui_ink(TuiInk::Info)
-            } else {
-                theme.fg(Role::Dim)
-            });
-            buf.set_stringn(
-                submit.x,
-                submit.y,
-                mark,
-                3,
-                if self.can_submit {
-                    style.add_modifier(Modifier::BOLD)
-                } else {
-                    style
-                },
-            );
-        }
+        self.frame(Some(theme), Some(area)).render(area, buf);
     }
     fn height(&self, width: u16, _theme: &Theme) -> u16 {
         self.desired_height(width, self.density.max_rows())
     }
 }
-
-struct InputRow {
-    text: String,
-    start: usize,
-}
 fn multiline_safe(value: &str) -> String {
     value.split('\n').map(safe).collect::<Vec<_>>().join("\n")
-}
-fn input_rows(value: &str, width: usize) -> Vec<InputRow> {
-    let value = multiline_safe(value);
-    let mut rows = Vec::new();
-    let mut start = 0;
-    for raw in value.split('\n') {
-        let mut current = String::new();
-        let mut cells = 0;
-        let mut break_at = None;
-        let mut output = Vec::new();
-        for g in raw.graphemes(true) {
-            let w = text::width(g);
-            if cells + w > width && cells != 0 {
-                flush_input(&mut current, &mut cells, &mut break_at, &mut output);
-            }
-            current.push_str(g);
-            cells += w;
-            if g == " " && !current.trim_start().is_empty() {
-                break_at = Some(current.len());
-            }
-            if cells >= width {
-                flush_input(&mut current, &mut cells, &mut break_at, &mut output);
-            }
-        }
-        output.push(current);
-        for line in output {
-            let count = line.graphemes(true).count();
-            rows.push(InputRow { text: line, start });
-            start += count;
-        }
-        start += 1;
-    }
-    rows
-}
-fn flush_input(
-    current: &mut String,
-    cells: &mut usize,
-    break_at: &mut Option<usize>,
-    rows: &mut Vec<String>,
-) {
-    match break_at.take() {
-        Some(byte) if byte < current.len() => {
-            let remainder = current.split_off(byte);
-            rows.push(std::mem::replace(current, remainder));
-            *cells = text::width(current);
-        }
-        _ => {
-            rows.push(std::mem::take(current));
-            *cells = 0;
-        }
-    }
 }

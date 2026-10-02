@@ -202,20 +202,20 @@ Sessions, settings, pickers and work panels built from reusable native parts.
 
 <a id="the-native-composer-and-footer"></a>
 <details>
-<summary>The native composer and footer · 20 examples</summary>
+<summary>The native composer and footer · 22 examples</summary>
 
 Composer geometry, permission and mode, workflow rows and model/context metrics.
 
-![Native composer, Native composer narrow, Native composer quiet, Native composer target, Workflow progress live, Workflow progress settled, Workflow progress queued, Workflow progress narrow, Posture bar, Posture narrow, Posture context cap, Posture compact, Metrics line, Metrics narrow, Metrics compact, Metrics startup, Workflow tree, Workflow tree selected — dark truecolor](<assets/readme/native-chrome.dark-truecolor-1.svg>)
+![Native composer rich selection, Native composer rich search, Native composer, Native composer narrow, Native composer quiet, Native composer target, Workflow progress live, Workflow progress settled, Workflow progress queued, Workflow progress narrow, Posture bar, Posture narrow, Posture context cap, Posture compact, Metrics line — dark truecolor](<assets/readme/native-chrome.dark-truecolor-1.svg>)
 
-![Workflow tree clipped, Workflow tree long — dark truecolor](<assets/readme/native-chrome.dark-truecolor-2.svg>)
+![Metrics narrow, Metrics compact, Metrics startup, Workflow tree, Workflow tree selected, Workflow tree clipped, Workflow tree long — dark truecolor](<assets/readme/native-chrome.dark-truecolor-2.svg>)
 
 <details>
 <summary>Light appearance</summary>
 
-![Native composer, Native composer narrow, Native composer quiet, Native composer target, Workflow progress live, Workflow progress settled, Workflow progress queued, Workflow progress narrow, Posture bar, Posture narrow, Posture context cap, Posture compact, Metrics line, Metrics narrow, Metrics compact, Metrics startup, Workflow tree, Workflow tree selected — light truecolor](<assets/readme/native-chrome.light-truecolor-1.svg>)
+![Native composer rich selection, Native composer rich search, Native composer, Native composer narrow, Native composer quiet, Native composer target, Workflow progress live, Workflow progress settled, Workflow progress queued, Workflow progress narrow, Posture bar, Posture narrow, Posture context cap, Posture compact, Metrics line — light truecolor](<assets/readme/native-chrome.light-truecolor-1.svg>)
 
-![Workflow tree clipped, Workflow tree long — light truecolor](<assets/readme/native-chrome.light-truecolor-2.svg>)
+![Metrics narrow, Metrics compact, Metrics startup, Workflow tree, Workflow tree selected, Workflow tree clipped, Workflow tree long — light truecolor](<assets/readme/native-chrome.light-truecolor-2.svg>)
 
 </details>
 
@@ -971,3 +971,14 @@ The gallery's `approval-native-band` and collapsed companion use this real API.
 The existing bordered `ApprovalCard` keeps its verbatim-subject and caller-key
 contract. The band accepts host-projected display lines; it does not reparse
 commands, infer policy or construct permission rules.
+
+### Mounted composer row plan
+
+`NativeComposerFrame` projects host-owned scalar cursor/selection, localized
+styled copy, completion/history menu facts and live styles through one pure
+layout/paint/caret/viewport/pointer plan. Raw source positions retain hidden
+characters; display content is guarded before width measurement and paint.
+`NativeComposer` uses the same plan and keeps its existing grapheme cursor
+API. The actual `native-composer-rich-selection` and `native-composer-rich-search` gallery
+entries show both presentations. Editing, bindings, IME, completion filtering
+and submit dispatch stay with the host.
