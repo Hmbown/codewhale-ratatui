@@ -16,7 +16,11 @@ use std::{
     path::Path,
 };
 
-use codewhale_ratatui::{gallery, testing::Profile};
+use codewhale_ratatui::{
+    Depth, Dialog, Heading, HorizonRule, KeyHint, KeyHints, Paint, Panel, Segmented,
+    SegmentedState, Sheet, SheetEdge, State, Tab, Tabs, TabsState, Theme, Toast, Toasts, Toggle,
+    gallery, testing::Profile,
+};
 use ratatui::{
     buffer::{Buffer, Cell},
     layout::Rect,
@@ -192,6 +196,78 @@ fn every_gallery_entry_paints_only_inside_the_buffer_and_the_request() {
 #[ignore = "src/whale.rs does not intersect its area with the buffer"]
 fn the_whale_paints_only_inside_the_buffer_and_the_request() {
     assert_no_failures(&failures_for(|name| name.starts_with("whale")));
+}
+
+/// A component lays itself out in the part of its area the buffer holds:
+/// painting a request that runs past the buffer is the same as painting the
+/// request clipped to it. Anchored, centered and right-aligned parts (the
+/// toasts' bottom-right corner, a dialog's centre, a sheet's edge) would
+/// otherwise land outside the buffer, where nobody sees them.
+#[test]
+fn a_request_past_the_buffer_paints_what_its_visible_part_would() {
+    let hints = KeyHints::new(vec![
+        KeyHint::new("Enter", "select a thing"),
+        KeyHint::new("Esc", "cancel and go back"),
+        KeyHint::new("?", "more"),
+    ]);
+    let tabs = [
+        Tab::new("General"),
+        Tab::new("Appearance"),
+        Tab::new("Agents"),
+    ];
+    let toasts = Toasts::new(vec![
+        Toast::new(State::Done, "Saved summary.md"),
+        Toast::new(State::NeedsYou, "A command is waiting for your approval"),
+        Toast::new(State::Failed, "Could not save: the file is read-only"),
+    ]);
+    let dialog = Dialog::new()
+        .title("Stop the running workflow?")
+        .body_rows(2)
+        .hints(&hints);
+    let sheet_bottom = Sheet::new().title("Settings").aside("3 changed").size(6);
+    let sheet_right = Sheet::new().edge(SheetEdge::Right).title("Agents").size(14);
+    let horizon = HorizonRule::new().label("Ask").aside("12% of context used");
+    let heading = Heading::new("Settings").meta("saved to this project");
+    let toggle = Toggle::new("Reduced motion", true).focused(true);
+    let segmented = Segmented::new(["Full", "Reduced", "Still"], SegmentedState::new(1));
+    let tabs = Tabs::new(&tabs, TabsState::new(1)).focused(true);
+    let panel = Panel::new(Depth::Overlay).title("Mode").hints(&hints);
+    let components: Vec<(&str, &dyn Paint)> = vec![
+        ("toasts", &toasts),
+        ("dialog", &dialog),
+        ("sheet (bottom)", &sheet_bottom),
+        ("sheet (right)", &sheet_right),
+        ("horizon rule", &horizon),
+        ("heading", &heading),
+        ("toggle", &toggle),
+        ("segmented", &segmented),
+        ("tabs", &tabs),
+        ("panel", &panel),
+        ("key hints", &hints),
+    ];
+    let requests = [
+        Rect::new(7, 5, 60, 40),
+        Rect::new(0, 0, 100, 100),
+        Rect::new(2, 1, 20, 8),
+        Rect::new(9, 0, 12, 9),
+        Rect::new(20, 8, u16::MAX, u16::MAX),
+    ];
+    let theme: Theme = Profile::DarkTrue.theme();
+    for (name, component) in components {
+        for request in requests {
+            let clipped = request.intersection(BUF);
+            let paint = |area: Rect| {
+                let mut buf = filled(BUF);
+                component.paint(area, &mut buf, &theme);
+                buf
+            };
+            assert_eq!(
+                paint(request),
+                paint(clipped),
+                "{name}: {request:?} must paint what {clipped:?} paints"
+            );
+        }
+    }
 }
 
 /// The gallery draws a fixture for every component, so the check above covers
