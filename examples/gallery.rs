@@ -117,13 +117,16 @@ fn dump(dir: &Path, svg: bool) -> io::Result<()> {
             let buf = gallery::render(entry, &theme);
             let stem = format!("{}.{}", entry.name, profile.name());
             if svg {
-                std::fs::write(dir.join(format!("{stem}.svg")), testing::svg(&buf, &theme))?;
+                std::fs::write(
+                    dir.join(format!("{stem}.svg")),
+                    testing::svg(&buf, &gallery::theme_for(entry, &theme)),
+                )?;
                 written += 1;
             } else {
                 std::fs::write(dir.join(format!("{stem}.ans")), testing::ansi(&buf))?;
                 std::fs::write(
                     dir.join(format!("{stem}.txt")),
-                    testing::styled(&buf, &theme),
+                    testing::styled(&buf, &gallery::theme_for(entry, &theme)),
                 )?;
                 written += 2;
             }
@@ -225,10 +228,7 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
                     .saturating_mul(entry.width.div_ceil(render_width.max(1)))
                     .max(1)
             };
-            let full = testing::render(render_width, capacity, |area, buf| {
-                buf.set_style(area, theme.bg(Role::Background));
-                (entry.draw)(area, buf, &theme);
-            });
+            let full = gallery::render_at(entry, &theme, render_width, capacity);
             content_height = content_rows(&full, entry.height);
             let canvas = Rect {
                 y: stage.y.saturating_add(2),

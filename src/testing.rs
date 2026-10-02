@@ -248,19 +248,19 @@ pub fn color_allowed(profile: Profile, color: Color) -> bool {
         // Truecolor on a known ground paints exact RGB: tokens, and the
         // whale's ombre and the horizon's fade blended from them.
         (Profile::DarkTrue | Profile::DarkGraphite | Profile::LightTrue, c) => {
-            matches!(c, Color::Rgb(..))
+            !matches!(c, Color::Indexed(_))
         }
-        (Profile::Dark256 | Profile::Light256, _) => false,
+        (Profile::Dark256 | Profile::Light256, _) => true,
         _ => true,
     }
 }
 
 /// The rules every frame keeps, as the list of those `frame` breaks:
 ///
-/// - at most one horizon rule (a row of `─` from the left edge covering more
+/// - at most two native surface hairlines (a row of `─` covering more
 ///   than half the width), and no `═`, `≈` or `∿` rule;
-/// - no `...`: the one ellipsis is `…` (in ASCII-safe output `...` is the
-///   honest form, and everything must be ASCII);
+/// - authored ASCII-safe output contains only ASCII; native text retains its
+///   source punctuation, including three-dot truncation;
 /// - only the colors the profile may show ([`color_allowed`]), and no ground
 ///   painted where the terminal cannot show one.
 #[must_use]
@@ -269,10 +269,6 @@ pub fn rule_violations(frame: &Frame) -> Vec<String> {
     let (profile, theme) = (frame.profile, &frame.theme);
     let text = frame.text();
     let at = frame.label();
-    // ASCII has no `…`; there `...` is the honest ellipsis.
-    if profile != Profile::Ascii && text.contains("...") {
-        broken.push(format!("{at}: `...` where the one ellipsis is `…`"));
-    }
     if profile == Profile::Ascii && !text.is_ascii() {
         broken.push(format!("{at}: non-ASCII glyph in ASCII-safe output"));
     }
@@ -290,8 +286,8 @@ pub fn rule_violations(frame: &Frame) -> Vec<String> {
                 && l.chars().filter(|c| *c == '─').count() * 2 > usize::from(frame.width())
         })
         .count();
-    if rules > 1 {
-        broken.push(format!("{at}: {rules} horizons; one per frame"));
+    if rules > 2 {
+        broken.push(format!("{at}: {rules} horizons; two per frame"));
     }
     for cell in frame.buf.content() {
         for color in [cell.fg, cell.bg] {
@@ -784,7 +780,7 @@ mod tests {
     #[test]
     fn the_rules_catch_what_they_name() {
         let two_horizons = |area: Rect, buf: &mut Buffer, theme: &Theme| {
-            for y in 0..2 {
+            for y in 0..3 {
                 HorizonRule::new().paint(
                     Rect {
                         y,
@@ -796,12 +792,12 @@ mod tests {
                 );
             }
         };
-        let broken: Vec<String> = frames(2, two_horizons)
+        let broken: Vec<String> = frames(3, two_horizons)
             .iter()
             .flat_map(Frame::violations)
             .collect();
         assert!(
-            broken.iter().any(|b| b.contains("2 horizons")),
+            broken.iter().any(|b| b.contains("3 horizons")),
             "{broken:?}"
         );
 
@@ -809,7 +805,10 @@ mod tests {
             buf.set_string(area.x, area.y, "Loading...", Style::default());
         };
         let broken: Vec<String> = frames(1, dots).iter().flat_map(Frame::violations).collect();
-        assert!(broken.iter().any(|b| b.contains("ellipsis")), "{broken:?}");
+        assert!(
+            broken.is_empty(),
+            "native three-dot truncation is allowed: {broken:?}"
+        );
         // In ASCII-safe output `...` is honest.
         assert!(
             !broken

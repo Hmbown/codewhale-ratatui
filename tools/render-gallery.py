@@ -35,17 +35,23 @@ MAX_HEIGHT = 2200
 MONO = "'DejaVu Sans Mono','Cascadia Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace"
 SANS = ",".join(f"'{family}'" for family in [TOKENS["typography"]["family"], *TOKENS["typography"]["fallbacks"]]) + ",-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
 GROUPS = {
-    "scenes": ("Codewhale at work", "Conversation, review and parallel work, composed from the same components"),
-    "components": ("Sessions and fleets", "Messages, tools, workspaces and parallel agents"),
-    "workbar": ("The workbar", "TODO, context, git, price and plugins; summoned, configurable and caller-owned"),
+    "studio": ("The live component gallery", "The native conversation layout, composer and workbar, plus interactive component studies"),
+    "native-views": ("Codewhale terminal views", "Sessions, settings, pickers and work panels built from reusable native parts"),
+    "native-chrome": ("The native composer and footer", "Composer geometry, permission and mode, workflow rows and model/context metrics"),
+    "workbar": ("The native workbar", "Tasks, Fleet, Jobs, Files, Notes, Context, Git and Cost; bottom, top and side placement"),
+    "tui-palettes": ("Every Codewhale TUI theme", "Sixteen source presets with their actual backgrounds, status, permission and mode inks"),
+    "water": ("Codewhale water and ombres", "The current TUI ocean, plus optional Lagoon, Dusk, Coral and Graphite treatments"),
+    "transcript": ("Conversation and queued input", "Rich prose, code, attached context and the next instruction"),
+    "components": ("Conversation and agents", "Inline messages and optional tool, agent and fleet cards"),
     "foundation": ("The Codewhale language", "Depth, rules, marks, hints and terminal chrome"),
     "input": ("Input and selection", "Editable fields, forms, lists and focused choices"),
     "chrome": ("Navigation and controls", "Headings, tabs, toggles and keyboard maps"),
-    "display": ("Work and receipts", "Diffs, trees, progress, approvals and durable outcomes"),
+    "display": ("Work and results", "Diffs, trees, progress, approvals and run results"),
     "motion": ("Motion and feedback", "Spinners, notifications and calm transitions"),
     "habitat": ("Life in the water", "Fish, jellyfish and bubbles, drawn in terminal cells"),
     "whales": ("A whale with a job", "Session state, attention, completion and the pod"),
     "whale-actions": ("Every whale action", "The complete v2 state vocabulary, in terminal cells"),
+    "scenes": ("Optional workspace compositions", "Desktop-inspired conversation, review and fleet layouts you can compose from the library"),
 }
 PROFILES = ["dark-truecolor", "dark-graphite", "light-truecolor", "dark-256", "light-256",
             "ansi-16", "unknown-ground", "no-color", "ascii"]
@@ -65,6 +71,18 @@ def element(parent, tag, attrs=None, text=None):
 
 
 def classify(name):
+    if name.startswith("tui-theme-"):
+        return "tui-palettes"
+    if name.startswith(("native-composer", "workflow-", "posture-", "metrics-")):
+        return "native-chrome"
+    if name.startswith(("native-", "view-")) or name in {"instrument-surface", "session-list"}:
+        return "native-views"
+    if name.startswith("showcase-"):
+        return "studio"
+    if name.startswith(("ocean-", "atmosphere-")):
+        return "water"
+    if name.startswith(("transcript-", "code-block", "pending-")):
+        return "transcript"
     if name.startswith(("workspace-scene", "review-scene", "fleet-scene", "habitat-scene")):
         return "scenes"
     if re.search(r"habitat|fish|jelly|bubble", name):
@@ -185,7 +203,7 @@ def layout(items, group=None):
     """Fit the specimens rather than shrink their terminal cells to a grid."""
     if not items:
         return []
-    if group == "scenes":
+    if group in {"scenes", "studio", "water", "native-views"}:
         pages = []
         for name, buffer, width, height in items:
             board_width = max(640 if width <= 640 else SCENE_WIDTH, math.ceil(width) + 2 * MARGIN)
@@ -367,6 +385,19 @@ def readme_gallery(readme, destination, index):
     for family in families:
         lines.extend(["### " + GROUPS[family][0], ""])
         lines.extend(embed(item) + "\n" for item in primary if item["group"] == family)
+        if family == "studio":
+            paths = [Path(os.path.relpath(destination / filename, readme.parent)).as_posix()
+                     for filename in ("showcase.gif", "showcase-light.gif", "whale-performance.gif")]
+            lines.extend([
+                "<details>", "<summary>Watch the WhaleLight gallery and all seventeen native whale actions</summary>", "",
+                f"![The same native layout in WhaleLight](<{paths[1]}>)", "",
+                f"![All seventeen native whale performances, with colored props and marine life](<{paths[2]}>)", "",
+                "Actual terminal buffers from the live showcase renderer, sampled at its terminal cadence.",
+                "The demonstration supplies its work phases; no displayed command runs.",
+                "The whale uses the native Director's springs and authored clips, with one host clock.",
+                "Run `cargo run --example showcase` to edit, answer, change the palette and explore every component.", "",
+                "</details>", "",
+            ])
         if family == "motion":
             paths = [Path(os.path.relpath(destination / filename, readme.parent)).as_posix()
                      for filename in ("motion-demo.gif", "motion-demo-light.gif")]

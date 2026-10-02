@@ -3,245 +3,215 @@ source: tests/snapshots.rs
 expression: dump(&entry)
 ---
 == dark-truecolor
-▎ You
-▏ Show every component in the README.
+▎ Show every component in the README.
 
-● Codewhale
-▏ The gallery uses the same components as the library.
+● The gallery uses the same components as the library.
 ▏
 ▏ Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c0..1 fg=Primary bg=Background
+r0 c0..1 fg=Primary bg=Background bold
 r0 c1..2 bg=Background
-r0 c2..5 fg=Primary bg=Background bold
-r0 c5..64 bg=Background
-r1 c0..2 fg=Border bg=Background
-r1 c2..37 fg=Foreground bg=Background
-r1 c37..64 bg=Background
-r2 c0..64 bg=Background
-r3 c0..1 fg=Foreground bg=Background
-r3 c1..2 bg=Background
-r3 c2..11 fg=Foreground bg=Background bold
-r3 c11..64 bg=Background
-r4 c0..2 fg=Border bg=Background
-r4 c2..54 fg=Foreground bg=Background
-r4 c54..64 bg=Background
-r5 c0..2 fg=Border bg=Background
-r5 c2..64 bg=Background
-r6 c0..2 fg=Border bg=Background
-r6 c2..57 fg=Foreground bg=Background
-r6 c57..64 bg=Background
+r0 c2..37 fg=Foreground bg=Background
+r0 c37..64 bg=Background
+r1 c0..64 bg=Background
+r2 c0..1 fg=Primary bg=Background bold
+r2 c1..2 bg=Background
+r2 c2..54 fg=Foreground bg=Background
+r2 c54..64 bg=Background
+r3 c0..2 fg=Dim bg=Background
+r3 c2..64 bg=Background
+r4 c0..2 fg=Dim bg=Background
+r4 c2..57 fg=Foreground bg=Background
+r4 c57..64 bg=Background
+r5 c0..64 bg=Background
+r6 c0..64 bg=Background
 r7 c0..64 bg=Background
 r8 c0..64 bg=Background
 
 == dark-graphite
-▎ You
-▏ Show every component in the README.
+▎ Show every component in the README.
 
-● Codewhale
-▏ The gallery uses the same components as the library.
+● The gallery uses the same components as the library.
 ▏
 ▏ Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c0..1 fg=Primary bg=Background
+r0 c0..1 fg=Primary bg=Background bold
 r0 c1..2 bg=Background
-r0 c2..5 fg=Primary bg=Background bold
-r0 c5..64 bg=Background
-r1 c0..2 fg=Border bg=Background
-r1 c2..37 fg=Foreground bg=Background
-r1 c37..64 bg=Background
-r2 c0..64 bg=Background
-r3 c0..1 fg=Foreground bg=Background
-r3 c1..2 bg=Background
-r3 c2..11 fg=Foreground bg=Background bold
-r3 c11..64 bg=Background
-r4 c0..2 fg=Border bg=Background
-r4 c2..54 fg=Foreground bg=Background
-r4 c54..64 bg=Background
-r5 c0..2 fg=Border bg=Background
-r5 c2..64 bg=Background
-r6 c0..2 fg=Border bg=Background
-r6 c2..57 fg=Foreground bg=Background
-r6 c57..64 bg=Background
+r0 c2..37 fg=Foreground bg=Background
+r0 c37..64 bg=Background
+r1 c0..64 bg=Background
+r2 c0..1 fg=Primary bg=Background bold
+r2 c1..2 bg=Background
+r2 c2..54 fg=Foreground bg=Background
+r2 c54..64 bg=Background
+r3 c0..2 fg=Dim bg=Background
+r3 c2..64 bg=Background
+r4 c0..2 fg=Dim bg=Background
+r4 c2..57 fg=Foreground bg=Background
+r4 c57..64 bg=Background
+r5 c0..64 bg=Background
+r6 c0..64 bg=Background
 r7 c0..64 bg=Background
 r8 c0..64 bg=Background
 
 == light-truecolor
-▎ You
-▏ Show every component in the README.
+▎ Show every component in the README.
 
-● Codewhale
-▏ The gallery uses the same components as the library.
+● The gallery uses the same components as the library.
 ▏
 ▏ Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c0..1 fg=Primary bg=Background
+r0 c0..1 fg=Primary bg=Background bold
 r0 c1..2 bg=Background
-r0 c2..5 fg=Primary bg=Background bold
-r0 c5..64 bg=Background
-r1 c0..2 fg=Border bg=Background
-r1 c2..37 fg=Foreground bg=Background
-r1 c37..64 bg=Background
-r2 c0..64 bg=Background
-r3 c0..1 fg=Foreground bg=Background
-r3 c1..2 bg=Background
-r3 c2..11 fg=Foreground bg=Background bold
-r3 c11..64 bg=Background
-r4 c0..2 fg=Border bg=Background
-r4 c2..54 fg=Foreground bg=Background
-r4 c54..64 bg=Background
-r5 c0..2 fg=Border bg=Background
-r5 c2..64 bg=Background
-r6 c0..2 fg=Border bg=Background
-r6 c2..57 fg=Foreground bg=Background
-r6 c57..64 bg=Background
+r0 c2..37 fg=Foreground bg=Background
+r0 c37..64 bg=Background
+r1 c0..64 bg=Background
+r2 c0..1 fg=Primary bg=Background bold
+r2 c1..2 bg=Background
+r2 c2..54 fg=Foreground bg=Background
+r2 c54..64 bg=Background
+r3 c0..2 fg=Dim bg=Background
+r3 c2..64 bg=Background
+r4 c0..2 fg=Dim bg=Background
+r4 c2..57 fg=Foreground bg=Background
+r4 c57..64 bg=Background
+r5 c0..64 bg=Background
+r6 c0..64 bg=Background
 r7 c0..64 bg=Background
 r8 c0..64 bg=Background
 
 == dark-256
-▎ You
-▏ Show every component in the README.
+▎ Show every component in the README.
 
-● Codewhale
-▏ The gallery uses the same components as the library.
+● The gallery uses the same components as the library.
 ▏
 ▏ Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c0..1 fg=Primary bg=Background
+r0 c0..1 fg=Primary bg=Background bold
 r0 c1..2 bg=Background
-r0 c2..5 fg=Primary bg=Background bold
-r0 c5..64 bg=Background
-r1 c0..2 fg=Border bg=Background
-r1 c2..37 fg=Foreground bg=Background
-r1 c37..64 bg=Background
-r2 c0..64 bg=Background
-r3 c0..1 fg=Foreground bg=Background
-r3 c1..2 bg=Background
-r3 c2..11 fg=Foreground bg=Background bold
-r3 c11..64 bg=Background
-r4 c0..2 fg=Border bg=Background
-r4 c2..54 fg=Foreground bg=Background
-r4 c54..64 bg=Background
-r5 c0..2 fg=Border bg=Background
-r5 c2..64 bg=Background
-r6 c0..2 fg=Border bg=Background
-r6 c2..57 fg=Foreground bg=Background
-r6 c57..64 bg=Background
+r0 c2..37 fg=Foreground bg=Background
+r0 c37..64 bg=Background
+r1 c0..64 bg=Background
+r2 c0..1 fg=Primary bg=Background bold
+r2 c1..2 bg=Background
+r2 c2..54 fg=Foreground bg=Background
+r2 c54..64 bg=Background
+r3 c0..2 fg=Dim bg=Background
+r3 c2..64 bg=Background
+r4 c0..2 fg=Dim bg=Background
+r4 c2..57 fg=Foreground bg=Background
+r4 c57..64 bg=Background
+r5 c0..64 bg=Background
+r6 c0..64 bg=Background
 r7 c0..64 bg=Background
 r8 c0..64 bg=Background
 
 == light-256
-▎ You
-▏ Show every component in the README.
+▎ Show every component in the README.
 
-● Codewhale
-▏ The gallery uses the same components as the library.
+● The gallery uses the same components as the library.
 ▏
 ▏ Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c0..1 fg=Primary bg=Background|Surface
+r0 c0..1 fg=Primary bg=Background|Surface bold
 r0 c1..2 bg=Background|Surface
-r0 c2..5 fg=Primary bg=Background|Surface bold
-r0 c5..64 bg=Background|Surface
-r1 c0..2 fg=Border bg=Background|Surface
-r1 c2..37 fg=Foreground bg=Background|Surface
-r1 c37..64 bg=Background|Surface
-r2 c0..64 bg=Background|Surface
-r3 c0..1 fg=Foreground bg=Background|Surface
-r3 c1..2 bg=Background|Surface
-r3 c2..11 fg=Foreground bg=Background|Surface bold
-r3 c11..64 bg=Background|Surface
-r4 c0..2 fg=Border bg=Background|Surface
-r4 c2..54 fg=Foreground bg=Background|Surface
-r4 c54..64 bg=Background|Surface
-r5 c0..2 fg=Border bg=Background|Surface
-r5 c2..64 bg=Background|Surface
-r6 c0..2 fg=Border bg=Background|Surface
-r6 c2..57 fg=Foreground bg=Background|Surface
-r6 c57..64 bg=Background|Surface
+r0 c2..37 fg=Foreground bg=Background|Surface
+r0 c37..64 bg=Background|Surface
+r1 c0..64 bg=Background|Surface
+r2 c0..1 fg=Primary bg=Background|Surface bold
+r2 c1..2 bg=Background|Surface
+r2 c2..54 fg=Foreground bg=Background|Surface
+r2 c54..64 bg=Background|Surface
+r3 c0..2 fg=Dim bg=Background|Surface
+r3 c2..64 bg=Background|Surface
+r4 c0..2 fg=Dim bg=Background|Surface
+r4 c2..57 fg=Foreground bg=Background|Surface
+r4 c57..64 bg=Background|Surface
+r5 c0..64 bg=Background|Surface
+r6 c0..64 bg=Background|Surface
 r7 c0..64 bg=Background|Surface
 r8 c0..64 bg=Background|Surface
 
 == ansi-16
-▎ You
-▏ Show every component in the README.
+▎ Show every component in the README.
 
-● Codewhale
-▏ The gallery uses the same components as the library.
+● The gallery uses the same components as the library.
 ▏
 ▏ Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c0..1 fg=Primary
-r0 c2..5 fg=Primary bold
-r1 c0..2 dim
-r3 c2..11 bold
+r0 c0..1 fg=Primary bold
+r2 c0..1 fg=Primary bold
+r3 c0..2 dim
 r4 c0..2 dim
-r5 c0..2 dim
-r6 c0..2 dim
 
 == unknown-ground
-▎ You
-▏ Show every component in the README.
+▎ Show every component in the README.
 
-● Codewhale
-▏ The gallery uses the same components as the library.
+● The gallery uses the same components as the library.
 ▏
 ▏ Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c0..1 fg=Primary
-r0 c2..5 fg=Primary bold
-r1 c0..2 dim
-r3 c2..11 bold
+r0 c0..1 fg=Primary bold
+r2 c0..1 fg=Primary bold
+r3 c0..2 dim
 r4 c0..2 dim
-r5 c0..2 dim
-r6 c0..2 dim
 
 == no-color
-▎ You
-▏ Show every component in the README.
+▎ Show every component in the README.
 
-● Codewhale
-▏ The gallery uses the same components as the library.
+● The gallery uses the same components as the library.
 ▏
 ▏ Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c2..5 bold
-r1 c0..2 dim
-r3 c2..11 bold
+r0 c0..1 bold
+r2 c0..1 bold
+r3 c0..2 dim
 r4 c0..2 dim
-r5 c0..2 dim
-r6 c0..2 dim
 
 == ascii
-| You
 | Show every component in the README.
 
-. Codewhale
-| The gallery uses the same components as the library.
+. The gallery uses the same components as the library.
 |
 | Each preview includes light, dark and ASCII treatments.
 
 
+
+
 ---
-r0 c2..5 bold
-r1 c0..2 dim
-r3 c2..11 bold
+r0 c0..1 bold
+r2 c0..1 bold
+r3 c0..2 dim
 r4 c0..2 dim
-r5 c0..2 dim
-r6 c0..2 dim

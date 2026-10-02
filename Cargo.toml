@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.89"
 license = "MIT"
-description = "Codewhale's terminal component library for ratatui: one design language shared with the Codewhale desktop app and website."
+description = "Reusable Ratatui components from Codewhale: native workbar, composer, views, themes, ocean and motion."
 repository = "https://github.com/Hmbown/codewhale-ratatui"
 keywords = ["ratatui", "tui", "terminal", "components", "codewhale"]
 categories = ["command-line-interface"]
@@ -14,10 +14,12 @@ ratatui = "=0.30.2"
 crossterm = "0.29"
 unicode-width = "0.2"
 unicode-segmentation = "1.12"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 [dev-dependencies]
 insta = "1.48.0"
-serde_json = "1"
+sha2 = "0.10"
 
 [target."cfg(unix)".dependencies]
 libc = "0.2"

@@ -93,7 +93,7 @@ fn workspace(area: Rect, buf: &mut Buffer, theme: &Theme) {
     let tool_top = reply_top.saturating_add(reply_height + 1);
     if main.height >= tool_top.saturating_add(12) {
         ToolCard::new("Inspect", "workspace layout and rendered cells", State::Done).elapsed("12s").output("Wide: conversation + files\nNarrow: conversation, details on demand\nHost facts: preserved").paint(band(main, tool_top, 6), buf, theme);
-        let workbar = workbench::readouts();
+        let workbar = super::workbar::sample(crate::WorkbarPanel::Tasks);
         let height = workbar
             .height(main.width, theme)
             .min(main.height.saturating_sub(tool_top + 12));
@@ -129,7 +129,7 @@ fn review(area: Rect, buf: &mut Buffer, theme: &Theme) {
     let frame = WorkspaceFrame::new("codewhale-ratatui")
         .branch("workspace-polish")
         .mode("Review")
-        .footer("Illustrative review / local evidence is distinct from hosted CI / no publication");
+        .footer("Review changes / Enter inspect / Esc close");
     frame.paint(area, buf, theme);
     let regions = frame.areas(area);
     let main = regions.main;
@@ -140,7 +140,7 @@ fn review(area: Rect, buf: &mut Buffer, theme: &Theme) {
         .gutter(DiffGutter::Both)
         .wrap(DiffWrap::Wrap)
         .paint(band(main, 3, 12), buf, theme);
-    Heading::new("Evidence for this change")
+    Heading::new("Run results")
         .section()
         .paint(band(main, 17, 2), buf, theme);
     receipts().paint(band(main, 20, 7), buf, theme);
@@ -265,7 +265,11 @@ fn fleet(area: Rect, buf: &mut Buffer, theme: &Theme) {
             .focused(true)
             .paint(right, buf, theme);
     }
-    workbench::readouts().paint(band(main, main.height.saturating_sub(5), 5), buf, theme);
+    super::workbar::sample(crate::WorkbarPanel::Fleet).paint(
+        band(main, main.height.saturating_sub(5), 5),
+        buf,
+        theme,
+    );
 }
 pub(crate) fn entries() -> Vec<Entry> {
     vec![

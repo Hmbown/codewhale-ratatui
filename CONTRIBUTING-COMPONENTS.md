@@ -32,7 +32,8 @@ nothing else, so work never collides.
 6. **Names are unique crate-wide.** Everything `pub` in your module is
    re-exported from the crate root, so prefix it: `TextInputWords`, not
    `Words`.
-7. **At most one horizon rule per frame; no `═`; no `...` (use `…`);** ASCII
+7. **At most two native surface hairlines per frame; no `═`; preserve source
+   punctuation (native lists use `...`);** ASCII
    output stays ASCII. `testing::assert_rules` checks all of it.
 
 ## Your files

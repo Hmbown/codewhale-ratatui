@@ -1,6 +1,5 @@
 use codewhale_ratatui::{
-    ContextItem, ContextRibbon, Paint, PaneHeader, ReceiptValue, Workbar, WorkbarItem,
-    WorkspaceFrame,
+    ContextItem, ContextRibbon, Paint, PaneHeader, WorkspaceFrame,
     testing::{Profile, render, text},
 };
 use ratatui::{buffer::Buffer, layout::Rect};
@@ -47,45 +46,6 @@ fn ribbon_keeps_priority_and_reports_folded_context() {
 }
 
 #[test]
-fn workbar_wraps_readouts_preserves_unknowns_and_counts_clipping() {
-    let items = vec![
-        WorkbarItem::new("TODO", ReceiptValue::Count(Some(3))),
-        WorkbarItem::new("PRICE", ReceiptValue::Cost(None)),
-        WorkbarItem::new("PLUGINS", ReceiptValue::Count(Some(4))),
-    ];
-    let workbar = Workbar::new(items);
-    let theme = Profile::DarkTrue.theme();
-    assert_eq!(workbar.height(40, &theme), 8);
-    let shown = text(&render(40, 8, |area, buf| workbar.paint(area, buf, &theme)));
-    assert!(shown.contains("TODO") && shown.contains("PRICE") && shown.contains("PLUGINS"));
-    assert!(shown.contains('—') && !shown.contains("$0.00"));
-    let shown = text(&render(40, 6, |area, buf| workbar.paint(area, buf, &theme)));
-    assert!(shown.contains("1 more in details"), "{shown}");
-    assert!(!shown.contains("PLUGINS"));
-}
-
-#[test]
-fn workbar_mouse_geometry_matches_visible_complete_readouts() {
-    let workbar = Workbar::new(
-        (0..5)
-            .map(|_| WorkbarItem::new("Metric", ReceiptValue::Count(None)))
-            .collect(),
-    );
-    let area = Rect::new(7, 5, 40, 12);
-    assert_eq!(workbar.item_at(area, 8, 7), Some(0));
-    assert_eq!(workbar.item_at(area, 35, 7), Some(1));
-    assert_eq!(workbar.item_at(area, 8, 10), Some(2));
-    assert_eq!(workbar.item_at(area, 8, 5), None);
-    assert_eq!(workbar.item_at(area, 8, 16), None);
-    let clipped = Rect { height: 6, ..area };
-    assert_eq!(workbar.item_at(clipped, 8, 10), None);
-    let requested = Rect::new(0, 0, 40, 8);
-    let buffer = Rect::new(20, 0, 20, 8);
-    let clipped = requested.intersection(buffer);
-    assert_eq!(workbar.item_at(clipped, 21, 2), Some(0));
-}
-
-#[test]
 fn workbench_text_is_sanitized_and_all_surfaces_stay_in_their_bounds() {
     for profile in Profile::ALL {
         let theme = profile.theme();
@@ -100,14 +60,6 @@ fn workbench_text_is_sanitized_and_all_surfaces_stay_in_their_bounds() {
                 "repo",
                 "cafe\u{301}鲸\u{202e}",
             )])),
-            Box::new(
-                Workbar::new(vec![
-                    WorkbarItem::new("reef\u{202e}", ReceiptValue::text("鲸\u{1b}"))
-                        .detail("cafe\u{301}"),
-                ])
-                .selected(0)
-                .focused(true),
-            ),
         ];
         for widget in &widgets {
             for buffer_area in [
