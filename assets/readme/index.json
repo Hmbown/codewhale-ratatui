@@ -1,5 +1,31 @@
 {
   "entries": [
+    "workspace-scene",
+    "review-scene",
+    "fleet-scene",
+    "workspace-scene-narrow",
+    "workbench-frame",
+    "pane-header",
+    "context-ribbon",
+    "context-ribbon-narrow",
+    "workbar",
+    "workbar-narrow",
+    "workbar-unreported",
+    "attention-queue",
+    "attention-focused",
+    "attention-narrow",
+    "attention-empty",
+    "artifact",
+    "artifact-shelf",
+    "artifact-narrow",
+    "artifact-unknown",
+    "artifact-empty",
+    "fish-school",
+    "jellyfish",
+    "bubble-field",
+    "habitat-scene",
+    "habitat-ascii",
+    "habitat-reduced",
     "key-hints",
     "keymap-hints",
     "status-marks",
@@ -84,7 +110,62 @@
   ],
   "boards": [
     {
-      "file": "components.dark-truecolor.svg",
+      "file": "scenes.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "scenes",
+      "entries": [
+        "workspace-scene"
+      ]
+    },
+    {
+      "file": "scenes.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "scenes",
+      "entries": [
+        "review-scene"
+      ]
+    },
+    {
+      "file": "scenes.dark-truecolor-3.svg",
+      "profile": "dark-truecolor",
+      "group": "scenes",
+      "entries": [
+        "fleet-scene"
+      ]
+    },
+    {
+      "file": "scenes.dark-truecolor-4.svg",
+      "profile": "dark-truecolor",
+      "group": "scenes",
+      "entries": [
+        "workspace-scene-narrow"
+      ]
+    },
+    {
+      "file": "scenes.dark-truecolor-5.svg",
+      "profile": "dark-truecolor",
+      "group": "scenes",
+      "entries": [
+        "habitat-scene"
+      ]
+    },
+    {
+      "file": "components.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "components",
+      "entries": [
+        "workbench-frame",
+        "pane-header",
+        "context-ribbon",
+        "context-ribbon-narrow",
+        "attention-queue",
+        "attention-focused",
+        "attention-narrow",
+        "attention-empty"
+      ]
+    },
+    {
+      "file": "components.dark-truecolor-2.svg",
       "profile": "dark-truecolor",
       "group": "components",
       "entries": [
@@ -93,6 +174,16 @@
         "tool-card",
         "agent-card",
         "fleet"
+      ]
+    },
+    {
+      "file": "workbar.dark-truecolor.svg",
+      "profile": "dark-truecolor",
+      "group": "workbar",
+      "entries": [
+        "workbar",
+        "workbar-narrow",
+        "workbar-unreported"
       ]
     },
     {
@@ -122,9 +213,7 @@
         "text-input-empty",
         "text-input-typed",
         "text-input-unfocused",
-        "text-input-invalid",
-        "text-input-disabled",
-        "text-input-secret"
+        "text-input-invalid"
       ]
     },
     {
@@ -132,6 +221,8 @@
       "profile": "dark-truecolor",
       "group": "input",
       "entries": [
+        "text-input-disabled",
+        "text-input-secret",
         "text-input-long",
         "text-input-wide-text",
         "form",
@@ -170,12 +261,15 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
+        "artifact",
+        "artifact-shelf",
+        "artifact-narrow",
+        "artifact-unknown",
+        "artifact-empty",
         "receipt-row",
         "receipt-table",
         "receipt-table-compact",
-        "receipt-table-minimal",
-        "receipt-table-clipped",
-        "diff"
+        "receipt-table-minimal"
       ]
     },
     {
@@ -183,12 +277,10 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
+        "receipt-table-clipped",
+        "diff",
         "diff-wrapped",
-        "diff-no-numbers",
-        "diff-highlighted",
-        "workflow-tree",
-        "workflow-tree-selected",
-        "workflow-tree-clipped"
+        "diff-no-numbers"
       ]
     },
     {
@@ -196,11 +288,13 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
+        "diff-highlighted",
+        "workflow-tree",
+        "workflow-tree-selected",
+        "workflow-tree-clipped",
         "workflow-tree-long",
         "count-bars",
-        "approval-command",
-        "approval-outside",
-        "approval-patch"
+        "approval-command"
       ]
     },
     {
@@ -208,8 +302,17 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
+        "approval-outside",
+        "approval-patch",
         "approval-elevation",
-        "approval-clipped",
+        "approval-clipped"
+      ]
+    },
+    {
+      "file": "display.dark-truecolor-5.svg",
+      "profile": "dark-truecolor",
+      "group": "display",
+      "entries": [
         "approval-spoofed",
         "review-verdicts",
         "review-aggregate"
@@ -230,6 +333,25 @@
         "motion-mid-flight",
         "motion-settled",
         "motion-reduced"
+      ]
+    },
+    {
+      "file": "habitat.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "habitat",
+      "entries": [
+        "fish-school",
+        "jellyfish",
+        "bubble-field",
+        "habitat-ascii"
+      ]
+    },
+    {
+      "file": "habitat.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "habitat",
+      "entries": [
+        "habitat-reduced"
       ]
     },
     {
@@ -256,7 +378,62 @@
       ]
     },
     {
-      "file": "components.light-truecolor.svg",
+      "file": "scenes.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "workspace-scene"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "review-scene"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-3.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "fleet-scene"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-4.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "workspace-scene-narrow"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-5.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "habitat-scene"
+      ]
+    },
+    {
+      "file": "components.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "components",
+      "entries": [
+        "workbench-frame",
+        "pane-header",
+        "context-ribbon",
+        "context-ribbon-narrow",
+        "attention-queue",
+        "attention-focused",
+        "attention-narrow",
+        "attention-empty"
+      ]
+    },
+    {
+      "file": "components.light-truecolor-2.svg",
       "profile": "light-truecolor",
       "group": "components",
       "entries": [
@@ -265,6 +442,16 @@
         "tool-card",
         "agent-card",
         "fleet"
+      ]
+    },
+    {
+      "file": "workbar.light-truecolor.svg",
+      "profile": "light-truecolor",
+      "group": "workbar",
+      "entries": [
+        "workbar",
+        "workbar-narrow",
+        "workbar-unreported"
       ]
     },
     {
@@ -294,9 +481,7 @@
         "text-input-empty",
         "text-input-typed",
         "text-input-unfocused",
-        "text-input-invalid",
-        "text-input-disabled",
-        "text-input-secret"
+        "text-input-invalid"
       ]
     },
     {
@@ -304,6 +489,8 @@
       "profile": "light-truecolor",
       "group": "input",
       "entries": [
+        "text-input-disabled",
+        "text-input-secret",
         "text-input-long",
         "text-input-wide-text",
         "form",
@@ -342,12 +529,15 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
+        "artifact",
+        "artifact-shelf",
+        "artifact-narrow",
+        "artifact-unknown",
+        "artifact-empty",
         "receipt-row",
         "receipt-table",
         "receipt-table-compact",
-        "receipt-table-minimal",
-        "receipt-table-clipped",
-        "diff"
+        "receipt-table-minimal"
       ]
     },
     {
@@ -355,12 +545,10 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
+        "receipt-table-clipped",
+        "diff",
         "diff-wrapped",
-        "diff-no-numbers",
-        "diff-highlighted",
-        "workflow-tree",
-        "workflow-tree-selected",
-        "workflow-tree-clipped"
+        "diff-no-numbers"
       ]
     },
     {
@@ -368,11 +556,13 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
+        "diff-highlighted",
+        "workflow-tree",
+        "workflow-tree-selected",
+        "workflow-tree-clipped",
         "workflow-tree-long",
         "count-bars",
-        "approval-command",
-        "approval-outside",
-        "approval-patch"
+        "approval-command"
       ]
     },
     {
@@ -380,8 +570,17 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
+        "approval-outside",
+        "approval-patch",
         "approval-elevation",
-        "approval-clipped",
+        "approval-clipped"
+      ]
+    },
+    {
+      "file": "display.light-truecolor-5.svg",
+      "profile": "light-truecolor",
+      "group": "display",
+      "entries": [
         "approval-spoofed",
         "review-verdicts",
         "review-aggregate"
@@ -402,6 +601,25 @@
         "motion-mid-flight",
         "motion-settled",
         "motion-reduced"
+      ]
+    },
+    {
+      "file": "habitat.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "habitat",
+      "entries": [
+        "fish-school",
+        "jellyfish",
+        "bubble-field",
+        "habitat-ascii"
+      ]
+    },
+    {
+      "file": "habitat.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "habitat",
+      "entries": [
+        "habitat-reduced"
       ]
     },
     {
