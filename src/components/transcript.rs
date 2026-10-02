@@ -1094,6 +1094,14 @@ impl<'a> TranscriptViewport<'a> {
 }
 
 impl TranscriptViewportPlan {
+    /// The exact display-safe, pinned/offset rows used by this plan's content
+    /// painter. Hosts may derive frame-only semantic masks from these facts
+    /// without repeating the viewport projection or touching raw copy source.
+    #[must_use]
+    pub fn display_rows(&self) -> &[Line<'static>] {
+        &self.rows
+    }
+
     /// Visible hyperlink cells, excluding scroll chrome and the opaque jump button.
     /// Hosts retain the corresponding target outside these rectangles.
     pub fn link_rects(&self, row: usize, start: usize, end: usize) -> Vec<Rect> {

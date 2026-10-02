@@ -8,7 +8,8 @@ expression: dump(&entry)
 ---
 r0 c0..60 fg=Border bg=Surface
 r1 c0..1 fg=Primary bg=Surface
-r1 c1..24 fg=BorderStrong bg=Surface
+r1 c1..2 bg=Surface
+r1 c2..24 fg=BorderStrong bg=Surface
 r1 c24..60 bg=Surface
 
 == dark-graphite
@@ -17,7 +18,8 @@ r1 c24..60 bg=Surface
 ---
 r0 c0..60 fg=Border bg=Surface
 r1 c0..1 fg=Primary bg=Surface
-r1 c1..24 fg=BorderStrong bg=Surface
+r1 c1..2 bg=Surface
+r1 c2..24 fg=BorderStrong bg=Surface
 r1 c24..60 bg=Surface
 
 == light-truecolor
@@ -26,7 +28,7 @@ r1 c24..60 bg=Surface
 ---
 r0 c0..60 fg=Border
 r1 c0..1 fg=Primary
-r1 c1..24 fg=BorderStrong
+r1 c2..24 fg=BorderStrong
 
 == dark-256
 ────────────────────────────────────────────────────────────
@@ -34,7 +36,8 @@ r1 c1..24 fg=BorderStrong
 ---
 r0 c0..60 fg=Border bg=Surface|Hover|DiffRemovedTint
 r1 c0..1 fg=Primary bg=Surface|Hover|DiffRemovedTint
-r1 c1..24 fg=BorderStrong bg=Surface|Hover|DiffRemovedTint
+r1 c1..2 bg=Surface|Hover|DiffRemovedTint
+r1 c2..24 fg=BorderStrong bg=Surface|Hover|DiffRemovedTint
 r1 c24..60 bg=Surface|Hover|DiffRemovedTint
 
 == light-256
@@ -43,34 +46,34 @@ r1 c24..60 bg=Surface|Hover|DiffRemovedTint
 ---
 r0 c0..60 fg=Border
 r1 c0..1 fg=Primary
-r1 c1..24 fg=BorderStrong
+r1 c2..24 fg=BorderStrong
 
 == ansi-16
 ────────────────────────────────────────────────────────────
 ❯ Write a task or use /.
 ---
 r0 c0..60 dim
-r1 c0..1 fg=Primary dim
-r1 c1..24 dim
+r1 c0..1 fg=Primary
+r1 c2..24 dim
 
 == unknown-ground
 ────────────────────────────────────────────────────────────
 ❯ Write a task or use /.
 ---
 r0 c0..60 dim
-r1 c0..1 fg=Primary dim
-r1 c1..24 dim
+r1 c0..1 fg=Primary
+r1 c2..24 dim
 
 == no-color
 ────────────────────────────────────────────────────────────
 ❯ Write a task or use /.
 ---
 r0 c0..60 dim
-r1 c0..24 dim
+r1 c2..24 dim
 
 == ascii
 ------------------------------------------------------------
 > Write a task or use /.
 ---
 r0 c0..60 dim
-r1 c0..24 dim
+r1 c2..24 dim

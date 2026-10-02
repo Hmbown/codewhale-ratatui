@@ -99,7 +99,8 @@ r19 c0..90 fg=Primary bg=Surface
 r19 c90..91 fg=Border bg=Sidebar
 r19 c91..120 fg=Foreground bg=Sidebar
 r20 c0..2 fg=Primary bg=Surface
-r20 c2..28 fg=Foreground bg=Surface
+r20 c2..3 bg=Surface
+r20 c3..28 fg=Foreground bg=Surface
 r20 c28..85 bg=Surface
 r20 c85..88 fg=Primary bg=Surface bold
 r20 c88..89 bg=Surface
@@ -240,7 +241,8 @@ r19 c0..90 fg=Primary bg=Surface
 r19 c90..91 fg=Border bg=Sidebar
 r19 c91..120 fg=Foreground bg=Sidebar
 r20 c0..2 fg=Primary bg=Surface
-r20 c2..28 fg=Foreground bg=Surface
+r20 c2..3 bg=Surface
+r20 c3..28 fg=Foreground bg=Surface
 r20 c28..85 bg=Surface
 r20 c85..88 fg=Primary bg=Surface bold
 r20 c88..89 bg=Surface
@@ -362,7 +364,7 @@ r19 c0..90 fg=Primary
 r19 c90..91 fg=Border
 r19 c91..120 fg=Foreground
 r20 c0..2 fg=Primary
-r20 c2..28 fg=Foreground
+r20 c3..28 fg=Foreground
 r20 c85..88 fg=Primary bold
 r20 c89..90 fg=Primary
 r20 c90..91 fg=Border
@@ -495,7 +497,8 @@ r19 c0..90 fg=Primary bg=Surface|Hover|DiffRemovedTint
 r19 c90..91 fg=Border bg=Sidebar
 r19 c91..120 fg=Foreground bg=Sidebar
 r20 c0..2 fg=Primary bg=Surface|Hover|DiffRemovedTint
-r20 c2..28 fg=Foreground bg=Surface|Hover|DiffRemovedTint
+r20 c2..3 bg=Surface|Hover|DiffRemovedTint
+r20 c3..28 fg=Foreground bg=Surface|Hover|DiffRemovedTint
 r20 c28..85 bg=Surface|Hover|DiffRemovedTint
 r20 c85..88 fg=Primary bg=Surface|Hover|DiffRemovedTint bold
 r20 c88..89 bg=Surface|Hover|DiffRemovedTint
@@ -617,7 +620,7 @@ r19 c0..90 fg=Primary
 r19 c90..91 fg=Border
 r19 c91..120 fg=Foreground
 r20 c0..2 fg=Primary
-r20 c2..28 fg=Foreground
+r20 c3..28 fg=Foreground
 r20 c85..88 fg=Primary bold
 r20 c89..90 fg=Primary
 r20 c90..91 fg=Border

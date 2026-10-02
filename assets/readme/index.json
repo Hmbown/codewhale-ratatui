@@ -191,6 +191,7 @@
     "ocean-phases",
     "ocean-context",
     "ocean-reduced",
+    "ocean-native-guarded",
     "pending-queued",
     "pending-steering",
     "pending-paused",
@@ -611,6 +612,14 @@
       "group": "water",
       "entries": [
         "ocean-reduced"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-10.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-native-guarded"
       ]
     },
     {
@@ -1276,6 +1285,14 @@
       "group": "water",
       "entries": [
         "ocean-reduced"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-10.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-native-guarded"
       ]
     },
     {

@@ -3,12 +3,19 @@
 
 use std::time::Duration;
 
-use ratatui::{buffer::Buffer, layout::Rect};
+use ratatui::{
+    buffer::Buffer,
+    layout::Rect,
+    style::Modifier,
+    text::{Line, Span},
+    widgets::{Paragraph, Widget},
+};
+use unicode_width::UnicodeWidthStr;
 
 use super::Entry;
 use crate::{
     Depth, Heading, Message, MotionMode, Paint, Panel, Role, State, StatusMark, Theme,
-    ocean::{OceanColumn, OceanPhase},
+    ocean::{OceanCausticFacts, OceanColumn, OceanPaintFacts, OceanPhase, ocean_semantic_surfaces},
 };
 
 fn band(area: Rect, top: u16, height: u16) -> Rect {
@@ -117,6 +124,61 @@ fn context(area: Rect, buf: &mut Buffer, theme: &Theme) {
     }
 }
 
+// This native path supplies presentation facts from a real rendered pane.
+// It keeps raw ink/style facts and semantic padding while sharing cached rows
+// between the base water and caustic passes. No terminal evidence is invented.
+fn native_guarded(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let area = area.intersection(buf.area);
+    let base = theme.bg(Role::Background);
+    let mut rows = vec![Line::from(""); 4];
+    rows.push(Line::from(vec![Span::styled(
+        "Native / guarded ocean",
+        theme.fg(Role::Foreground),
+    )]));
+    rows.push(Line::from(vec![Span::styled(
+        "[Selected] source keeps its own ground",
+        theme.bg(Role::Selected).patch(theme.fg(Role::Foreground)),
+    )]));
+    rows.push(Line::styled("", base));
+    rows.push(Line::from(vec![Span::styled(
+        "Explicit blank padding is semantic",
+        base.patch(theme.fg(Role::Foreground)),
+    )]));
+    rows.push(Line::from(vec![Span::styled(
+        "Reversed surface",
+        theme.fg(Role::Foreground).add_modifier(Modifier::REVERSED),
+    )]));
+    rows.push(Line::styled(
+        "Caller phase: Working / fixture",
+        theme.fg(Role::Dim),
+    ));
+    Paragraph::new(rows.clone()).render(area, buf);
+    let column = OceanColumn::new(Duration::from_millis(22_500), MotionMode::Full)
+        .phase(OceanPhase::Working)
+        .viewport(area);
+    let samples: Vec<_> = (area.y..area.bottom())
+        .map_while(|y| column.color_at_y(y, area, theme))
+        .collect();
+    let protected = ocean_semantic_surfaces(&rows, area, str::width);
+    let paint = OceanPaintFacts {
+        ground: base.bg.unwrap_or(ratatui::style::Color::Reset),
+        sample_top: area.y,
+        samples: &samples,
+        protected: &protected,
+    };
+    column.apply_native(area, buf, theme, &paint, |cell, _| cell.fg);
+    column.apply_caustics(
+        area,
+        buf,
+        theme,
+        &OceanCausticFacts {
+            paint,
+            elapsed: Duration::from_millis(480),
+            band_rows: 4,
+        },
+    );
+}
+
 pub(crate) fn entries() -> Vec<Entry> {
     vec![
         Entry {
@@ -142,6 +204,12 @@ pub(crate) fn entries() -> Vec<Entry> {
             width: 80,
             height: 20,
             draw: reduced,
+        },
+        Entry {
+            name: "ocean-native-guarded",
+            width: 80,
+            height: 16,
+            draw: native_guarded,
         },
     ]
 }

@@ -400,6 +400,19 @@ fn truncate_columns(value: &str, width: usize) -> String {
     }
     result
 }
+// The prompt inset is raw chrome, independent of placeholder/input ink.
+// Fold line style into its original spans before adding unstyled padding.
+fn prompt_inset_line(mut line: Line<'static>, inset: u16) -> Line<'static> {
+    if inset > 0 {
+        for span in &mut line.spans {
+            span.style = line.style.patch(span.style);
+        }
+        line.style = Style::default();
+        line.spans.insert(0, Span::raw("  "));
+    }
+    line
+}
+
 impl NativeComposerFrame<'_> {
     pub fn desired_height(&self, width: u16, available: u16) -> u16 {
         let panel = native_composer_geometry(
@@ -443,18 +456,13 @@ impl NativeComposerFrame<'_> {
         let mut lines = vec![Line::from(""); padding];
         let inset = geometry.text.x.saturating_sub(geometry.inner.x);
         if self.text.is_empty() {
-            let mut line = safe_line(&self.placeholder);
-            if inset > 0 {
-                line.spans.insert(0, Span::raw("  "))
-            }
-            lines.push(line)
+            lines.push(prompt_inset_line(safe_line(&self.placeholder), inset))
         } else {
             for (start, value) in &source.visible {
-                let mut line = selected_line(value, *start, self.selection, self.styles);
-                if inset > 0 {
-                    line.spans.insert(0, Span::raw("  "))
-                }
-                lines.push(line)
+                lines.push(prompt_inset_line(
+                    selected_line(value, *start, self.selection, self.styles),
+                    inset,
+                ))
             }
         }
         let mut menu_rects = Vec::new();
