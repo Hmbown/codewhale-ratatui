@@ -11,13 +11,14 @@ use std::borrow::Cow;
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
-    style::Modifier,
+    style::{Modifier, Style},
     text::{Line, Span},
+    widgets::{Paragraph, Widget},
 };
 
-use crate::{Paint, Role, Theme, glyphs, text};
+use unicode_segmentation::UnicodeSegmentation;
 
-use super::workbench::row;
+use crate::{Paint, Role, Theme, glyphs, text};
 
 /// What the host reports about one pending item. The word and the mark are
 /// the only claims; the kit never moves an item between states.
@@ -319,9 +320,522 @@ impl<'a> ContextPreviewItem<'a> {
     }
 }
 
+#[derive(Clone)]
 struct PaintedRow {
     line: Line<'static>,
     selected: bool,
+}
+
+// One geometry and paint authority for the generic list and native card.
+struct PendingPlan {
+    width: u16,
+    max_rows: u16,
+    rows: Vec<PaintedRow>,
+    one_row: Option<PaintedRow>,
+    tail: Option<PendingTail>,
+}
+
+struct PendingTail {
+    hint: String,
+    omitted: String,
+    hint_style: Style,
+    omitted_style: Style,
+}
+
+impl PendingPlan {
+    fn new(width: u16, max_rows: u16) -> Self {
+        Self {
+            width,
+            max_rows,
+            rows: Vec::new(),
+            one_row: None,
+            tail: None,
+        }
+    }
+    fn push(&mut self, line: Line<'static>) {
+        self.rows.push(PaintedRow {
+            line,
+            selected: false,
+        });
+    }
+    fn height(&self) -> u16 {
+        if self.width < 4 {
+            return 0;
+        }
+        u16::try_from(
+            self.rows
+                .len()
+                .saturating_add(usize::from(self.tail.is_some())),
+        )
+        .unwrap_or(u16::MAX)
+        .min(self.max_rows)
+    }
+    fn shown(&self, height: u16) -> Vec<PaintedRow> {
+        let height = height.min(self.max_rows);
+        if self.width < 4 || height == 0 || self.rows.is_empty() {
+            return Vec::new();
+        }
+        if height == 1
+            && let Some(row) = &self.one_row
+        {
+            return vec![row.clone()];
+        }
+        let keep = usize::from(height).saturating_sub(usize::from(self.tail.is_some()));
+        let mut out: Vec<_> = self.rows.iter().take(keep).cloned().collect();
+        if let Some(tail) = &self.tail {
+            let hidden = self.rows.len().saturating_sub(keep);
+            let mut spans = Vec::new();
+            if hidden > 0 {
+                spans.push(Span::styled(
+                    format!("+{hidden} {}  ", tail.omitted),
+                    tail.omitted_style,
+                ));
+            }
+            spans.push(Span::styled(tail.hint.clone(), tail.hint_style));
+            out.push(PaintedRow {
+                line: Line::from(spans),
+                selected: false,
+            });
+        }
+        out
+    }
+    fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        if area.is_empty() {
+            return;
+        }
+        let shown = self.shown(area.height);
+        for (index, painted) in shown.iter().enumerate() {
+            let rect = Rect::new(
+                area.x,
+                area.y
+                    .saturating_add(u16::try_from(index).unwrap_or(u16::MAX)),
+                area.width,
+                1,
+            );
+            if painted.selected {
+                buf.set_style(rect, theme.bg(Role::Selected));
+            }
+        }
+        // Keep native Ratatui glyph painting, including caller-owned styles
+        // on wide-character continuation cells, in one shared paint path.
+        Paragraph::new(shown.into_iter().map(|row| row.line).collect::<Vec<_>>()).render(area, buf);
+    }
+}
+
+/// Localized copy for the native composer preview. Templates use `{count}`
+/// and `{number}`; key labels are resolved by the host before being supplied.
+#[derive(Clone, Debug)]
+pub struct PendingCardWords<'a> {
+    pub context_header: Cow<'a, str>,
+    pub inputs_header: Cow<'a, str>,
+    pub sending_prefix: Cow<'a, str>,
+    pub editing_prefix: Cow<'a, str>,
+    pub editing_restore: Cow<'a, str>,
+    pub queued_prefix: Cow<'a, str>,
+    pub queued_one_prefix: Cow<'a, str>,
+    pub queued_many_prefix: Cow<'a, str>,
+    pub queued_controls: Cow<'a, str>,
+    pub compact_controls: Cow<'a, str>,
+    pub removable: Cow<'a, str>,
+    pub selected_remove: Cow<'a, str>,
+}
+
+impl Default for PendingCardWords<'_> {
+    fn default() -> Self {
+        Self {
+            context_header: "Context for next send".into(),
+            inputs_header: "Pending inputs".into(),
+            sending_prefix: "Sending into this turn: ".into(),
+            editing_prefix: "Editing follow-up: ".into(),
+            editing_restore: "Esc restores the queued follow-up".into(),
+            queued_prefix: "Queued follow-up #{number}: ".into(),
+            queued_one_prefix: "Queued #1: ".into(),
+            queued_many_prefix: "Queued {count}; next: ".into(),
+            queued_controls: "Enter send now · ↑ edit".into(),
+            compact_controls: "Enter send now · ↑ edit · /queue drop 1".into(),
+            removable: "removable".into(),
+            selected_remove: "Backspace/Delete removes".into(),
+        }
+    }
+}
+
+/// Inclusion, removability and keyboard selection are independent host facts.
+/// None of them advances a queue or claims delivery.
+#[derive(Clone, Debug)]
+pub struct PendingCardContext<'a> {
+    pub kind: Cow<'a, str>,
+    pub label: Cow<'a, str>,
+    pub detail: Option<Cow<'a, str>>,
+    pub included: bool,
+    pub removable: bool,
+    pub selected: bool,
+}
+
+/// The native card's five concrete style slots. Defaults come from `Theme`;
+/// a host retaining its palette grammar may provide these exact styles.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct PendingCardStyles {
+    pub input: Style,
+    pub warning: Style,
+    pub context_muted: Style,
+    pub context_label: Style,
+    pub selected: Style,
+}
+
+impl PendingCardStyles {
+    #[must_use]
+    pub fn for_theme(theme: &Theme) -> Self {
+        Self {
+            input: theme.fg(Role::Dim).add_modifier(Modifier::DIM),
+            warning: theme.fg(Role::Attention),
+            context_muted: theme.fg(Role::Muted),
+            context_label: theme.fg(Role::Foreground),
+            selected: theme.fg(Role::Foreground).patch(theme.bg(Role::Selected)),
+        }
+    }
+}
+
+/// Native pending input above a composer, over caller-owned facts and copy.
+/// The same measured row plan as `PendingInputPreview` owns height, clipping,
+/// the one-row action fallback and painting. There is no queue or request state.
+#[derive(Clone, Debug)]
+pub struct PendingCard<'a> {
+    pub context: Vec<PendingCardContext<'a>>,
+    pub sending: Vec<Cow<'a, str>>,
+    pub queued: Vec<Cow<'a, str>>,
+    pub editing: Option<Cow<'a, str>>,
+    /// Already-localized notices that precede context and input, including
+    /// hidden child requests. A notice always outranks a queue action fallback.
+    pub priority_rows: Vec<Cow<'a, str>>,
+    pub words: PendingCardWords<'a>,
+    pub styles: Option<PendingCardStyles>,
+}
+
+impl<'a> PendingCard<'a> {
+    #[must_use]
+    pub fn new(words: PendingCardWords<'a>) -> Self {
+        Self {
+            context: Vec::new(),
+            sending: Vec::new(),
+            queued: Vec::new(),
+            editing: None,
+            priority_rows: Vec::new(),
+            words,
+            styles: None,
+        }
+    }
+
+    fn plan(&self, width: u16, theme: &Theme) -> PendingPlan {
+        let mut plan = PendingPlan::new(width, u16::MAX);
+        if width < 4 {
+            return plan;
+        }
+        let styles = self
+            .styles
+            .unwrap_or_else(|| PendingCardStyles::for_theme(theme));
+        for notice in &self.priority_rows {
+            plan.push(Line::from(Span::styled(
+                card_clip(&card_safe(notice), usize::from(width), theme.ascii()),
+                styles.warning,
+            )));
+        }
+        let queued_only = self.context.is_empty()
+            && self.sending.is_empty()
+            && self.editing.is_none()
+            && !self.queued.is_empty();
+        if queued_only {
+            let prefix = if self.queued.len() == 1 {
+                card_copy(&self.words.queued_one_prefix, theme)
+            } else {
+                card_copy(&self.words.queued_many_prefix, theme)
+                    .replace("{count}", &self.queued.len().to_string())
+            };
+            let next = card_safe(&self.queued[0].replace('\n', " "));
+            plan.push(Line::from(Span::styled(
+                card_clip(
+                    &format!("{prefix}{next}"),
+                    usize::from(width),
+                    theme.ascii(),
+                ),
+                styles.input.add_modifier(Modifier::ITALIC),
+            )));
+            let controls = Line::from(Span::styled(
+                card_clip(
+                    &card_copy(&self.words.compact_controls, theme),
+                    usize::from(width),
+                    theme.ascii(),
+                ),
+                styles.input,
+            ));
+            if self.priority_rows.is_empty() {
+                plan.one_row = Some(PaintedRow {
+                    line: controls.clone(),
+                    selected: false,
+                });
+            }
+            plan.push(controls);
+            return plan;
+        }
+        if !self.context.is_empty() {
+            plan.push(card_header(&self.words.context_header, theme));
+            for item in &self.context {
+                let prefix_style = if item.selected {
+                    styles.selected.add_modifier(Modifier::BOLD)
+                } else if item.included {
+                    styles.context_muted
+                } else {
+                    styles.warning
+                };
+                let body_style = if item.selected {
+                    styles.selected
+                } else if item.included {
+                    styles.context_label
+                } else {
+                    styles.context_muted
+                };
+                let mut body = format!("[{}] {}", card_safe(&item.kind), card_safe(&item.label));
+                let separator = if theme.ascii() { " . " } else { " · " };
+                if let Some(detail) = item
+                    .detail
+                    .as_deref()
+                    .filter(|value| !value.trim().is_empty())
+                {
+                    body.push_str(separator);
+                    body.push_str(&card_safe(detail));
+                }
+                let action = if item.selected {
+                    Some(&self.words.selected_remove)
+                } else if item.removable {
+                    Some(&self.words.removable)
+                } else {
+                    None
+                };
+                if let Some(action) = action {
+                    body.push_str(separator);
+                    body.push_str(&card_copy(action, theme));
+                }
+                for (index, segment) in
+                    card_wrap(&body, usize::from(width.saturating_sub(4).max(1)))
+                        .into_iter()
+                        .enumerate()
+                {
+                    let prefix = if index > 0 {
+                        "    "
+                    } else if item.selected {
+                        if theme.ascii() { "  > " } else { "  ▸ " }
+                    } else if theme.ascii() {
+                        "  + "
+                    } else {
+                        "  ↳ "
+                    };
+                    plan.push(Line::from(vec![
+                        Span::styled(prefix, prefix_style),
+                        Span::styled(segment, body_style),
+                    ]));
+                }
+            }
+        }
+        let has_inputs =
+            !self.sending.is_empty() || !self.queued.is_empty() || self.editing.is_some();
+        if has_inputs {
+            if !self.context.is_empty() {
+                plan.push(Line::from(""));
+            }
+            plan.push(card_header(&self.words.inputs_header, theme));
+            for value in &self.sending {
+                card_item(
+                    &mut plan,
+                    value,
+                    &card_copy(&self.words.sending_prefix, theme),
+                    styles.input,
+                    theme,
+                );
+            }
+            if let Some(value) = &self.editing {
+                card_item(
+                    &mut plan,
+                    value,
+                    &card_copy(&self.words.editing_prefix, theme),
+                    styles.input.add_modifier(Modifier::ITALIC),
+                    theme,
+                );
+                plan.push(Line::from(Span::styled(
+                    card_copy(&self.words.editing_restore, theme),
+                    styles.input,
+                )));
+            }
+            for (index, value) in self.queued.iter().enumerate() {
+                let prefix = card_copy(&self.words.queued_prefix, theme)
+                    .replace("{number}", &(index + 1).to_string());
+                card_item(
+                    &mut plan,
+                    value,
+                    &prefix,
+                    styles.input.add_modifier(Modifier::ITALIC),
+                    theme,
+                );
+            }
+            if !self.queued.is_empty() {
+                plan.push(Line::from(Span::styled(
+                    card_copy(&self.words.queued_controls, theme),
+                    styles.input,
+                )));
+            }
+        }
+        plan
+    }
+
+    #[must_use]
+    pub fn height(&self, width: u16, theme: &Theme) -> u16 {
+        self.plan(width, theme).height()
+    }
+}
+
+impl Paint for PendingCard<'_> {
+    fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
+        self.plan(area.width, theme).paint(area, buf, theme);
+    }
+    fn height(&self, width: u16, theme: &Theme) -> u16 {
+        self.plan(width, theme).height()
+    }
+}
+
+fn card_safe(value: &str) -> String {
+    // Newlines are handled by card_item. Sanitize once before both measuring
+    // and painting; invisible control/bidi bytes do not create phantom rows.
+    text::display_safe(value).into_owned()
+}
+
+fn card_copy(value: &str, theme: &Theme) -> String {
+    let value = card_safe(value);
+    if !theme.ascii() {
+        return value;
+    }
+    value
+        .chars()
+        .map(|c| {
+            glyphs::ascii_fallback(c.encode_utf8(&mut [0; 4]))
+                .map_or_else(|| c.to_string(), str::to_owned)
+        })
+        .collect()
+}
+
+fn card_header(value: &str, theme: &Theme) -> Line<'static> {
+    Line::from(format!(
+        "{} {}",
+        glyphs::pick("•", theme.ascii()),
+        card_copy(value, theme)
+    ))
+}
+
+fn card_clip(value: &str, width: usize, ascii: bool) -> String {
+    if text::width(value) <= width {
+        return value.to_owned();
+    }
+    let ellipsis = if ascii && width >= 4 {
+        "..."
+    } else if ascii {
+        "."
+    } else {
+        "…"
+    };
+    let budget = width.saturating_sub(text::width(ellipsis));
+    let mut out = String::new();
+    let mut cells = 0;
+    for g in value.graphemes(true) {
+        let next = text::width(g);
+        if cells + next > budget {
+            break;
+        }
+        out.push_str(g);
+        cells += next;
+    }
+    if width > 0 {
+        out.push_str(ellipsis);
+    }
+    out
+}
+
+fn card_item(plan: &mut PendingPlan, value: &str, prefix: &str, style: Style, theme: &Theme) {
+    let indent = " ".repeat(card_body_width(prefix));
+    let body_width = usize::from(plan.width)
+        .saturating_sub(card_body_width(prefix))
+        .max(1);
+    let mut produced = 0;
+    for (paragraph_index, paragraph) in value.split('\n').enumerate() {
+        for (index, segment) in card_wrap(&card_safe(paragraph), body_width)
+            .into_iter()
+            .enumerate()
+        {
+            if produced == 3 {
+                plan.push(Line::from(Span::styled(
+                    format!("{indent}{}", if theme.ascii() { "..." } else { "…" }),
+                    style,
+                )));
+                return;
+            }
+            let leader = if paragraph_index == 0 && index == 0 {
+                prefix
+            } else {
+                &indent
+            };
+            plan.push(Line::from(Span::styled(
+                format!("{leader}{segment}"),
+                style,
+            )));
+            produced += 1;
+        }
+    }
+}
+
+fn card_wrap(value: &str, width: usize) -> Vec<String> {
+    if value.is_empty() {
+        return vec![String::new()];
+    }
+    let mut out = Vec::new();
+    let mut current = String::new();
+    let mut cells = 0;
+    for word in value.split_inclusive(' ') {
+        let next = card_body_width(word);
+        if cells + next > width && !current.is_empty() {
+            out.push(std::mem::take(&mut current));
+            cells = 0;
+        }
+        if next > width {
+            // Preserve a long URL/token as one clipped row. Never split it
+            // into several misleading overflow fragments.
+            out.push(word.trim_end().to_owned());
+        } else {
+            current.push_str(word);
+            cells += next;
+        }
+    }
+    if !current.is_empty() {
+        out.push(current);
+    }
+    out
+}
+
+fn card_body_width(value: &str) -> usize {
+    // Native composer wrapping keeps its existing terminal contract for
+    // circled numbers and keycaps without a variation selector. Compact
+    // summaries still use ordinary Ratatui Unicode width when truncated.
+    value
+        .graphemes(true)
+        .map(|grapheme| {
+            if grapheme.contains('\u{20e3}') {
+                return 2;
+            }
+            if let Some(c) = grapheme.chars().next()
+                && c.len_utf8() == grapheme.len()
+                && matches!(c, '\u{2460}'..='\u{24ff}' | '\u{2776}'..='\u{2793}' | '\u{3248}'..='\u{324f}')
+            {
+                return 2;
+            }
+            text::width(grapheme)
+        })
+        .sum()
 }
 
 /// Pending items and attached context over caller-owned facts.
@@ -430,23 +944,7 @@ impl<'a> PendingInputPreview<'a> {
     /// Rows this preview wants at `width`. Empty input asks for zero.
     #[must_use]
     pub fn height(&self, width: u16, theme: &Theme) -> u16 {
-        if width < 4 {
-            return 0;
-        }
-        u16::try_from(self.needed_rows(theme))
-            .unwrap_or(u16::MAX)
-            .min(self.max_rows)
-    }
-
-    fn needed_rows(&self, theme: &Theme) -> usize {
-        if self.is_empty() {
-            return 0;
-        }
-        1 + self.body_count() + usize::from(!self.hint_text(theme).is_empty())
-    }
-
-    fn body_count(&self) -> usize {
-        self.context.len() + self.items.len()
+        self.plan(width, theme).height()
     }
 
     fn separator(theme: &Theme) -> &'static str {
@@ -584,22 +1082,6 @@ impl<'a> PendingInputPreview<'a> {
         Line::from(spans)
     }
 
-    fn hint_line(&self, theme: &Theme, hidden: usize) -> Option<Line<'static>> {
-        let hint = self.hint_text(theme);
-        if hint.is_empty() {
-            return None;
-        }
-        let mut spans = Vec::new();
-        if hidden > 0 {
-            spans.push(Span::styled(
-                format!("+{hidden} {}  ", text::display_safe(&self.omitted_label)),
-                theme.fg(Role::Muted),
-            ));
-        }
-        spans.push(Span::styled(hint, theme.fg(Role::Primary)));
-        Some(Line::from(spans))
-    }
-
     fn single_line(&self, width: usize, theme: &Theme) -> Line<'static> {
         let ascii = theme.ascii();
         let hint = self.hint_text(theme);
@@ -624,55 +1106,41 @@ impl<'a> PendingInputPreview<'a> {
         Line::from(Span::styled(shown, theme.fg(Role::Foreground)))
     }
 
-    fn rows(&self, width: u16, height: u16, theme: &Theme) -> Vec<PaintedRow> {
-        if width < 4 || height == 0 || self.is_empty() {
-            return Vec::new();
+    fn plan(&self, width: u16, theme: &Theme) -> PendingPlan {
+        let mut plan = PendingPlan::new(width, self.max_rows);
+        if width < 4 || self.is_empty() {
+            return plan;
         }
-        let hint = self.hint_text(theme);
-        if height == 1 {
-            return vec![PaintedRow {
-                line: self.single_line(usize::from(width), theme),
-                selected: false,
-            }];
-        }
-        let mut out = vec![PaintedRow {
-            line: self.summary_line(theme),
+        plan.one_row = Some(PaintedRow {
+            line: self.single_line(usize::from(width), theme),
             selected: false,
-        }];
-        let hint_rows = usize::from(!hint.is_empty());
-        let body_budget = usize::from(height).saturating_sub(1 + hint_rows);
-        let mut body: Vec<PaintedRow> = Vec::new();
+        });
+        plan.push(self.summary_line(theme));
         let selected = self.selected_index();
         if let Some(index) = selected {
-            body.push(PaintedRow {
+            plan.rows.push(PaintedRow {
                 line: self.item_line(index, theme),
                 selected: true,
             });
         }
         for item in &self.context {
-            body.push(PaintedRow {
-                line: self.context_line(item, theme),
-                selected: false,
-            });
+            plan.push(self.context_line(item, theme));
         }
-        for (index, item) in self.items.iter().enumerate() {
-            if selected == Some(index) {
-                continue;
+        for (index, _) in self.items.iter().enumerate() {
+            if selected != Some(index) {
+                plan.push(self.item_line(index, theme));
             }
-            body.push(PaintedRow {
-                line: self.item_line(index, theme),
-                selected: self.selected.as_deref() == Some(&*item.id),
+        }
+        let hint = self.hint_text(theme);
+        if !hint.is_empty() {
+            plan.tail = Some(PendingTail {
+                hint,
+                omitted: text::display_safe(&self.omitted_label).into_owned(),
+                hint_style: theme.fg(Role::Primary),
+                omitted_style: theme.fg(Role::Muted),
             });
         }
-        let hidden = body.len().saturating_sub(body_budget);
-        out.extend(body.into_iter().take(body_budget));
-        if let Some(line) = self.hint_line(theme, hidden) {
-            out.push(PaintedRow {
-                line,
-                selected: false,
-            });
-        }
-        out
+        plan
     }
 }
 
@@ -683,31 +1151,9 @@ fn one_line(value: &str) -> String {
 impl Paint for PendingInputPreview<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
         let area = area.intersection(buf.area);
-        if area.is_empty() {
-            return;
-        }
-        let rows = self.rows(area.width, area.height.min(self.max_rows), theme);
-        for (index, painted) in rows.iter().enumerate() {
-            let rect = Rect::new(
-                area.x,
-                area.y
-                    .saturating_add(u16::try_from(index).unwrap_or(u16::MAX)),
-                area.width,
-                1,
-            );
-            if painted.selected {
-                buf.set_style(rect, theme.bg(Role::Selected));
-            }
-            row(rect, buf, &painted.line);
-        }
+        self.plan(area.width, theme).paint(area, buf, theme);
     }
-
     fn height(&self, width: u16, theme: &Theme) -> u16 {
-        if width < 4 {
-            return 0;
-        }
-        u16::try_from(self.needed_rows(theme))
-            .unwrap_or(u16::MAX)
-            .min(self.max_rows)
+        self.plan(width, theme).height()
     }
 }
