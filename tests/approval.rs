@@ -242,6 +242,168 @@ fn the_natural_height_shows_everything_in_every_profile() {
     }
 }
 
+/// `height` is what the surface really needs: Panel(Overlay) chrome (edge,
+/// padding, title row), the `Why: ` and `Risk: ` prefixes, wrapped hints. An
+/// understated height clips the choices off the card, so it is checked
+/// against the real render for every kind, profile and width, and for the
+/// verdict as well as the card.
+#[test]
+fn height_never_understates_the_card_or_the_verdict() {
+    let long = long_command();
+    let subjects = [
+        ApprovalSubject::new(ApprovalKind::Command, "ls"),
+        ApprovalSubject::new(ApprovalKind::Command, long.as_str())
+            .cwd("/work/project/with/a/long/path/name")
+            .scope(ApprovalScope::Outside)
+            .agent("builder", true)
+            .risk_note("writes outside the project and reads the network at the same time"),
+        ApprovalSubject::new(ApprovalKind::FileChange, "src/\u{9c8d}\u{8bb0}\u{5f55}.rs")
+            .preview_line("+fn main() {}")
+            .preview_line("-fn old() {}")
+            .risk_note("overwrites a file"),
+        ApprovalSubject::new(ApprovalKind::Network, "https://example.com/a/b/c")
+            .scope(ApprovalScope::Inside),
+        ApprovalSubject::new(ApprovalKind::ToolCall, "mcp__server__tool").agent("planner", false),
+        ApprovalSubject::new(ApprovalKind::Elevation, "sudo make install")
+            .scope(ApprovalScope::Outside),
+    ];
+    for profile in [Profile::DarkTrue, Profile::NoColor, Profile::Ascii] {
+        let theme = profile.theme();
+        for (n, subject) in subjects.iter().enumerate() {
+            for width in 8..=130u16 {
+                let state = choices();
+                let card = ApprovalCard::new(subject, &state);
+                let height = card.height(width, &theme);
+                let (_, report) = card_buf(subject, width, height, &theme);
+                assert!(
+                    !report.clipped(),
+                    "card {n} {} {width}x{height}: {report:?}",
+                    profile.name()
+                );
+            }
+        }
+    }
+    let hints = hints();
+    for profile in [Profile::DarkTrue, Profile::NoColor, Profile::Ascii] {
+        let theme = profile.theme();
+        for kind in ReviewKind::ALL {
+            let verdicts = [
+                verdict_fixture(kind, &hints),
+                verdict_fixture(kind, &hints)
+                    .category("Deletes unseen files outside the project directory")
+                    .id("ar_7K2M"),
+                ReviewVerdict::new(
+                    kind,
+                    "Auto-Review",
+                    "a reason long enough to wrap at narrow widths and then some more",
+                    &hints,
+                    None,
+                )
+                .unwrap()
+                .subject(long.as_str()),
+            ];
+            for (n, verdict) in verdicts.iter().enumerate() {
+                for width in 8..=130u16 {
+                    let height = verdict.height(width, &theme);
+                    let mut report = ApprovalPaint::default();
+                    let _ = testing::render(width, height, |a, b| {
+                        report = verdict.render(a, b, &theme);
+                    });
+                    assert!(
+                        !report.clipped(),
+                        "verdict {kind:?} {n} {} {width}x{height}: {report:?}",
+                        profile.name()
+                    );
+                }
+            }
+        }
+    }
+}
+
+/// A choice is shown whole (its key and its label, in the cells, wrapped if
+/// need be) or the paint report says `choices > 0`. A choice cut at the right
+/// edge or cut off its last rows is one the person is still offered but cannot
+/// read.
+#[test]
+fn a_choice_is_either_shown_whole_or_reported_cut() {
+    // Wrapping and the panel's side edges add whitespace and `|` between rows.
+    let strip = |s: &str| -> String {
+        s.chars()
+            .filter(|c| !c.is_whitespace() && !matches!(c, '\u{2502}' | '|'))
+            .collect()
+    };
+    for profile in [Profile::DarkTrue, Profile::NoColor, Profile::Ascii] {
+        let theme = profile.theme();
+        let state = choices();
+        let wanted: Vec<String> = state
+            .choices()
+            .iter()
+            .map(|c| {
+                let key = match c.keys.first() {
+                    Some(k) => k.label(codewhale_ratatui::keys::Platform::current(theme.ascii())),
+                    None => String::new(),
+                };
+                strip(&format!("{key}{}", c.label))
+            })
+            .collect();
+        let subject = ApprovalSubject::new(ApprovalKind::Command, "cargo test")
+            .cwd("/work/project")
+            .scope(ApprovalScope::Inside);
+        for width in 4..=60u16 {
+            for height in 1..=24u16 {
+                let (buf, report) = card_buf(&subject, width, height, &theme);
+                let text = strip(&all_text(&buf));
+                let cut: Vec<usize> = (0..wanted.len())
+                    .filter(|&i| !text.contains(wanted[i].as_str()))
+                    .collect();
+                assert!(
+                    cut.is_empty() || report.choices > 0,
+                    "{} {width}x{height}: choices {cut:?} are cut but the report says none: {report:?}\n{}",
+                    profile.name(),
+                    all_text(&buf)
+                );
+            }
+        }
+    }
+}
+
+/// The same for a verdict, whose keys are the hints it was given: a hint is
+/// shown whole or `choices` counts rows that were not.
+#[test]
+fn a_verdict_hint_is_either_shown_whole_or_reported_cut() {
+    let strip = |s: &str| -> String {
+        s.chars()
+            .filter(|c| !c.is_whitespace() && !matches!(c, '\u{2502}' | '|'))
+            .collect()
+    };
+    let hints = hints();
+    for profile in [Profile::DarkTrue, Profile::NoColor, Profile::Ascii] {
+        let theme = profile.theme();
+        for kind in [ReviewKind::Held, ReviewKind::Denied] {
+            let verdict = verdict_fixture(kind, &hints);
+            for width in 4..=60u16 {
+                for height in 1..=14u16 {
+                    let mut report = ApprovalPaint::default();
+                    let buf = testing::render(width, height, |a, b| {
+                        report = verdict.render(a, b, &theme);
+                    });
+                    let text = strip(&all_text(&buf));
+                    let cut = hints
+                        .items
+                        .iter()
+                        .any(|h| !text.contains(&strip(&format!("{}{}", h.keys, h.verb))));
+                    assert!(
+                        !cut || report.choices > 0,
+                        "{kind:?} {} {width}x{height}: a hint is cut but the report says none: {report:?}\n{}",
+                        profile.name(),
+                        all_text(&buf)
+                    );
+                }
+            }
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Spoofing: what is shown is what runs
 // ---------------------------------------------------------------------------

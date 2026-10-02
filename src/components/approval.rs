@@ -750,7 +750,9 @@ impl Section {
 }
 
 /// Pack unbreakable items into rows, `sep` between them on a row; an item
-/// wider than a row wraps. Row units count the items that start in the row.
+/// wider than a row wraps. Row units count the items that end in the row: an
+/// item counts as shown only once its last row is, so a choice cut off after
+/// its key is reported as cut.
 fn pack(
     items: Vec<Vec<Unit<'static>>>,
     sep: &[Unit<'static>],
@@ -786,8 +788,12 @@ fn pack(
                 wrapper.push(u);
             }
             let mut wrapped = wrapper.finish();
-            if let Some(first) = wrapped.rows.first_mut() {
-                first.units = 1;
+            // The last row only counts if it was kept: rows past the cap are
+            // dropped, and an item whose tail is dropped is not shown.
+            if wrapped.rows.len() == wrapped.total_rows
+                && let Some(last) = wrapped.rows.last_mut()
+            {
+                last.units = 1;
             }
             wrapped.total_chars = 0;
             sec.absorb(wrapped);
