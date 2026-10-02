@@ -44,6 +44,7 @@ mod spinner;
 mod status;
 mod surface;
 mod toast;
+mod verification;
 mod whale;
 mod workbench;
 mod workspace;
@@ -80,6 +81,7 @@ pub fn entries() -> Vec<Entry> {
         toast::entries(),
         icons::entries(),
         spinner::entries(),
+        verification::entries(),
         whale::entries(),
         input::entries(),
         lists::entries(),

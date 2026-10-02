@@ -75,6 +75,8 @@ pub use approval::*;
 // Package Motion.
 mod motion;
 pub use motion::*;
+mod verification;
+pub use verification::*;
 
 // Distinctive session surfaces and settings share the same theme authority.
 mod settings;

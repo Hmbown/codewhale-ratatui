@@ -21,6 +21,10 @@
 //! The art is decoration; the state lives in the words beside it. Screen
 //! readers get the label, never a stream of dot names, and ASCII-safe
 //! terminals get the words alone.
+//!
+//! [`Whale::paint_frame`] accepts a packed frame from the host's shared
+//! Director. This renderer owns no clock, animation or state selection;
+//! [`Paint::paint`] keeps drawing the existing poster pose.
 
 use std::borrow::Cow;
 use std::sync::OnceLock;
@@ -454,6 +458,23 @@ impl Whale {
         self
     }
 
+    /// Paint packed Braille cells evaluated by the host's shared Director.
+    ///
+    /// `grid.cells` must contain exactly `grid.cols * grid.rows` row-major
+    /// bytes. The complete grid, at least 16×8 cells, must fit the intersection
+    /// of `area` and the buffer with one additional row for the state words.
+    /// Invalid or non-fitting grids and ASCII-safe terminals show only those
+    /// words; a supplied frame is never resized or replaced with a poster.
+    ///
+    /// The host owns timing, reduced motion and hidden-surface scheduling.
+    /// It can call [`Paint::paint`] for the static poster instead. Zero bits
+    /// are transparent, preserving the existing ground: repaint the surface
+    /// before each frame, as with other ratatui components. No grid is copied
+    /// or allocated by this method.
+    pub fn paint_frame(&self, area: Rect, buf: &mut Buffer, theme: &Theme, grid: &Grid) {
+        self.paint_grid(area, buf, theme, Some(grid));
+    }
+
     /// The largest standard viewport (32x16, 20x10, 16x8) that fits.
     fn viewport(area: Rect) -> Option<(u16, u16)> {
         let rows = area.height.saturating_sub(1);
@@ -500,10 +521,8 @@ impl Whale {
             buf[(area.x + x, area.y)] = row[(x, 0)].clone();
         }
     }
-}
 
-impl Paint for Whale {
-    fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+    fn paint_grid(&self, area: Rect, buf: &mut Buffer, theme: &Theme, grid: Option<&Grid>) {
         let area = area.intersection(buf.area);
         if area.is_empty() {
             return;
@@ -513,19 +532,20 @@ impl Paint for Whale {
         let label = Line::from(mark.spans(theme)).centered();
         // Braille has no honest ASCII form: dot-count shading turns the whale
         // into noise. ASCII-safe terminals get the words alone.
-        let viewport = if theme.ascii() {
-            None
-        } else {
-            Self::viewport(area)
-        };
-        let Some((cols, rows)) = viewport else {
+        let grid = grid.filter(|grid| {
+            !theme.ascii()
+                && grid.cols >= 16
+                && grid.rows >= 8
+                && grid.cols <= area.width
+                && grid.rows < area.height
+                && usize::from(grid.cols).checked_mul(usize::from(grid.rows))
+                    == Some(grid.cells.len())
+        });
+        let Some(grid) = grid else {
             Self::paint_label(label, Rect { height: 1, ..area }, buf);
             return;
         };
-        let Some(grid) = frame(self.state, cols, rows) else {
-            Self::paint_label(label, Rect { height: 1, ..area }, buf);
-            return;
-        };
+        let (cols, rows) = (grid.cols, grid.rows);
         let x0 = area.x + (area.width - cols) / 2;
         let y0 = area.y + (area.height - rows - 1) / 2;
         for r in 0..rows {
@@ -550,6 +570,18 @@ impl Paint for Whale {
             },
             buf,
         );
+    }
+}
+
+impl Paint for Whale {
+    fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
+        let grid = if theme.ascii() {
+            None
+        } else {
+            Self::viewport(area).and_then(|(cols, rows)| frame(self.state, cols, rows))
+        };
+        self.paint_grid(area, buf, theme, grid.as_ref());
     }
 
     fn height(&self, _width: u16, _theme: &Theme) -> u16 {

@@ -89,7 +89,7 @@ def classify(name):
         return "chrome"
     if re.search(r"receipt|diff|tree|progress|approval|review|count-bar|artifact", name):
         return "display"
-    if re.search(r"motion|spinner|toast", name):
+    if re.search(r"motion|spinner|toast|verification", name):
         return "motion"
     return "components"
 
@@ -367,6 +367,20 @@ def readme_gallery(readme, destination, index):
     for family in families:
         lines.extend(["### " + GROUPS[family][0], ""])
         lines.extend(embed(item) + "\n" for item in primary if item["group"] == family)
+        if family == "motion":
+            paths = [Path(os.path.relpath(destination / filename, readme.parent)).as_posix()
+                     for filename in ("motion-demo.gif", "motion-demo-light.gif")]
+            lines.extend([
+                "<details>", "<summary>Watch the working and verification spinners, then the receipt arrive</summary>", "",
+                f"![Working, verifying and settling into a receipt — Ocean](<{paths[0]}>)", "",
+                f"![Working, verifying and settling into a receipt — Paper](<{paths[1]}>)", "",
+                "A demonstration of the actual components at their normal cadence: the working swell,",
+                "verification tick, state ink, selection movement and detail reveal.",
+                "The demonstration supplies each state change; the component supplies its motion.",
+                "Reduced and still modes use readable static marks and settle transitions immediately.",
+                "Run `cargo run --example motion` to finish, restart, switch phases and change motion policy yourself.", "",
+                "</details>", "",
+            ])
     light = [item for item in index if item["profile"].startswith("light")]
     if light:
         lines.extend(["<details>", "<summary>Light theme</summary>", ""])
