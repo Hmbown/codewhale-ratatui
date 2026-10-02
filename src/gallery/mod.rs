@@ -15,6 +15,8 @@
 //! | `display` | package Display: receipt, diff, tree, progress |
 //! | `approval` | package Approval: approval card |
 //! | `motion` | package Motion |
+//! | `workspace` | messages, composer, tool and agent cards, fleets |
+//! | `settings` | values, source, locks, apply timing and defaults |
 
 use crossterm::event::KeyCode;
 use ratatui::{buffer::Buffer, layout::Rect};
@@ -33,11 +35,13 @@ mod input;
 mod lists;
 mod motion;
 mod picker;
+mod settings;
 mod spinner;
 mod status;
 mod surface;
 mod toast;
 mod whale;
+mod workspace;
 
 /// One gallery entry: a name, the size it is drawn at by default, and a
 /// function that paints it. `draw` must paint inside the `Rect` it is given
@@ -73,6 +77,8 @@ pub fn entries() -> Vec<Entry> {
         display::entries(),
         approval::entries(),
         motion::entries(),
+        workspace::entries(),
+        settings::entries(),
     ]
     .into_iter()
     .flatten()

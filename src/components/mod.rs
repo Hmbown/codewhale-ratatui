@@ -30,26 +30,20 @@ pub mod spin {
     };
 }
 
-// Modules reserved for the packages that will fill them. Each file is empty
-// until its package lands, so its glob re-export has nothing to export yet.
+// Component families share the same Paint and Theme contracts.
 
 // Package Input.
 mod form;
 mod text_input;
-#[allow(unused_imports)]
 pub use form::*;
-#[allow(unused_imports)]
 pub use text_input::*;
 
 // Package Lists.
 mod empty;
 mod fuzzy;
 mod list;
-#[allow(unused_imports)]
 pub use empty::*;
-#[allow(unused_imports)]
 pub use fuzzy::*;
-#[allow(unused_imports)]
 pub use list::*;
 
 // Package Chrome.
@@ -58,15 +52,10 @@ mod keymap;
 mod segmented;
 mod tabs;
 mod toggle;
-#[allow(unused_imports)]
 pub use heading::*;
-#[allow(unused_imports)]
 pub use keymap::*;
-#[allow(unused_imports)]
 pub use segmented::*;
-#[allow(unused_imports)]
 pub use tabs::*;
-#[allow(unused_imports)]
 pub use toggle::*;
 
 // Package Display.
@@ -74,21 +63,21 @@ mod diff;
 mod progress;
 mod receipt;
 mod tree;
-#[allow(unused_imports)]
 pub use diff::*;
-#[allow(unused_imports)]
 pub use progress::*;
-#[allow(unused_imports)]
 pub use receipt::*;
-#[allow(unused_imports)]
 pub use tree::*;
 
 // Package Approval.
 mod approval;
-#[allow(unused_imports)]
 pub use approval::*;
 
 // Package Motion.
 mod motion;
-#[allow(unused_imports)]
 pub use motion::*;
+
+// Distinctive session surfaces and settings share the same theme authority.
+mod settings;
+mod workspace;
+pub use settings::*;
+pub use workspace::*;
