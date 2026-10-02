@@ -2,7 +2,7 @@
 name = "codewhale-ratatui"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.88"
+rust-version = "1.89"
 license = "MIT"
 description = "Codewhale's terminal component library for ratatui: one design language shared with the Codewhale desktop app and website."
 repository = "https://github.com/Hmbown/codewhale-ratatui"

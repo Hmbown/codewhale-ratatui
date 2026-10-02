@@ -1,0 +1,33 @@
+name: Gallery previews
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('gallery-pr-{0}', github.event.pull_request.number) || format('gallery-{0}', github.sha) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  previews:
+    name: README matches the components
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - name: Gallery scrolling tests
+        run: cargo test --locked --example gallery
+      - name: Render every component in every terminal profile
+        run: cargo run --locked --example gallery -- --svg target/readme-buffers
+      - name: README previews match the actual buffers
+        run: python3 tools/render-gallery.py target/readme-buffers assets/readme --readme README.md --check

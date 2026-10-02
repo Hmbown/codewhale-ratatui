@@ -36,6 +36,9 @@ pub mod gallery;
 pub mod testing;
 pub mod whale;
 
+// Every component module is re-exported whole (see `components/mod.rs`), so
+// a package that makes an item `pub` in its own file exports it from here
+// without touching this file.
 pub use components::*;
 pub use theme::{Caps, Ground, Role, Theme};
 pub use whale::{Whale, WhaleState};

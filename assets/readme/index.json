@@ -1,0 +1,450 @@
+{
+  "entries": [
+    "key-hints",
+    "keymap-hints",
+    "status-marks",
+    "dialog",
+    "sheet",
+    "depth",
+    "horizon",
+    "mode-picker",
+    "status-picker",
+    "picker-query",
+    "picker-tabs-preview",
+    "picker-no-match",
+    "toasts",
+    "toasts-stacked",
+    "toasts-fading",
+    "icons",
+    "spinner",
+    "whale-rest",
+    "whale-busy",
+    "whale-needs",
+    "whale-done",
+    "whale-pod-1",
+    "whale-pod-3",
+    "whale-actions",
+    "whale-compact",
+    "whale-words-only",
+    "text-input-empty",
+    "text-input-typed",
+    "text-input-unfocused",
+    "text-input-invalid",
+    "text-input-disabled",
+    "text-input-secret",
+    "text-input-long",
+    "text-input-wide-text",
+    "form",
+    "list",
+    "list-scrolling",
+    "list-tall-rows",
+    "list-long",
+    "list-empty",
+    "empty-state",
+    "empty-state-small",
+    "heading",
+    "tabs",
+    "toggle",
+    "segmented",
+    "receipt-row",
+    "receipt-table",
+    "receipt-table-compact",
+    "receipt-table-minimal",
+    "receipt-table-clipped",
+    "diff",
+    "diff-wrapped",
+    "diff-no-numbers",
+    "diff-highlighted",
+    "workflow-tree",
+    "workflow-tree-selected",
+    "workflow-tree-clipped",
+    "workflow-tree-long",
+    "count-bars",
+    "approval-command",
+    "approval-outside",
+    "approval-patch",
+    "approval-elevation",
+    "approval-clipped",
+    "approval-spoofed",
+    "review-verdicts",
+    "review-aggregate",
+    "motion-modes",
+    "motion-working",
+    "motion-started",
+    "motion-mid-flight",
+    "motion-settled",
+    "motion-reduced",
+    "message",
+    "composer",
+    "tool-card",
+    "agent-card",
+    "fleet",
+    "setting-row",
+    "setting-detail"
+  ],
+  "boards": [
+    {
+      "file": "components.dark-truecolor.svg",
+      "profile": "dark-truecolor",
+      "group": "components",
+      "entries": [
+        "message",
+        "composer",
+        "tool-card",
+        "agent-card",
+        "fleet"
+      ]
+    },
+    {
+      "file": "foundation.dark-truecolor.svg",
+      "profile": "dark-truecolor",
+      "group": "foundation",
+      "entries": [
+        "key-hints",
+        "status-marks",
+        "dialog",
+        "sheet",
+        "depth",
+        "horizon",
+        "icons"
+      ]
+    },
+    {
+      "file": "input.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "input",
+      "entries": [
+        "mode-picker",
+        "status-picker",
+        "picker-query",
+        "picker-tabs-preview",
+        "picker-no-match",
+        "text-input-empty",
+        "text-input-typed",
+        "text-input-unfocused",
+        "text-input-invalid",
+        "text-input-disabled",
+        "text-input-secret"
+      ]
+    },
+    {
+      "file": "input.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "input",
+      "entries": [
+        "text-input-long",
+        "text-input-wide-text",
+        "form",
+        "list",
+        "list-scrolling",
+        "list-tall-rows",
+        "list-long",
+        "list-empty",
+        "empty-state"
+      ]
+    },
+    {
+      "file": "input.dark-truecolor-3.svg",
+      "profile": "dark-truecolor",
+      "group": "input",
+      "entries": [
+        "empty-state-small"
+      ]
+    },
+    {
+      "file": "chrome.dark-truecolor.svg",
+      "profile": "dark-truecolor",
+      "group": "chrome",
+      "entries": [
+        "keymap-hints",
+        "heading",
+        "tabs",
+        "toggle",
+        "segmented",
+        "setting-row",
+        "setting-detail"
+      ]
+    },
+    {
+      "file": "display.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "display",
+      "entries": [
+        "receipt-row",
+        "receipt-table",
+        "receipt-table-compact",
+        "receipt-table-minimal",
+        "receipt-table-clipped",
+        "diff"
+      ]
+    },
+    {
+      "file": "display.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "display",
+      "entries": [
+        "diff-wrapped",
+        "diff-no-numbers",
+        "diff-highlighted",
+        "workflow-tree",
+        "workflow-tree-selected",
+        "workflow-tree-clipped"
+      ]
+    },
+    {
+      "file": "display.dark-truecolor-3.svg",
+      "profile": "dark-truecolor",
+      "group": "display",
+      "entries": [
+        "workflow-tree-long",
+        "count-bars",
+        "approval-command",
+        "approval-outside",
+        "approval-patch"
+      ]
+    },
+    {
+      "file": "display.dark-truecolor-4.svg",
+      "profile": "dark-truecolor",
+      "group": "display",
+      "entries": [
+        "approval-elevation",
+        "approval-clipped",
+        "approval-spoofed",
+        "review-verdicts",
+        "review-aggregate"
+      ]
+    },
+    {
+      "file": "motion.dark-truecolor.svg",
+      "profile": "dark-truecolor",
+      "group": "motion",
+      "entries": [
+        "toasts",
+        "toasts-stacked",
+        "toasts-fading",
+        "spinner",
+        "motion-modes",
+        "motion-working",
+        "motion-started",
+        "motion-mid-flight",
+        "motion-settled",
+        "motion-reduced"
+      ]
+    },
+    {
+      "file": "whales.dark-truecolor.svg",
+      "profile": "dark-truecolor",
+      "group": "whales",
+      "entries": [
+        "whale-rest",
+        "whale-busy",
+        "whale-needs",
+        "whale-done",
+        "whale-pod-1",
+        "whale-pod-3",
+        "whale-compact",
+        "whale-words-only"
+      ]
+    },
+    {
+      "file": "whale-actions.dark-truecolor.svg",
+      "profile": "dark-truecolor",
+      "group": "whale-actions",
+      "entries": [
+        "whale-actions"
+      ]
+    },
+    {
+      "file": "components.light-truecolor.svg",
+      "profile": "light-truecolor",
+      "group": "components",
+      "entries": [
+        "message",
+        "composer",
+        "tool-card",
+        "agent-card",
+        "fleet"
+      ]
+    },
+    {
+      "file": "foundation.light-truecolor.svg",
+      "profile": "light-truecolor",
+      "group": "foundation",
+      "entries": [
+        "key-hints",
+        "status-marks",
+        "dialog",
+        "sheet",
+        "depth",
+        "horizon",
+        "icons"
+      ]
+    },
+    {
+      "file": "input.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "input",
+      "entries": [
+        "mode-picker",
+        "status-picker",
+        "picker-query",
+        "picker-tabs-preview",
+        "picker-no-match",
+        "text-input-empty",
+        "text-input-typed",
+        "text-input-unfocused",
+        "text-input-invalid",
+        "text-input-disabled",
+        "text-input-secret"
+      ]
+    },
+    {
+      "file": "input.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "input",
+      "entries": [
+        "text-input-long",
+        "text-input-wide-text",
+        "form",
+        "list",
+        "list-scrolling",
+        "list-tall-rows",
+        "list-long",
+        "list-empty",
+        "empty-state"
+      ]
+    },
+    {
+      "file": "input.light-truecolor-3.svg",
+      "profile": "light-truecolor",
+      "group": "input",
+      "entries": [
+        "empty-state-small"
+      ]
+    },
+    {
+      "file": "chrome.light-truecolor.svg",
+      "profile": "light-truecolor",
+      "group": "chrome",
+      "entries": [
+        "keymap-hints",
+        "heading",
+        "tabs",
+        "toggle",
+        "segmented",
+        "setting-row",
+        "setting-detail"
+      ]
+    },
+    {
+      "file": "display.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "display",
+      "entries": [
+        "receipt-row",
+        "receipt-table",
+        "receipt-table-compact",
+        "receipt-table-minimal",
+        "receipt-table-clipped",
+        "diff"
+      ]
+    },
+    {
+      "file": "display.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "display",
+      "entries": [
+        "diff-wrapped",
+        "diff-no-numbers",
+        "diff-highlighted",
+        "workflow-tree",
+        "workflow-tree-selected",
+        "workflow-tree-clipped"
+      ]
+    },
+    {
+      "file": "display.light-truecolor-3.svg",
+      "profile": "light-truecolor",
+      "group": "display",
+      "entries": [
+        "workflow-tree-long",
+        "count-bars",
+        "approval-command",
+        "approval-outside",
+        "approval-patch"
+      ]
+    },
+    {
+      "file": "display.light-truecolor-4.svg",
+      "profile": "light-truecolor",
+      "group": "display",
+      "entries": [
+        "approval-elevation",
+        "approval-clipped",
+        "approval-spoofed",
+        "review-verdicts",
+        "review-aggregate"
+      ]
+    },
+    {
+      "file": "motion.light-truecolor.svg",
+      "profile": "light-truecolor",
+      "group": "motion",
+      "entries": [
+        "toasts",
+        "toasts-stacked",
+        "toasts-fading",
+        "spinner",
+        "motion-modes",
+        "motion-working",
+        "motion-started",
+        "motion-mid-flight",
+        "motion-settled",
+        "motion-reduced"
+      ]
+    },
+    {
+      "file": "whales.light-truecolor.svg",
+      "profile": "light-truecolor",
+      "group": "whales",
+      "entries": [
+        "whale-rest",
+        "whale-busy",
+        "whale-needs",
+        "whale-done",
+        "whale-pod-1",
+        "whale-pod-3",
+        "whale-compact",
+        "whale-words-only"
+      ]
+    },
+    {
+      "file": "whale-actions.light-truecolor.svg",
+      "profile": "light-truecolor",
+      "group": "whale-actions",
+      "entries": [
+        "whale-actions"
+      ]
+    },
+    {
+      "file": "profile-comparison.svg",
+      "profile": "all",
+      "group": "profiles",
+      "entries": [
+        "status-marks"
+      ],
+      "profiles": [
+        "dark-truecolor",
+        "dark-graphite",
+        "light-truecolor",
+        "dark-256",
+        "light-256",
+        "ansi-16",
+        "unknown-ground",
+        "no-color",
+        "ascii"
+      ]
+    }
+  ]
+}

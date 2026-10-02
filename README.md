@@ -1,39 +1,152 @@
 # codewhale-ratatui
 
-Paints Codewhale's terminal interface from one set of
-[ratatui](https://ratatui.rs) components.
+Codewhale's terminal component library: one visual language for agents, their
+work, and the person steering them. Built on [Ratatui](https://ratatui.rs), with
+the same design tokens as the Codewhale desktop app and website.
 
-- **Takes every color from the Codewhale design tokens**, the same file the
-  desktop app and the website read, and resolves it for the terminal in
-  front of it: truecolor, 256 colors, 16 colors or `NO_COLOR`, on a light or
-  dark ground.
-- **Paints dark terminals in the blue ombre** by default: deep navy grounds
-  rising toward the logo's blue, at the same luminance as the token grounds,
-  so every contrast the tokens pass still passes. It shows at truecolor;
-  256-color terminals keep the token grounds, because the color cube has no
-  navy fine enough. `Theme::ground(Ground::Graphite)` keeps the token
-  grounds everywhere.
-- **Pairs every state with a mark and a word** (`● Working`, `◆ Needs you`,
-  `✕ Failed`), so nothing depends on color alone.
-- **Draws the Codewhale whale in Braille** from the same contours as the
-  desktop pet, in all 17 of its actions: resting, listening, thinking,
-  reading, searching, editing, running, browsing, replying, using the
-  computer, calling a connected app, needs you, done, stuck, asleep, and a
-  pod whose calves swim with it when agents work in parallel. The art draws
-  up to three calves; the words beneath always give the real count.
-- **Spells keys one way**: `Ctrl+O`, `⌥V` on macOS (`Alt+V` elsewhere),
-  `↑↓`, or `Up/Down` in ASCII-safe terminals.
+The kit paints **real session surfaces**—transcripts, tool output, fleets,
+receipts, diffs, decisions and the composer—alongside the controls that build
+them. Components accept facts from your host and paint through `Theme` and
+`Role`. The host owns the Engine, permissions, persistence and event loop.
+
+## See the components
+
+These previews are generated from the **actual Ratatui cell buffers** used by
+the gallery and snapshot tests. Every gallery entry appears in the dark and
+light collections below; the profile comparison shows how the same state
+marks adapt to all nine terminal profiles. SVGs contain no remote assets or
+scripts. Open an image to inspect it at full size.
+
+Profiles that leave colors to the terminal use a representative palette in
+these images; your terminal supplies its own defaults.
+
+<!-- gallery:start -->
+
+Generated from the real ratatui buffers. Every catalogue entry is shown below.
+
+Jump to: [Sessions and fleets](#sessions-and-fleets) · [The Codewhale language](#the-codewhale-language) · [Input and selection](#input-and-selection) · [Navigation and controls](#navigation-and-controls) · [Work and receipts](#work-and-receipts) · [Motion and feedback](#motion-and-feedback) · [A whale with a job](#a-whale-with-a-job) · [Every whale action](#every-whale-action) · [Terminal profiles](#terminal-profiles)
+
+### Sessions and fleets
+
+![Sessions and fleets — dark truecolor](<assets/readme/components.dark-truecolor.svg>)
+
+### The Codewhale language
+
+![The Codewhale language — dark truecolor](<assets/readme/foundation.dark-truecolor.svg>)
+
+### Input and selection
+
+![Input and selection — dark truecolor](<assets/readme/input.dark-truecolor-1.svg>)
+
+![Input and selection — dark truecolor](<assets/readme/input.dark-truecolor-2.svg>)
+
+![Input and selection — dark truecolor](<assets/readme/input.dark-truecolor-3.svg>)
+
+### Navigation and controls
+
+![Navigation and controls — dark truecolor](<assets/readme/chrome.dark-truecolor.svg>)
+
+### Work and receipts
+
+![Work and receipts — dark truecolor](<assets/readme/display.dark-truecolor-1.svg>)
+
+![Work and receipts — dark truecolor](<assets/readme/display.dark-truecolor-2.svg>)
+
+![Work and receipts — dark truecolor](<assets/readme/display.dark-truecolor-3.svg>)
+
+![Work and receipts — dark truecolor](<assets/readme/display.dark-truecolor-4.svg>)
+
+### Motion and feedback
+
+![Motion and feedback — dark truecolor](<assets/readme/motion.dark-truecolor.svg>)
+
+### A whale with a job
+
+![A whale with a job — dark truecolor](<assets/readme/whales.dark-truecolor.svg>)
+
+### Every whale action
+
+![Every whale action — dark truecolor](<assets/readme/whale-actions.dark-truecolor.svg>)
+
+<details>
+<summary>Light theme</summary>
+
+![Sessions and fleets — light truecolor](<assets/readme/components.light-truecolor.svg>)
+
+![The Codewhale language — light truecolor](<assets/readme/foundation.light-truecolor.svg>)
+
+![Input and selection — light truecolor](<assets/readme/input.light-truecolor-1.svg>)
+
+![Input and selection — light truecolor](<assets/readme/input.light-truecolor-2.svg>)
+
+![Input and selection — light truecolor](<assets/readme/input.light-truecolor-3.svg>)
+
+![Navigation and controls — light truecolor](<assets/readme/chrome.light-truecolor.svg>)
+
+![Work and receipts — light truecolor](<assets/readme/display.light-truecolor-1.svg>)
+
+![Work and receipts — light truecolor](<assets/readme/display.light-truecolor-2.svg>)
+
+![Work and receipts — light truecolor](<assets/readme/display.light-truecolor-3.svg>)
+
+![Work and receipts — light truecolor](<assets/readme/display.light-truecolor-4.svg>)
+
+![Motion and feedback — light truecolor](<assets/readme/motion.light-truecolor.svg>)
+
+![A whale with a job — light truecolor](<assets/readme/whales.light-truecolor.svg>)
+
+![Every whale action — light truecolor](<assets/readme/whale-actions.light-truecolor.svg>)
+
+</details>
+
+### Terminal profiles
+
+![Terminal profile comparison](<assets/readme/profile-comparison.svg>)
+
+<!-- gallery:end -->
+
+## Component catalogue
+
+| Family | Components | What they do |
+|---|---|---|
+| Session surfaces | `Message`, `ToolCard`, `Composer`, `AgentCard`, `Fleet` | Speaker anchors, output rails, honest omission counts, caller-owned prompts and each agent's own state, route and task |
+| Identity and state | `Whale`, `WhaleState`, `Icon`, `StatusMark`, `StateWords` | The v2 whale's 17 actions and pods; marks always paired with words; localized state labels |
+| Surfaces | `Panel`, `Depth`, `Dialog`, `Sheet`, `HorizonRule` | Deep, stage, raised and overlay grounds; centered decisions, edge-anchored sheets and the composer ledge |
+| Navigation | `Heading`, `Tabs`, `KeyHints`, `Keymap`, `Picker`, `List` | Shared heading hierarchy, selection, scrolling, keyboard labels and caller-owned outcomes |
+| Input and controls | `TextInput`, `Form`, `Toggle`, `Segmented` | Unicode-aware editing, masked fields, validation and controls that explain disabled state |
+| Search and empty states | `PickerQuery`, `PickerTabs`, `PickerMatches`, fuzzy matching helpers, `EmptyState` | Ranked choices, search highlights, tabs, previews and a clear next action when there are no results |
+| Work and evidence | `Receipt`, `ReceiptTable`, `Diff`, `WorkflowTree`, `CountBar` | Measured values, explicit unknowns, numbered additions/removals, workflow hierarchy and progress from known totals |
+| Decisions | `ApprovalCard`, `ReviewVerdict`, `ReviewAggregate` | What will happen, where, why, and the caller's available next actions |
+| Settings | `SettingRow`, `SettingDetail` | Value, source, lock reason, changed state, apply timing and reset details |
+| Feedback and motion | `Toasts`, `Spinner`, motion helpers | Notices, measured elapsed time, bounded transitions and reduced/still motion |
+
+Words and data arrive from the caller, with English defaults where useful.
+The kit does not calculate a diff, parse Markdown, validate credentials,
+authorize a command, estimate cost or run an agent.
 
 ## Use it
 
-```rust
-use codewhale_ratatui::{Depth, KeyHint, KeyHints, Paint, Panel, Picker, PickerItem, PickerState, Theme};
+Use this repository as a Git dependency while the crate is developed:
 
-// Once, after enabling raw mode: measure the terminal's ground (OSC 11).
+```toml
+[dependencies]
+codewhale-ratatui = { git = "https://github.com/Hmbown/codewhale-ratatui" }
+ratatui = "=0.30.2"
+```
+
+Rust 1.89 or later. The kit and host must share the same Ratatui and Crossterm
+versions so their buffers, styles and key events are the same types.
+
+```rust
+use codewhale_ratatui::{
+    Depth, KeyHint, KeyHints, Paint, Panel, Picker, PickerItem, PickerState, Theme,
+};
+
+// Once, after enabling raw mode, if the host does not already detect it:
 codewhale_ratatui::detect::probe_terminal_background();
 let theme = Theme::detect();
 
-// In your draw callback:
+// In your draw callback, with a Ratatui area and buffer:
 let hints = KeyHints::new(vec![
     KeyHint::new("↑↓", "move"),
     KeyHint::new("Enter", "select"),
@@ -47,96 +160,102 @@ let items = [PickerItem::new("Work").key('1'), PickerItem::new("Plan").key('2')]
 Picker::new(&items, PickerState::new(0)).paint(inner, buf, &theme);
 ```
 
-If nothing measures the terminal's ground (no OSC 11 reply, no
-`COLORFGBG`), the theme uses the terminal's own 16 named colors and paints no
-grounds, rather than guess. Set `CODEWHALE_APPEARANCE=light` or `=dark` to
-tell it, or set `Caps::appearance` from your own theme setting.
-`CODEWHALE_ASCII_SAFE=1` draws every mark in ASCII.
+Every `Paint` component also becomes a Ratatui widget with `.themed(&theme)`:
 
-A host that already detects the terminal (the Codewhale engine does) builds
-the theme from what it knows instead of probing twice:
-`Theme::new(Caps { depth, ascii, appearance }).ground(Ground::Graphite)`.
-
-Components name a `Role` (`Muted`, `Live`, `Danger`, …), never a color. The
-`Theme` resolves the role when it paints, so a theme or terminal change
-reaches every component on the next frame.
-
-| Component | What it shows |
-|---|---|
-| `KeyHints` | `↑↓ move · Enter select · Esc cancel`; wraps instead of dropping an action |
-| `StatusMark` | a state's mark and word; the mark takes the state's hue |
-| `Panel` + `Depth` | deep, stage, raised and overlay grounds; an edge where grounds cannot paint |
-| `HorizonRule` | the one full-width rule, above the place you type |
-| `Picker` | choose-one and checklist rows; selection is a marker, bold and a ground |
-| `Toasts` | one-line notices at the bottom right |
-| `Spinner` | appears after 400 ms, holds still under reduced motion, shows measured time |
-| `Icon` | sonar, tide, shell and kelp, one cell each, with words and ASCII forms; none borrows a state's mark |
-| `Whale` | the v2 whale in Braille, any of its 17 actions, with its state in words beneath |
-
-## See every component
-
-```sh
-cargo run --example gallery                        # browse; p changes the profile
-cargo run --example gallery -- --print dark-256    # print one profile to stdout
-cargo run --example gallery -- --dump out/         # write .ans and .txt for every profile
+```rust
+use codewhale_ratatui::{Composer, Paint, Theme};
+let theme = Theme::detect();
+let composer = Composer::new("Review the changes")
+    .context("codewhale-ratatui / main");
+frame.render_widget(composer.themed(&theme), frame.area());
 ```
 
-Profiles: `dark-truecolor` (the blue ombre), `dark-graphite`,
-`light-truecolor`, `dark-256`, `light-256`, `ansi-16`, `unknown-ground`,
-`no-color`, `ascii`.
+The [gallery fixtures](src/gallery/) are runnable usage examples for every
+family. [Component contribution instructions](CONTRIBUTING-COMPONENTS.md)
+explain the rendering and ownership contracts.
 
-## Test it
+## Choose a terminal profile
+
+- **Truecolor:** exact token inks; dark terminals use the blue ombre by default.
+  `Theme::ground(Ground::Graphite)` retains graphite grounds.
+- **256 colors:** audited fixed-palette colors preserve contrast and state hues.
+- **16 colors or unknown ground:** named terminal colors and visible marks/edges;
+  the terminal owns the background.
+- **`NO_COLOR`:** words, weight and marks carry every state.
+- **`CODEWHALE_ASCII_SAFE=1`:** component chrome uses ASCII glyphs; user-authored
+  Unicode remains text supplied by the host.
+
+Set `CODEWHALE_APPEARANCE=light` or `dark` if the ground cannot be measured.
+A host with its own detection can pass `Theme::new(Caps { depth, ascii,
+appearance })` and avoid a second probe. Changes to a theme reach components
+on their next paint; components hold roles rather than cached colors.
+
+## Browse and regenerate
 
 ```sh
-cargo test                  # unit, generated-roles, whale and snapshot tests
-cargo insta review          # review changed snapshots
+cargo run --example gallery                          # interactive catalogue
+cargo run --example gallery -- --print dark-256     # ANSI preview to stdout
+cargo run --example gallery -- --dump out/          # .ans and styled .txt, all profiles
+cargo run --example gallery -- --svg target/readme-buffers
+python3 tools/render-gallery.py target/readme-buffers assets/readme --readme README.md
+python3 tools/render-gallery.py target/readme-buffers assets/readme --readme README.md --check
 ```
 
-Snapshots record the role each cell was painted with, not its hex value, so
-a token change does not rewrite them but painting the wrong role does. Where
-two roles look the same at a depth, the snapshot names both
-(`bg=Background|Surface`).
+In the interactive gallery: `↑↓` or `j/k` selects a component, `p/P` switches
+terminal profile, `w/W` switches width, `PgUp/PgDn` scrolls tall previews,
+`Home/End` jumps through them, and `q` or `Esc` exits. This includes the full
+17-action whale sheet on an ordinary-height terminal.
 
-## Update the tokens
+Profiles: `dark-truecolor`, `dark-graphite`, `light-truecolor`, `dark-256`,
+`light-256`, `ansi-16`, `unknown-ground`, `no-color`, `ascii`.
 
-The tokens live in the `codewhale-design` repository. Vendor a new version
-and regenerate the roles:
+## Verify it
+
+```sh
+cargo fmt --check
+cargo clippy --all-targets --locked -- -D warnings
+cargo test --locked
+cargo test --example gallery --locked
+python3 vendor/codewhale-design/generate.py --check
+```
+
+Snapshots record the role each run uses, alongside its glyphs. Tests exercise
+profiles and widths, Unicode input, missing data, clipped output and disabled
+controls. The generated README boards can be checked separately with the
+command above. GitHub CI qualifies the branch; a local pass proves local
+behavior only.
+
+## Update design assets
+
+Tokens are vendored from the private `codewhale-design` source. Maintainers
+with that checkout can sync and regenerate:
 
 ```sh
 ../codewhale-design/scripts/sync-to.sh .
 CODEWHALE_BLESS=1 cargo test --test generated
 ```
 
-`src/roles.rs` holds the roles, the truecolor tables, a 256-color table and
-the blue ombre table. The 256-color table starts from the nearest fixed
-index and moves an ink only where quantizing breaks the design's contrast
-floors or turns a state hue gray. The ombre tints the dark grounds and the
-quiet line toward the logo's `#0B48BB` and restores each one's luminance,
-and the generator fails if any contrast floor breaks. `cargo test` fails if
-`roles.rs` no longer matches `tokens.json`.
+`src/roles.rs` is generated from the tokens, including terminal-derived hint,
+dim and diff-tint roles. Contrast tests cover truecolor and quantized colors.
 
-## Update the whale
-
-`assets/whale-v2.scenes` holds the poster contours of all 17 actions (the
-pod with one, two and three calves), exported from the whale-character-v2
-kit:
+`assets/whale-v2.scenes` holds contours exported from the v2 whale kit. To
+update or check them with that source available:
 
 ```sh
-node tools/export-whale.cjs <path-to-whale-character-v2>          # rewrite
-node tools/export-whale.cjs <path-to-whale-character-v2> --check  # verify
+node tools/export-whale.cjs <path-to-whale-character-v2>
+node tools/export-whale.cjs <path-to-whale-character-v2> --check
 ```
 
-`tests/whale.rs` checks every action against the kit's own 32×16 and 20×10
-stills, dot for dot, and fails if the kit gains an action this crate cannot
-draw.
+`tests/whale.rs` checks all 17 actions against the kit's 32×16 and 20×10 stills,
+dot for dot. Artwork shows up to three calves; the state label gives the true
+agent count, including larger fleets. Compact or ASCII terminals keep the
+state in words when the art cannot fit.
 
-## Where it came from
+## Integration status and license
 
-The color detection, OSC 11 probe, glyph charter, key labels, hint layout,
-modal sizing and spinner are extracted from the Codewhale engine
-([Hmbown/CodeWhale](https://github.com/Hmbown/CodeWhale) at `58b1dd3dd`);
-each module names its source. The engine does not use this crate yet.
+The foundation was extracted from the Codewhale Engine
+([Hmbown/CodeWhale](https://github.com/Hmbown/CodeWhale) at `58b1dd3dd`) and
+extended here. The Engine has not migrated onto this crate yet. Completing
+this library and its gallery does not establish Engine adoption or a release.
 
-## License
-
-MIT
+MIT. See [LICENSE](LICENSE).
