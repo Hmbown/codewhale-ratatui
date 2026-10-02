@@ -18,7 +18,7 @@
 //!   [`text::display_safe`] before anything is measured.
 //!
 //! Modelled on the engine's `crates/tui/src/tui/diff_render.rs`
-//! (`Hmbown/CodeWhale` `58b1dd3dd`) and `docs/TUI-KIT-DESIGN.md` §3.19.
+//! (`Hmbown/CodeWhale` `58b1dd3dd`).
 
 use std::{borrow::Cow, ops::Range};
 

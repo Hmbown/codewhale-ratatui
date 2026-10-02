@@ -19,8 +19,7 @@
 //! person flipped from their default (`TreeNode::collapsed`), and
 //! [`TreeState::handle_key`] turns keys into a [`TreeOutcome`] the host acts
 //! on. Modelled on the engine's `widgets/workflow_panel.rs` and
-//! `history/checklist.rs` (`Hmbown/CodeWhale` `58b1dd3dd`) and
-//! `docs/TUI-KIT-DESIGN.md` §3.17.
+//! `history/checklist.rs` (`Hmbown/CodeWhale` `58b1dd3dd`).
 
 use std::{borrow::Cow, collections::BTreeSet};
 

@@ -15,7 +15,7 @@
 //! Modelled on the engine's roster receipts (`crates/tui/src/tui/
 //! agent_roster.rs` and `agent_roster::format_duration` / `format_tokens`,
 //! `Hmbown/CodeWhale` `58b1dd3dd`), whose "absent receipts render as `—`"
-//! rule this keeps, and `docs/TUI-KIT-DESIGN.md` §3.6.
+//! rule this keeps.
 
 use std::{borrow::Cow, time::Duration};
 

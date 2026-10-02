@@ -13,7 +13,7 @@
 //!   (`12 files so far, total unknown`) instead of guessing a fraction.
 //!
 //! The state (and so the mark and word) comes from the host; the bar never
-//! infers "done" from the counts. `docs/TUI-KIT-DESIGN.md` §3.16.
+//! infers "done" from the counts.
 
 use std::borrow::Cow;
 

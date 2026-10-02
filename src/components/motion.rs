@@ -1,9 +1,8 @@
 //! Motion: the few things that move, and the promise that nothing else does.
 //!
-//! The design (`TUI-KIT-DESIGN.md` §4) allows motion for a change of state or
-//! for spatial continuity, and nothing else: no sweeps, dissolves, glitches or
-//! bounces. This module is that layer in about the size the design asked
-//! for, instead of a dependency.
+//! Motion is allowed for a change of state or for spatial continuity, and
+//! nothing else: no sweeps, dissolves, glitches or bounces. This module is
+//! that layer in a few hundred lines, instead of a dependency.
 //!
 //! - A [`MotionStep`] eases a value from where it is to a target in `0..=1`,
 //!   sampled at an instant the caller passes in. Nothing here reads a clock,
