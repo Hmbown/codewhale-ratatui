@@ -45,7 +45,7 @@ Gallery names are the exact names accepted by the gallery example; the
 | Engine `history/message.rs::render_message`, `composer_chrome.rs::ComposerChrome`, `widgets/tool_card.rs::ToolFamily`, `CardRail`; GPUI `workspace/render/conversation.rs::render_prepared_row`, `workspace/render/composer.rs` | `Message::native`, optional `Composer`, `ToolCard` | Native inline message / optional composites | `message`, `composer`, `tool-card` |
 | Engine `widgets/agent_card.rs::DelegateCard`, `FanoutCard`, `AgentLifecycle`, `views/fleet_roster.rs::FleetRosterView`; GPUI `workspace/dock/agents.rs::AgentsModule` | `AgentCard`, `Fleet` | Composite | `agent-card`, `fleet`, `fleet-scene` |
 | Engine `phase_strip.rs::TidelineFooter`, `workspace_context.rs`; GPUI `workspace/dock/skin.rs::QuietDockSkin`, `workspace/render/composer.rs` context controls | `WorkspaceFrame`, `WorkspaceAreas`, `PaneHeader`, `ContextRibbon`, `ContextItem` | Composite | `workbench-frame`, `pane-header`, `context-ribbon`, `context-ribbon-narrow`, `workspace-scene`, `workspace-scene-narrow` |
-| Engine `work_surface/{model,input,views}.rs`, `work_surface/render/{mod,layout,rows}.rs` | `Workbar`, `WorkbarRow`, `WorkbarPanel`, `WorkbarState`, `DockTabRow`, `DockTabPlan`, `DockTabEntry`, `DockTabStyles`, `DockTabTarget` | Native extraction | `workbar-tasks`, `workbar-fleet`, `workbar-jobs`, `workbar-files`, `workbar-notes`, `workbar-context`, `workbar-git`, `workbar-cost`, placement and narrow variants |
+| Engine `work_surface/{model,input,views}.rs`, `work_surface/render/{mod,layout,rows}.rs` | `Workbar`, `WorkbarRow`, `WorkbarPanel`, `WorkbarState`, `WorkbarLayout`, `WorkbarScrollbar`, `DockTabRow`, `DockTabPlan`, `DockTabEntry`, `DockTabStyles`, `DockTabTarget` | Native extraction | `workbar-tasks`, `workbar-fleet`, `workbar-jobs`, `workbar-files`, `workbar-notes`, `workbar-context`, `workbar-git`, `workbar-cost`, placement and narrow variants |
 | Engine `widgets/workbar.rs` | `WorkflowProgress`, `WorkflowRun` | Native extraction | `workflow-*` |
 | Engine `widgets/mod.rs`, `composer_chrome.rs`, `composer_ui.rs`, `mouse_ui.rs` | `NativeComposer`, `NativeComposerFrame`, `NativeComposerPlan`, `NativeComposerSourcePlan` | Native extraction | `native-composer-*` |
 | Engine `phase_strip.rs`, `infoline.rs`, `ui/frame.rs` | `PostureBar`, `MetricsLine`, `TerminalShell` | Native extraction | `posture-*`, `metrics-*`, `showcase-work`, `showcase-narrow` |
@@ -148,3 +148,9 @@ The existing `ocean-native-guarded` gallery directly uses `OceanPaintFacts`,
 the host role mapping for guarded native finishing. These are
 presentation facts and protection helpers; they do not grant terminal capability
 or weaken motion, selection, REVERSED or contrast guards.
+
+`WorkbarLayout::for_body` shares header folding, overflow reservation, content
+geometry and offset fitting with Engine's body viewport. `WorkbarScrollbar`
+shares its rail math and paint. Native row composition, detail/focus gutters
+and caller action/tooltip projection remain Engine-owned; this does not yet
+claim full row-composer replacement by `Workbar`.
