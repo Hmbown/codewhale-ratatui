@@ -32,18 +32,22 @@ impl From<KeyCode> for KeyChord {
     }
 }
 
-/// Fold what terminals disagree about: `Shift` on a character is already in
-/// its case (and some terminals add it to `?`), `BackTab` always carries
-/// `Shift`, and a modified letter may arrive in either case.
+/// Fold what terminals disagree about: `Shift` on a lone character is already
+/// in its case (and some terminals add it to `?`), `BackTab` always carries
+/// `Shift`, and a letter held with a command modifier may arrive in either
+/// case.
+///
+/// `Shift` is kept once Control, Alt or Super is held: `Ctrl+Shift+E` and
+/// `Ctrl+E` are two chords a keymap may bind to two actions, and their hints
+/// already print differently.
 fn normalize(code: KeyCode, modifiers: KeyModifiers) -> (KeyCode, KeyModifiers) {
     match code {
         KeyCode::Char(c) => {
-            let modifiers = modifiers & !KeyModifiers::SHIFT;
             if modifiers.intersects(KeyModifiers::CONTROL | KeyModifiers::ALT | KeyModifiers::SUPER)
             {
                 (KeyCode::Char(c.to_ascii_lowercase()), modifiers)
             } else {
-                (code, modifiers)
+                (code, modifiers & !KeyModifiers::SHIFT)
             }
         }
         KeyCode::BackTab => (code, modifiers & !KeyModifiers::SHIFT),

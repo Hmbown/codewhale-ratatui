@@ -411,6 +411,80 @@ fn verbs(hints: &KeyHints) -> Vec<String> {
     hints.items.iter().map(|h| h.verb.to_string()).collect()
 }
 
+/// `Ctrl+E` and `Ctrl+Shift+E` are different chords with different hints, so a
+/// keymap that declares both must fire both. Shift was stripped before the
+/// comparison, so an event `Char('E')` with `CONTROL | SHIFT` fired whichever
+/// of the two was declared first.
+#[test]
+fn ctrl_e_and_ctrl_shift_e_are_two_chords() {
+    let ctrl_e = KeyChord::ctrl('e');
+    let ctrl_shift_e = KeyChord::new(
+        KeyCode::Char('e'),
+        KeyModifiers::CONTROL | KeyModifiers::SHIFT,
+    );
+    let plain = KeyEvent::new(KeyCode::Char('e'), KeyModifiers::CONTROL);
+    // Terminals report the shifted letter either way.
+    let shifted = [
+        KeyEvent::new(
+            KeyCode::Char('E'),
+            KeyModifiers::CONTROL | KeyModifiers::SHIFT,
+        ),
+        KeyEvent::new(
+            KeyCode::Char('e'),
+            KeyModifiers::CONTROL | KeyModifiers::SHIFT,
+        ),
+    ];
+    assert!(ctrl_e.matches(&plain));
+    assert!(!ctrl_shift_e.matches(&plain));
+    for event in &shifted {
+        assert!(ctrl_shift_e.matches(event), "{event:?}");
+        assert!(!ctrl_e.matches(event), "{event:?} is not Ctrl+E");
+    }
+    // The hints differ, so the bindings must too.
+    assert_eq!(ctrl_e.label(LINUX), "Ctrl+E");
+    assert_eq!(ctrl_shift_e.label(LINUX), "Ctrl+Shift+E");
+
+    // Declared in either order, each chord fires its own action.
+    let both = Keymap::new()
+        .with(Binding::new(ctrl_e, "export", "export"))
+        .with(Binding::new(ctrl_shift_e, "export all", "export-all"));
+    let reversed = Keymap::new()
+        .with(Binding::new(ctrl_shift_e, "export all", "export-all"))
+        .with(Binding::new(ctrl_e, "export", "export"));
+    for map in [&both, &reversed] {
+        assert_eq!(map.lookup(&plain), Some(&"export"));
+        for event in &shifted {
+            assert_eq!(map.lookup(event), Some(&"export-all"), "{event:?}");
+        }
+    }
+    // The same holds for Alt and Super.
+    for modifier in [KeyModifiers::ALT, KeyModifiers::SUPER] {
+        let bare = KeyChord::new(KeyCode::Char('e'), modifier);
+        let with_shift = KeyChord::new(KeyCode::Char('e'), modifier | KeyModifiers::SHIFT);
+        let event = KeyEvent::new(KeyCode::Char('E'), modifier | KeyModifiers::SHIFT);
+        assert!(with_shift.matches(&event) && !bare.matches(&event));
+    }
+}
+
+/// What the fix must not cost: Shift is still folded where it only says the
+/// character is shifted, and BackTab still carries it.
+#[test]
+fn shift_is_still_folded_without_a_command_modifier() {
+    let question = KeyChord::char('?');
+    for modifiers in [KeyModifiers::NONE, KeyModifiers::SHIFT] {
+        assert!(question.matches(&KeyEvent::new(KeyCode::Char('?'), modifiers)));
+    }
+    let upper = KeyChord::char('E');
+    assert!(upper.matches(&KeyEvent::new(KeyCode::Char('E'), KeyModifiers::SHIFT)));
+    assert!(upper.matches(&KeyEvent::new(KeyCode::Char('E'), KeyModifiers::NONE)));
+    assert!(!upper.matches(&KeyEvent::new(KeyCode::Char('e'), KeyModifiers::NONE)));
+    let back_tab = KeyChord::plain(KeyCode::BackTab);
+    assert!(back_tab.matches(&KeyEvent::new(KeyCode::BackTab, KeyModifiers::SHIFT)));
+    assert!(back_tab.matches(&KeyEvent::new(KeyCode::BackTab, KeyModifiers::NONE)));
+    // A letter held with Ctrl still arrives in either case.
+    assert!(KeyChord::ctrl('o').matches(&KeyEvent::new(KeyCode::Char('O'), KeyModifiers::CONTROL)));
+}
+
 #[test]
 fn a_keymap_looks_keys_up_and_skips_what_is_disabled() {
     let map = settings_keymap();
