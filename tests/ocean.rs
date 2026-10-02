@@ -652,3 +652,182 @@ fn native_gallery_scenes_keep_the_nine_profile_rules_at_narrow_widths() {
         ));
     }
 }
+
+fn explicit_ramp() -> OceanRamp {
+    OceanRamp::new(
+        Color::Rgb(12, 34, 56),
+        Color::Rgb(6, 20, 35),
+        Color::Rgb(2, 10, 20),
+        Color::Rgb(40, 80, 100),
+        Color::Rgb(240, 180, 60),
+        Color::Rgb(220, 80, 80),
+    )
+}
+
+#[test]
+fn explicit_ramp_reaches_every_sampling_and_finishing_path() {
+    let theme = Profile::DarkTrue.theme();
+    let viewport = Rect::new(7, 9, 8, 5);
+    let ramp = explicit_ramp();
+    let fallback = OceanRamp::for_theme(&theme).unwrap();
+    let column = OceanColumn::new(Duration::ZERO, MotionMode::Still)
+        .ramp(ramp)
+        .viewport(viewport);
+    assert_eq!(
+        column.color_at_y(9, viewport, &theme),
+        Some(Color::Rgb(12, 34, 56))
+    );
+    assert_eq!(
+        column.color_at_y(13, viewport, &theme),
+        Some(Color::Rgb(2, 10, 20))
+    );
+    assert_eq!(
+        column.color_at_y_with_ramp(9, Rect::new(0, 0, 1, 1), fallback),
+        Color::Rgb(12, 34, 56)
+    );
+    for method in 0..3 {
+        let mut buf = ordinary(viewport, &theme);
+        if method == 2 {
+            buf.set_style(viewport, Style::default().bg(Color::Rgb(1, 2, 3)));
+            column.apply_matching(viewport, &mut buf, &theme, Color::Rgb(1, 2, 3));
+        } else if method == 1 {
+            column.paint(viewport, &mut buf, &theme);
+        } else {
+            column.apply(viewport, &mut buf, &theme);
+        }
+        assert_eq!(buf[(7, 9)].bg, Color::Rgb(12, 34, 56));
+        assert_eq!(buf[(14, 13)].bg, Color::Rgb(2, 10, 20));
+    }
+}
+
+#[test]
+fn explicit_ramp_cannot_grant_capabilities_or_overwrite_semantic_cells() {
+    let ramp = explicit_ramp();
+    let area = Rect::new(3, 5, 6, 1);
+    let column = OceanColumn::new(Duration::ZERO, MotionMode::Still).ramp(ramp);
+    for profile in Profile::ALL {
+        let theme = profile.theme();
+        if OceanRamp::for_theme(&theme).is_some() {
+            continue;
+        }
+        let mut buf = ordinary(area, &theme);
+        let before = buf.clone();
+        assert_eq!(column.color_at_y(5, area, &theme), None);
+        column.apply(area, &mut buf, &theme);
+        column.apply_matching(area, &mut buf, &theme, Color::Reset);
+        assert_eq!(buf, before, "{} retains its paint gate", profile.name());
+    }
+    let theme = Profile::DarkTrue.theme();
+    for guarded in [
+        theme.without_base_ground(),
+        theme.tui_palette(codewhale_ratatui::TuiPalette::Whale),
+    ] {
+        let mut buf = ordinary(area, &guarded);
+        let before = buf.clone();
+        assert_eq!(column.color_at_y(5, area, &guarded), None);
+        column.apply(area, &mut buf, &guarded);
+        column.apply_matching(area, &mut buf, &guarded, Color::Reset);
+        assert_eq!(buf, before);
+    }
+    let mut buf = ordinary(area, &theme);
+    buf[(3, 5)].set_symbol("?").set_fg(Color::Reset);
+    buf[(4, 5)].set_symbol("?").set_fg(Color::Rgb(12, 34, 56));
+    buf[(5, 5)].modifier.insert(Modifier::REVERSED);
+    buf[(6, 5)].set_bg(Color::Rgb(99, 98, 97));
+    buf[(7, 5)].set_symbol("x").set_fg(Color::White);
+    let before = buf.clone();
+    column.apply(area, &mut buf, &theme);
+    for x in 3..7 {
+        assert_eq!(buf[(x, 5)], before[(x, 5)]);
+    }
+    for x in 7..9 {
+        assert_eq!(buf[(x, 5)].bg, Color::Rgb(12, 34, 56));
+    }
+    let before = buf.clone();
+    column.apply_matching(Rect::new(0, 0, 1, 1), &mut buf, &theme, Color::Reset);
+    assert_eq!(buf, before, "off-buffer matching is inert");
+}
+
+#[test]
+fn explicit_ramp_retains_motion_clamps_and_success_only_completion() {
+    let theme = Profile::DarkTrue.theme();
+    let area = Rect::new(7, 9, 8, 5);
+    let ramp = explicit_ramp();
+    for phase in PHASES {
+        for motion in [MotionMode::Still, MotionMode::Reduced] {
+            let sample = |elapsed| {
+                OceanColumn::new(elapsed, motion)
+                    .phase(phase)
+                    .ramp(ramp)
+                    .completion_elapsed(elapsed)
+                    .color_at_y(10, area, &theme)
+            };
+            assert_eq!(sample(Duration::ZERO), sample(Duration::from_secs(22)));
+        }
+    }
+    for phase in [
+        OceanPhase::Waiting,
+        OceanPhase::Approval,
+        OceanPhase::Failed,
+    ] {
+        let base = OceanColumn::new(Duration::ZERO, MotionMode::Full)
+            .phase(phase)
+            .ramp(ramp);
+        let stale = base.completion_elapsed(Duration::from_millis(320));
+        for y in area.top()..area.bottom() {
+            assert_eq!(
+                base.color_at_y(y, area, &theme),
+                stale.color_at_y(y, area, &theme)
+            );
+        }
+    }
+    let success = OceanColumn::new(Duration::ZERO, MotionMode::Full)
+        .phase(OceanPhase::Done)
+        .presence(0)
+        .ramp(ramp);
+    assert_ne!(
+        success
+            .completion_elapsed(Duration::ZERO)
+            .color_at_y(9, area, &theme),
+        success
+            .completion_elapsed(Duration::from_millis(320))
+            .color_at_y(9, area, &theme)
+    );
+    assert_eq!(
+        success
+            .completion_elapsed(Duration::from_millis(800))
+            .color_at_y(9, area, &theme),
+        Some(Color::Rgb(12, 34, 56))
+    );
+    let plain = OceanColumn::new(Duration::ZERO, MotionMode::Still).ramp(ramp);
+    assert_eq!(
+        plain.context_percent(100).color_at_y(9, area, &theme),
+        plain.context_percent(255).color_at_y(9, area, &theme)
+    );
+    assert_eq!(
+        plain.color_at_y(u16::MAX, area, &theme),
+        Some(Color::Rgb(2, 10, 20))
+    );
+}
+
+#[test]
+fn explicit_non_rgb_tints_leave_the_existing_water_unchanged() {
+    let ramp = OceanRamp::new(
+        Color::Rgb(12, 34, 56),
+        Color::Rgb(6, 20, 35),
+        Color::Rgb(2, 10, 20),
+        Color::Rgb(40, 80, 100),
+        Color::Reset,
+        Color::Indexed(200),
+    );
+    for phase in [
+        OceanPhase::Waiting,
+        OceanPhase::Approval,
+        OceanPhase::Failed,
+    ] {
+        assert_eq!(
+            ramp.color_at_attention_context(0, 5, phase, 0),
+            Color::Rgb(12, 34, 56)
+        );
+    }
+}
