@@ -34,7 +34,7 @@ use codewhale_ratatui::{NativeComposer, Paint, Theme};
 
 let theme = Theme::detect().tui();
 let composer = NativeComposer::new("Review the changes")
-    .target("my-project / main");
+    .focused(true);
 frame.render_widget(composer.themed(&theme), frame.area());
 ```
 
@@ -770,7 +770,10 @@ authorize a command, estimate cost or run an agent.
 
 `OceanColumn` is adapted from the current TUI's three native stops:
 `#102A45` → `#0A1E33` → `#061320`. Apply it after painting a scene to share
-one continuous column behind ordinary grounds. Selections, elevated panels,
+one continuous column behind ordinary grounds. Give it the full shell with
+`.viewport(area)`, then use `.apply_matching(composer_area, buffer, theme, composer_ground)`
+for a composer with its own base fill. The native [starter example](examples/starter.rs)
+shows this complete composition. Selections, elevated panels,
 diffs and code retain their backgrounds. The host supplies phase, elapsed time
 and measured context; quiet policies stop breathing. The dark field is
 opt-in on measured truecolor Ocean; light and limited-color terminals retain
@@ -876,14 +879,17 @@ switches working/verification, `r` replays, `p` changes profile, and `m`
 changes motion policy. `q` or `Esc` closes it.
 
 In the studio, `F1`–`F6` choose the six sections. `F7` changes terminal profile,
-`F8` motion policy, `F9` native TUI theme, and `F10` the example work phase. `Tab` moves
-focus; `Enter` edits; `Esc` keeps the draft. The decision accepts an explicit
-answer. Life uses `←→` to study an action and `Space` to play all seventeen.
+`F8` motion policy, `F9` native TUI theme, and `F10` the example work phase.
+The composer starts focused. `Enter` queues a follow-up while work is running;
+`Esc` interrupts the illustrative turn and keeps the draft. `Shift+Tab` changes
+permission. The decision accepts an explicit answer. Life uses `←→` to study
+an action and `Space` to play all seventeen.
 In Work, `Ctrl+X` opens Fleet, `Alt+W` focuses the workbar, and Left/Right
 switches its panel while focused. `Esc` closes the dock. Color controls select
 optional ombré washes separately from the native F9 theme.
 Components supports search and tall-preview scrolling. `Ctrl+R` restarts the
 demonstration; `q` or `Esc` closes outside editing.
+`Ctrl+C` closes from any section or focus.
 
 Profiles: `dark-truecolor`, `dark-graphite`, `light-truecolor`, `dark-256`,
 `light-256`, `ansi-16`, `unknown-ground`, `no-color`, `ascii`.

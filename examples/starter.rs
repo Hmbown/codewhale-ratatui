@@ -4,7 +4,7 @@ use std::{io, time::Duration};
 
 use codewhale_ratatui::{
     Message, MotionMode, NativeComposer, OceanColumn, Paint, PostureBar, TerminalShell,
-    TextInputOutcome, TextInputState, Theme, Workbar, WorkbarPanel, WorkbarRow,
+    TextInputOutcome, TextInputState, Theme, TuiGround, Workbar, WorkbarPanel, WorkbarRow,
 };
 use crossterm::{
     event::{self, DisableBracketedPaste, EnableBracketedPaste, Event, KeyCode, KeyModifiers},
@@ -49,7 +49,11 @@ fn main() -> io::Result<()> {
                 PostureBar::new("ask").paint(regions.posture, buf, &theme);
                 workbar.paint(regions.workbar, buf, &theme);
                 // A still column keeps the native depth without an idle redraw loop.
-                OceanColumn::new(Duration::ZERO, MotionMode::Still).apply(area, buf, &theme);
+                let water = OceanColumn::new(Duration::ZERO, MotionMode::Still).viewport(area);
+                water.apply(area, buf, &theme);
+                if let Some(ground) = theme.tui_ground(TuiGround::Composer).bg {
+                    water.apply_matching(regions.composer, buf, &theme, ground);
+                }
                 if let Some(cursor) = cursor {
                     frame.set_cursor_position(cursor);
                 }

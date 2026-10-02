@@ -28,7 +28,7 @@ fn source_slot_order_and_height_budget_hold_at_offset_and_tiny_sizes() {
         assert_eq!(y, area.bottom());
         assert!(slots.pending.height <= 4);
         if height >= 12 {
-            assert!(slots.conversation.height >= 5);
+            assert!(slots.conversation.height >= 3);
             assert_eq!(slots.posture.height, 1);
             assert_eq!(slots.metrics.height, 1);
         }

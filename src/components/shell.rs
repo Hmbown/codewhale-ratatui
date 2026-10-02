@@ -30,7 +30,7 @@ impl TerminalShell {
             pending_rows: 0,
             workflow_rows: 0,
             workbar_rows: 0,
-            minimum_chat_rows: 5,
+            minimum_chat_rows: 3,
         }
     }
     pub const fn pending_rows(mut self, rows: u16) -> Self {

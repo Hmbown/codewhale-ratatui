@@ -4,235 +4,233 @@ expression: dump(&entry)
 ---
 == dark-truecolor
 
-▎ Polish the workbar and update the
-▏ gallery.
+▎ Make the session picker readable in
+▏ narrow windows.
 
-
-● The changes are ready for review.
-
-
-
-
+● The session picker is ready for
+▏ review.
+▏ Search, numbering and selection
+▏ remain visible in narrow windows.
 
 ✓ Done                               6 s
 
 
 
+
+
+
+
 ╭──────────────────────────────────────╮
-│❯ Review the changes.                 │
-│                                  [↵] │
-╰ Enter send  Shift+Enter newline ─────╯
- ● ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+│  Also preserve the search            │
+│❯ shortcut.                       [↵] │
+╰──────────────────────────────────────╯
+ ● ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ────────────────────────────────────────
   Tasks    Fleet    Jobs    Files     ×
- Goal: Make the work dock reusable
- TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component
- 2 · ● Extract the native work dock
- 3 · ○ Document the reusable API
+ Goal: Make session navigation feel e…
+ TODO · 2/2 · done
+ ✓ Preserve session selection          ┃
 ---
-r0 c0..40 fg=Foreground bg=Hover
-r1 c0..1 fg=Primary bg=#102a43 bold
-r1 c1..40 fg=Foreground bg=#102a43
-r2 c0..2 fg=Hint|Dim bg=#102843
-r2 c2..40 fg=Foreground bg=#102843
-r3 c0..40 fg=Foreground bg=#0e2841
-r4 c0..40 fg=Foreground bg=#0e263f
-r5 c0..1 fg=Primary bg=#0e263e bold
-r5 c1..40 fg=Foreground bg=#0e263e
-r6 c0..40 fg=Foreground bg=#0e253d
-r7 c0..40 fg=Foreground bg=#0d243b
-r8 c0..40 fg=Foreground bg=#0d233a
-r9 c0..40 fg=Foreground bg=#0c2239
-r10 c0..40 fg=Foreground bg=#0c2237
-r11 c0..1 fg=Live bg=#0c2136
-r11 c1..40 fg=Foreground bg=#0c2136
-r12 c0..40 fg=Foreground bg=#0b2035
-r13 c0..40 fg=Foreground bg=#0b1f33
-r14 c0..40 fg=Foreground bg=#0a1e32
-r15 c0..40 fg=Border bg=Surface
-r16 c0..1 fg=Border bg=Surface
-r16 c1..2 fg=Primary bg=Surface
-r16 c2..39 fg=Foreground bg=Surface
-r16 c39..40 fg=Border bg=Surface
-r17 c0..1 fg=Border bg=Surface
-r17 c1..35 fg=Foreground bg=Surface
-r17 c35..38 fg=Primary bg=Surface bold
-r17 c38..39 fg=Foreground bg=Surface
-r17 c39..40 fg=Border bg=Surface
-r18 c0..1 fg=Border bg=Surface
-r18 c1..34 fg=Primary bg=Surface
-r18 c34..40 fg=Border bg=Surface
-r19 c0..1 fg=Foreground bg=#081a2b
-r19 c1..6 fg=#e09948 bg=#081a2b bold
-r19 c6..9 fg=Hint|Dim bg=#081a2b
-r19 c9..13 fg=#7eb4e8 bg=#081a2b
-r19 c13..30 fg=Hint|Dim bg=#081a2b
-r19 c30..40 fg=Foreground bg=#081a2b
-r20 c0..9 fg=Muted bg=#08192a
-r20 c9..12 fg=Hint|Dim bg=#08192a
-r20 c12..15 fg=Muted bg=#08192a
-r20 c15..16 fg=Foreground bg=#08192a
-r20 c16..19 fg=Muted bg=#08192a
-r20 c19..40 fg=Foreground bg=#08192a
-r21 c0..40 fg=Border bg=#081828
-r22 c0..1 fg=Foreground bg=#081727
-r22 c1..8 fg=Foreground bg=Selected bold
-r22 c8..10 fg=Foreground bg=#081727
-r22 c10..17 fg=Muted bg=#081727
-r22 c17..19 fg=Foreground bg=#081727
-r22 c19..25 fg=Muted bg=#081727
-r22 c25..27 fg=Foreground bg=#081727
-r22 c27..34 fg=Muted bg=#081727
-r22 c34..37 fg=Foreground bg=#081727
-r22 c37..40 fg=Hint|Dim bg=#081727
-r23 c0..1 fg=Foreground bg=#081726
-r23 c1..34 fg=Live bg=#081726 bold
-r23 c34..40 fg=Foreground bg=#081726
-r24 c0..1 fg=Foreground bg=#071524
-r24 c1..20 fg=Muted bg=#071524
-r24 c20..40 fg=Foreground bg=#071524
-r25 c0..1 fg=Foreground bg=#061522
-r25 c1..39 fg=#9bd66f bg=#061522
-r25 c39..40 fg=Foreground bg=#061522
-r26 c0..1 fg=Foreground bg=#061322
-r26 c1..39 fg=Live bg=#061322
-r26 c39..40 fg=Foreground bg=#061322
+r0 c0..40 fg=Foreground bg=#0e243c
+r1 c0..1 fg=Primary bg=#0d243b bold
+r1 c1..40 fg=Foreground bg=#0d243b
+r2 c0..2 fg=Hint|Dim bg=#0c2339
+r2 c2..40 fg=Foreground bg=#0c2339
+r3 c0..40 fg=Foreground bg=#0c2238
+r4 c0..1 fg=Primary bg=#0c2137 bold
+r4 c1..40 fg=Foreground bg=#0c2137
+r5 c0..2 fg=Hint|Dim bg=#0b2035
+r5 c2..40 fg=Foreground bg=#0b2035
+r6 c0..2 fg=Hint|Dim bg=#0b1f34
+r6 c2..40 fg=Foreground bg=#0b1f34
+r7 c0..2 fg=Hint|Dim bg=#0b1f33
+r7 c2..40 fg=Foreground bg=#0b1f33
+r8 c0..40 fg=Foreground bg=#0a1e31
+r9 c0..1 fg=Live bg=#0a1d30
+r9 c1..40 fg=Foreground bg=#0a1d30
+r10 c0..40 fg=Foreground bg=#0a1c2e
+r11 c0..40 fg=Foreground bg=#091b2d
+r12 c0..40 fg=Foreground bg=#091a2c
+r13 c0..40 fg=Foreground bg=#08192a
+r14 c0..40 fg=Foreground bg=#081929
+r15 c0..40 fg=Foreground bg=#081728
+r16 c0..40 fg=Foreground bg=#081726
+r17 c0..40 fg=Primary bg=#081624
+r18 c0..1 fg=Primary bg=#061524
+r18 c1..39 fg=Foreground bg=#061524
+r18 c39..40 fg=Primary bg=#061524
+r19 c0..2 fg=Primary bg=#061522
+r19 c2..35 fg=Foreground bg=#061522
+r19 c35..38 fg=Primary bg=#061522 bold
+r19 c38..39 fg=Foreground bg=#061522
+r19 c39..40 fg=Primary bg=#061522
+r20 c0..40 fg=Primary bg=Sidebar
+r21 c0..1 fg=Foreground bg=Sidebar
+r21 c1..6 fg=#e09948 bg=Sidebar bold
+r21 c6..20 fg=Hint|Dim bg=Sidebar
+r21 c20..24 fg=#7eb4e8 bg=Sidebar
+r21 c24..27 fg=Hint|Dim bg=Sidebar
+r21 c27..37 fg=Muted bg=Sidebar
+r21 c37..40 fg=Foreground bg=Sidebar
+r22 c0..1 fg=Foreground bg=Sidebar
+r22 c1..12 fg=Muted bg=Sidebar
+r22 c12..15 fg=Hint|Dim bg=Sidebar
+r22 c15..18 fg=Muted bg=Sidebar
+r22 c18..19 fg=Foreground bg=Sidebar
+r22 c19..22 fg=Muted bg=Sidebar
+r22 c22..40 fg=Foreground bg=Sidebar
+r23 c0..40 fg=Border bg=Sidebar
+r24 c0..1 fg=Foreground bg=Sidebar
+r24 c1..8 fg=Foreground bg=Selected bold
+r24 c8..10 fg=Foreground bg=Sidebar
+r24 c10..17 fg=Muted bg=Sidebar
+r24 c17..19 fg=Foreground bg=Sidebar
+r24 c19..25 fg=Muted bg=Sidebar
+r24 c25..27 fg=Foreground bg=Sidebar
+r24 c27..34 fg=Muted bg=Sidebar
+r24 c34..37 fg=Foreground bg=Sidebar
+r24 c37..40 fg=Hint|Dim bg=Sidebar
+r25 c0..1 fg=Foreground bg=Sidebar
+r25 c1..38 fg=Live bg=Sidebar bold
+r25 c38..40 fg=Foreground bg=Sidebar
+r26 c0..1 fg=Foreground bg=Sidebar
+r26 c1..18 fg=Muted bg=Sidebar
+r26 c18..40 fg=Foreground bg=Sidebar
 r27 c0..1 fg=Foreground bg=Sidebar
-r27 c1..39 fg=Muted bg=Sidebar
-r27 c39..40 fg=Foreground bg=Sidebar
+r27 c1..38 fg=#9bd66f bg=Sidebar
+r27 c38..39 fg=Foreground bg=Sidebar
+r27 c39..40 fg=Live bg=Sidebar
 
 == dark-graphite
 
-▎ Polish the workbar and update the
-▏ gallery.
+▎ Make the session picker readable in
+▏ narrow windows.
 
-
-● The changes are ready for review.
-
-
-
-
+● The session picker is ready for
+▏ review.
+▏ Search, numbering and selection
+▏ remain visible in narrow windows.
 
 ✓ Done                               6 s
 
 
 
+
+
+
+
 ╭──────────────────────────────────────╮
-│❯ Review the changes.                 │
-│                                  [↵] │
-╰ Enter send  Shift+Enter newline ─────╯
- ● ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+│  Also preserve the search            │
+│❯ shortcut.                       [↵] │
+╰──────────────────────────────────────╯
+ ● ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ────────────────────────────────────────
   Tasks    Fleet    Jobs    Files     ×
- Goal: Make the work dock reusable
- TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component
- 2 · ● Extract the native work dock
- 3 · ○ Document the reusable API
+ Goal: Make session navigation feel e…
+ TODO · 2/2 · done
+ ✓ Preserve session selection          ┃
 ---
-r0 c0..40 fg=Foreground bg=Hover
-r1 c0..1 fg=Primary bg=#102a43 bold
-r1 c1..40 fg=Foreground bg=#102a43
-r2 c0..2 fg=Hint|Dim bg=#102843
-r2 c2..40 fg=Foreground bg=#102843
-r3 c0..40 fg=Foreground bg=#0e2841
-r4 c0..40 fg=Foreground bg=#0e263f
-r5 c0..1 fg=Primary bg=#0e263e bold
-r5 c1..40 fg=Foreground bg=#0e263e
-r6 c0..40 fg=Foreground bg=#0e253d
-r7 c0..40 fg=Foreground bg=#0d243b
-r8 c0..40 fg=Foreground bg=#0d233a
-r9 c0..40 fg=Foreground bg=#0c2239
-r10 c0..40 fg=Foreground bg=#0c2237
-r11 c0..1 fg=Live bg=#0c2136
-r11 c1..40 fg=Foreground bg=#0c2136
-r12 c0..40 fg=Foreground bg=#0b2035
-r13 c0..40 fg=Foreground bg=#0b1f33
-r14 c0..40 fg=Foreground bg=#0a1e32
-r15 c0..40 fg=Border bg=Surface
-r16 c0..1 fg=Border bg=Surface
-r16 c1..2 fg=Primary bg=Surface
-r16 c2..39 fg=Foreground bg=Surface
-r16 c39..40 fg=Border bg=Surface
-r17 c0..1 fg=Border bg=Surface
-r17 c1..35 fg=Foreground bg=Surface
-r17 c35..38 fg=Primary bg=Surface bold
-r17 c38..39 fg=Foreground bg=Surface
-r17 c39..40 fg=Border bg=Surface
-r18 c0..1 fg=Border bg=Surface
-r18 c1..34 fg=Primary bg=Surface
-r18 c34..40 fg=Border bg=Surface
-r19 c0..1 fg=Foreground bg=#081a2b
-r19 c1..6 fg=#e09948 bg=#081a2b bold
-r19 c6..9 fg=Hint|Dim bg=#081a2b
-r19 c9..13 fg=#7eb4e8 bg=#081a2b
-r19 c13..30 fg=Hint|Dim bg=#081a2b
-r19 c30..40 fg=Foreground bg=#081a2b
-r20 c0..9 fg=Muted bg=#08192a
-r20 c9..12 fg=Hint|Dim bg=#08192a
-r20 c12..15 fg=Muted bg=#08192a
-r20 c15..16 fg=Foreground bg=#08192a
-r20 c16..19 fg=Muted bg=#08192a
-r20 c19..40 fg=Foreground bg=#08192a
-r21 c0..40 fg=Border bg=#081828
-r22 c0..1 fg=Foreground bg=#081727
-r22 c1..8 fg=Foreground bg=Selected bold
-r22 c8..10 fg=Foreground bg=#081727
-r22 c10..17 fg=Muted bg=#081727
-r22 c17..19 fg=Foreground bg=#081727
-r22 c19..25 fg=Muted bg=#081727
-r22 c25..27 fg=Foreground bg=#081727
-r22 c27..34 fg=Muted bg=#081727
-r22 c34..37 fg=Foreground bg=#081727
-r22 c37..40 fg=Hint|Dim bg=#081727
-r23 c0..1 fg=Foreground bg=#081726
-r23 c1..34 fg=Live bg=#081726 bold
-r23 c34..40 fg=Foreground bg=#081726
-r24 c0..1 fg=Foreground bg=#071524
-r24 c1..20 fg=Muted bg=#071524
-r24 c20..40 fg=Foreground bg=#071524
-r25 c0..1 fg=Foreground bg=#061522
-r25 c1..39 fg=#9bd66f bg=#061522
-r25 c39..40 fg=Foreground bg=#061522
-r26 c0..1 fg=Foreground bg=#061322
-r26 c1..39 fg=Live bg=#061322
-r26 c39..40 fg=Foreground bg=#061322
+r0 c0..40 fg=Foreground bg=#0e243c
+r1 c0..1 fg=Primary bg=#0d243b bold
+r1 c1..40 fg=Foreground bg=#0d243b
+r2 c0..2 fg=Hint|Dim bg=#0c2339
+r2 c2..40 fg=Foreground bg=#0c2339
+r3 c0..40 fg=Foreground bg=#0c2238
+r4 c0..1 fg=Primary bg=#0c2137 bold
+r4 c1..40 fg=Foreground bg=#0c2137
+r5 c0..2 fg=Hint|Dim bg=#0b2035
+r5 c2..40 fg=Foreground bg=#0b2035
+r6 c0..2 fg=Hint|Dim bg=#0b1f34
+r6 c2..40 fg=Foreground bg=#0b1f34
+r7 c0..2 fg=Hint|Dim bg=#0b1f33
+r7 c2..40 fg=Foreground bg=#0b1f33
+r8 c0..40 fg=Foreground bg=#0a1e31
+r9 c0..1 fg=Live bg=#0a1d30
+r9 c1..40 fg=Foreground bg=#0a1d30
+r10 c0..40 fg=Foreground bg=#0a1c2e
+r11 c0..40 fg=Foreground bg=#091b2d
+r12 c0..40 fg=Foreground bg=#091a2c
+r13 c0..40 fg=Foreground bg=#08192a
+r14 c0..40 fg=Foreground bg=#081929
+r15 c0..40 fg=Foreground bg=#081728
+r16 c0..40 fg=Foreground bg=#081726
+r17 c0..40 fg=Primary bg=#081624
+r18 c0..1 fg=Primary bg=#061524
+r18 c1..39 fg=Foreground bg=#061524
+r18 c39..40 fg=Primary bg=#061524
+r19 c0..2 fg=Primary bg=#061522
+r19 c2..35 fg=Foreground bg=#061522
+r19 c35..38 fg=Primary bg=#061522 bold
+r19 c38..39 fg=Foreground bg=#061522
+r19 c39..40 fg=Primary bg=#061522
+r20 c0..40 fg=Primary bg=Sidebar
+r21 c0..1 fg=Foreground bg=Sidebar
+r21 c1..6 fg=#e09948 bg=Sidebar bold
+r21 c6..20 fg=Hint|Dim bg=Sidebar
+r21 c20..24 fg=#7eb4e8 bg=Sidebar
+r21 c24..27 fg=Hint|Dim bg=Sidebar
+r21 c27..37 fg=Muted bg=Sidebar
+r21 c37..40 fg=Foreground bg=Sidebar
+r22 c0..1 fg=Foreground bg=Sidebar
+r22 c1..12 fg=Muted bg=Sidebar
+r22 c12..15 fg=Hint|Dim bg=Sidebar
+r22 c15..18 fg=Muted bg=Sidebar
+r22 c18..19 fg=Foreground bg=Sidebar
+r22 c19..22 fg=Muted bg=Sidebar
+r22 c22..40 fg=Foreground bg=Sidebar
+r23 c0..40 fg=Border bg=Sidebar
+r24 c0..1 fg=Foreground bg=Sidebar
+r24 c1..8 fg=Foreground bg=Selected bold
+r24 c8..10 fg=Foreground bg=Sidebar
+r24 c10..17 fg=Muted bg=Sidebar
+r24 c17..19 fg=Foreground bg=Sidebar
+r24 c19..25 fg=Muted bg=Sidebar
+r24 c25..27 fg=Foreground bg=Sidebar
+r24 c27..34 fg=Muted bg=Sidebar
+r24 c34..37 fg=Foreground bg=Sidebar
+r24 c37..40 fg=Hint|Dim bg=Sidebar
+r25 c0..1 fg=Foreground bg=Sidebar
+r25 c1..38 fg=Live bg=Sidebar bold
+r25 c38..40 fg=Foreground bg=Sidebar
+r26 c0..1 fg=Foreground bg=Sidebar
+r26 c1..18 fg=Muted bg=Sidebar
+r26 c18..40 fg=Foreground bg=Sidebar
 r27 c0..1 fg=Foreground bg=Sidebar
-r27 c1..39 fg=Muted bg=Sidebar
-r27 c39..40 fg=Foreground bg=Sidebar
+r27 c1..38 fg=#9bd66f bg=Sidebar
+r27 c38..39 fg=Foreground bg=Sidebar
+r27 c39..40 fg=Live bg=Sidebar
 
 == light-truecolor
 
-▎ Polish the workbar and update the
-▏ gallery.
+▎ Make the session picker readable in
+▏ narrow windows.
 
-
-● The changes are ready for review.
-
-
-
-
+● The session picker is ready for
+▏ review.
+▏ Search, numbering and selection
+▏ remain visible in narrow windows.
 
 ✓ Done                               6 s
 
 
 
+
+
+
+
 ╭──────────────────────────────────────╮
-│❯ Review the changes.                 │
-│                                  [↵] │
-╰ Enter send  Shift+Enter newline ─────╯
- ● ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+│  Also preserve the search            │
+│❯ shortcut.                       [↵] │
+╰──────────────────────────────────────╯
+ ● ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ────────────────────────────────────────
   Tasks    Fleet    Jobs    Files     ×
- Goal: Make the work dock reusable
- TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component
- 2 · ● Extract the native work dock
- 3 · ○ Document the reusable API
+ Goal: Make session navigation feel e…
+ TODO · 2/2 · done
+ ✓ Preserve session selection          ┃
 ---
 r0 c0..40 fg=Foreground
 r1 c0..1 fg=Primary bold
@@ -240,100 +238,99 @@ r1 c1..40 fg=Foreground
 r2 c0..2 fg=Hint|Dim
 r2 c2..40 fg=Foreground
 r3 c0..40 fg=Foreground
-r4 c0..40 fg=Foreground
-r5 c0..1 fg=Primary bold
-r5 c1..40 fg=Foreground
-r6 c0..40 fg=Foreground
-r7 c0..40 fg=Foreground
+r4 c0..1 fg=Primary bold
+r4 c1..40 fg=Foreground
+r5 c0..2 fg=Hint|Dim
+r5 c2..40 fg=Foreground
+r6 c0..2 fg=Hint|Dim
+r6 c2..40 fg=Foreground
+r7 c0..2 fg=Hint|Dim
+r7 c2..40 fg=Foreground
 r8 c0..40 fg=Foreground
-r9 c0..40 fg=Foreground
+r9 c0..1 fg=Live
+r9 c1..40 fg=Foreground
 r10 c0..40 fg=Foreground
-r11 c0..1 fg=Live
-r11 c1..40 fg=Foreground
+r11 c0..40 fg=Foreground
 r12 c0..40 fg=Foreground
 r13 c0..40 fg=Foreground
 r14 c0..40 fg=Foreground
-r15 c0..40 fg=Border
-r16 c0..1 fg=Border
-r16 c1..2 fg=Primary
-r16 c2..39 fg=Foreground
-r16 c39..40 fg=Border
-r17 c0..1 fg=Border
-r17 c1..35 fg=Foreground
-r17 c35..38 fg=Primary bold
-r17 c38..39 fg=Foreground
-r17 c39..40 fg=Border
-r18 c0..1 fg=Border
-r18 c1..34 fg=Primary
-r18 c34..40 fg=Border
-r19 c0..1 fg=Foreground
-r19 c1..6 fg=#92400e bold
-r19 c6..9 fg=Hint|Dim
-r19 c9..13 fg=#1636b2
-r19 c13..30 fg=Hint|Dim
-r19 c30..40 fg=Foreground
-r20 c0..9 fg=Muted
-r20 c9..12 fg=Hint|Dim
-r20 c12..15 fg=Muted
-r20 c15..16 fg=Foreground
-r20 c16..19 fg=Muted
-r20 c19..40 fg=Foreground
-r21 c0..40 fg=Border
+r15 c0..40 fg=Foreground
+r16 c0..40 fg=Foreground
+r17 c0..40 fg=Primary
+r18 c0..1 fg=Primary
+r18 c1..39 fg=Foreground
+r18 c39..40 fg=Primary
+r19 c0..2 fg=Primary
+r19 c2..35 fg=Foreground
+r19 c35..38 fg=Primary bold
+r19 c38..39 fg=Foreground
+r19 c39..40 fg=Primary
+r20 c0..40 fg=Primary
+r21 c0..1 fg=Foreground
+r21 c1..6 fg=#92400e bold
+r21 c6..20 fg=Hint|Dim
+r21 c20..24 fg=#1636b2
+r21 c24..27 fg=Hint|Dim
+r21 c27..37 fg=Muted
+r21 c37..40 fg=Foreground
 r22 c0..1 fg=Foreground
-r22 c1..8 fg=Foreground bg=Selected bold
-r22 c8..10 fg=Foreground
-r22 c10..17 fg=Muted
-r22 c17..19 fg=Foreground
-r22 c19..25 fg=Muted
-r22 c25..27 fg=Foreground
-r22 c27..34 fg=Muted
-r22 c34..37 fg=Foreground
-r22 c37..40 fg=Hint|Dim
-r23 c0..1 fg=Foreground
-r23 c1..34 fg=Live bold
-r23 c34..40 fg=Foreground
+r22 c1..12 fg=Muted
+r22 c12..15 fg=Hint|Dim
+r22 c15..18 fg=Muted
+r22 c18..19 fg=Foreground
+r22 c19..22 fg=Muted
+r22 c22..40 fg=Foreground
+r23 c0..40 fg=Border
 r24 c0..1 fg=Foreground
-r24 c1..20 fg=Muted
-r24 c20..40 fg=Foreground
+r24 c1..8 fg=Foreground bg=Selected bold
+r24 c8..10 fg=Foreground
+r24 c10..17 fg=Muted
+r24 c17..19 fg=Foreground
+r24 c19..25 fg=Muted
+r24 c25..27 fg=Foreground
+r24 c27..34 fg=Muted
+r24 c34..37 fg=Foreground
+r24 c37..40 fg=Hint|Dim
 r25 c0..1 fg=Foreground
-r25 c1..39 fg=#14763d
-r25 c39..40 fg=Foreground
+r25 c1..38 fg=Live bold
+r25 c38..40 fg=Foreground
 r26 c0..1 fg=Foreground
-r26 c1..39 fg=Live
-r26 c39..40 fg=Foreground
+r26 c1..18 fg=Muted
+r26 c18..40 fg=Foreground
 r27 c0..1 fg=Foreground
-r27 c1..39 fg=Muted
-r27 c39..40 fg=Foreground
+r27 c1..38 fg=#14763d
+r27 c38..39 fg=Foreground
+r27 c39..40 fg=Live
 
 == dark-256
 
-▎ Polish the workbar and update the
-▏ gallery.
+▎ Make the session picker readable in
+▏ narrow windows.
 
-
-● The changes are ready for review.
-
-
-
-
+● The session picker is ready for
+▏ review.
+▏ Search, numbering and selection
+▏ remain visible in narrow windows.
 
 ✓ Done                               6 s
 
 
 
+
+
+
+
 ╭──────────────────────────────────────╮
-│❯ Review the changes.                 │
-│                                  [↵] │
-╰ Enter send  Shift+Enter newline ─────╯
- ● ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+│  Also preserve the search            │
+│❯ shortcut.                       [↵] │
+╰──────────────────────────────────────╯
+ ● ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ────────────────────────────────────────
   Tasks    Fleet    Jobs    Files     ×
- Goal: Make the work dock reusable
- TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component
- 2 · ● Extract the native work dock
- 3 · ○ Document the reusable API
+ Goal: Make session navigation feel e…
+ TODO · 2/2 · done
+ ✓ Preserve session selection          ┃
 ---
 r0 c0..40 fg=Foreground bg=Background|DiffAddedTint
 r1 c0..1 fg=Primary bg=Background|DiffAddedTint bold
@@ -341,100 +338,99 @@ r1 c1..40 fg=Foreground bg=Background|DiffAddedTint
 r2 c0..2 fg=Hint|Dim bg=Background|DiffAddedTint
 r2 c2..40 fg=Foreground bg=Background|DiffAddedTint
 r3 c0..40 fg=Foreground bg=Background|DiffAddedTint
-r4 c0..40 fg=Foreground bg=Background|DiffAddedTint
-r5 c0..1 fg=Primary bg=Background|DiffAddedTint bold
-r5 c1..40 fg=Foreground bg=Background|DiffAddedTint
-r6 c0..40 fg=Foreground bg=Background|DiffAddedTint
-r7 c0..40 fg=Foreground bg=Background|DiffAddedTint
+r4 c0..1 fg=Primary bg=Background|DiffAddedTint bold
+r4 c1..40 fg=Foreground bg=Background|DiffAddedTint
+r5 c0..2 fg=Hint|Dim bg=Background|DiffAddedTint
+r5 c2..40 fg=Foreground bg=Background|DiffAddedTint
+r6 c0..2 fg=Hint|Dim bg=Background|DiffAddedTint
+r6 c2..40 fg=Foreground bg=Background|DiffAddedTint
+r7 c0..2 fg=Hint|Dim bg=Background|DiffAddedTint
+r7 c2..40 fg=Foreground bg=Background|DiffAddedTint
 r8 c0..40 fg=Foreground bg=Background|DiffAddedTint
-r9 c0..40 fg=Foreground bg=Background|DiffAddedTint
+r9 c0..1 fg=Live bg=Background|DiffAddedTint
+r9 c1..40 fg=Foreground bg=Background|DiffAddedTint
 r10 c0..40 fg=Foreground bg=Background|DiffAddedTint
-r11 c0..1 fg=Live bg=Background|DiffAddedTint
-r11 c1..40 fg=Foreground bg=Background|DiffAddedTint
+r11 c0..40 fg=Foreground bg=Background|DiffAddedTint
 r12 c0..40 fg=Foreground bg=Background|DiffAddedTint
 r13 c0..40 fg=Foreground bg=Background|DiffAddedTint
 r14 c0..40 fg=Foreground bg=Background|DiffAddedTint
-r15 c0..40 fg=Border bg=Surface|Hover|DiffRemovedTint
-r16 c0..1 fg=Border bg=Surface|Hover|DiffRemovedTint
-r16 c1..2 fg=Primary bg=Surface|Hover|DiffRemovedTint
-r16 c2..39 fg=Foreground bg=Surface|Hover|DiffRemovedTint
-r16 c39..40 fg=Border bg=Surface|Hover|DiffRemovedTint
-r17 c0..1 fg=Border bg=Surface|Hover|DiffRemovedTint
-r17 c1..35 fg=Foreground bg=Surface|Hover|DiffRemovedTint
-r17 c35..38 fg=Primary bg=Surface|Hover|DiffRemovedTint bold
-r17 c38..39 fg=Foreground bg=Surface|Hover|DiffRemovedTint
-r17 c39..40 fg=Border bg=Surface|Hover|DiffRemovedTint
-r18 c0..1 fg=Border bg=Surface|Hover|DiffRemovedTint
-r18 c1..34 fg=Primary bg=Surface|Hover|DiffRemovedTint
-r18 c34..40 fg=Border bg=Surface|Hover|DiffRemovedTint
-r19 c0..1 fg=Foreground bg=Background|DiffAddedTint
-r19 c1..6 fg=idx173 bg=Background|DiffAddedTint bold
-r19 c6..9 fg=Hint|Dim bg=Background|DiffAddedTint
-r19 c9..13 fg=idx110 bg=Background|DiffAddedTint
-r19 c13..30 fg=Hint|Dim bg=Background|DiffAddedTint
-r19 c30..40 fg=Foreground bg=Background|DiffAddedTint
-r20 c0..9 fg=Muted bg=Background|DiffAddedTint
-r20 c9..12 fg=Hint|Dim bg=Background|DiffAddedTint
-r20 c12..15 fg=Muted bg=Background|DiffAddedTint
-r20 c15..16 fg=Foreground bg=Background|DiffAddedTint
-r20 c16..19 fg=Muted bg=Background|DiffAddedTint
-r20 c19..40 fg=Foreground bg=Background|DiffAddedTint
-r21 c0..40 fg=Border bg=Sidebar
+r15 c0..40 fg=Foreground bg=Background|DiffAddedTint
+r16 c0..40 fg=Foreground bg=Background|DiffAddedTint
+r17 c0..40 fg=Primary bg=Surface|Hover|DiffRemovedTint
+r18 c0..1 fg=Primary bg=Surface|Hover|DiffRemovedTint
+r18 c1..39 fg=Foreground bg=Surface|Hover|DiffRemovedTint
+r18 c39..40 fg=Primary bg=Surface|Hover|DiffRemovedTint
+r19 c0..2 fg=Primary bg=Surface|Hover|DiffRemovedTint
+r19 c2..35 fg=Foreground bg=Surface|Hover|DiffRemovedTint
+r19 c35..38 fg=Primary bg=Surface|Hover|DiffRemovedTint bold
+r19 c38..39 fg=Foreground bg=Surface|Hover|DiffRemovedTint
+r19 c39..40 fg=Primary bg=Surface|Hover|DiffRemovedTint
+r20 c0..40 fg=Primary bg=Surface|Hover|DiffRemovedTint
+r21 c0..1 fg=Foreground bg=Sidebar
+r21 c1..6 fg=idx173 bg=Sidebar bold
+r21 c6..20 fg=Hint|Dim bg=Sidebar
+r21 c20..24 fg=idx110 bg=Sidebar
+r21 c24..27 fg=Hint|Dim bg=Sidebar
+r21 c27..37 fg=Muted bg=Sidebar
+r21 c37..40 fg=Foreground bg=Sidebar
 r22 c0..1 fg=Foreground bg=Sidebar
-r22 c1..8 fg=Foreground bg=Selected bold
-r22 c8..10 fg=Foreground bg=Sidebar
-r22 c10..17 fg=Muted bg=Sidebar
-r22 c17..19 fg=Foreground bg=Sidebar
-r22 c19..25 fg=Muted bg=Sidebar
-r22 c25..27 fg=Foreground bg=Sidebar
-r22 c27..34 fg=Muted bg=Sidebar
-r22 c34..37 fg=Foreground bg=Sidebar
-r22 c37..40 fg=Hint|Dim bg=Sidebar
-r23 c0..1 fg=Foreground bg=Sidebar
-r23 c1..34 fg=Live bg=Sidebar bold
-r23 c34..40 fg=Foreground bg=Sidebar
+r22 c1..12 fg=Muted bg=Sidebar
+r22 c12..15 fg=Hint|Dim bg=Sidebar
+r22 c15..18 fg=Muted bg=Sidebar
+r22 c18..19 fg=Foreground bg=Sidebar
+r22 c19..22 fg=Muted bg=Sidebar
+r22 c22..40 fg=Foreground bg=Sidebar
+r23 c0..40 fg=Border bg=Sidebar
 r24 c0..1 fg=Foreground bg=Sidebar
-r24 c1..20 fg=Muted bg=Sidebar
-r24 c20..40 fg=Foreground bg=Sidebar
+r24 c1..8 fg=Foreground bg=Selected bold
+r24 c8..10 fg=Foreground bg=Sidebar
+r24 c10..17 fg=Muted bg=Sidebar
+r24 c17..19 fg=Foreground bg=Sidebar
+r24 c19..25 fg=Muted bg=Sidebar
+r24 c25..27 fg=Foreground bg=Sidebar
+r24 c27..34 fg=Muted bg=Sidebar
+r24 c34..37 fg=Foreground bg=Sidebar
+r24 c37..40 fg=Hint|Dim bg=Sidebar
 r25 c0..1 fg=Foreground bg=Sidebar
-r25 c1..39 fg=idx113 bg=Sidebar
-r25 c39..40 fg=Foreground bg=Sidebar
+r25 c1..38 fg=Live bg=Sidebar bold
+r25 c38..40 fg=Foreground bg=Sidebar
 r26 c0..1 fg=Foreground bg=Sidebar
-r26 c1..39 fg=Live bg=Sidebar
-r26 c39..40 fg=Foreground bg=Sidebar
+r26 c1..18 fg=Muted bg=Sidebar
+r26 c18..40 fg=Foreground bg=Sidebar
 r27 c0..1 fg=Foreground bg=Sidebar
-r27 c1..39 fg=Muted bg=Sidebar
-r27 c39..40 fg=Foreground bg=Sidebar
+r27 c1..38 fg=idx113 bg=Sidebar
+r27 c38..39 fg=Foreground bg=Sidebar
+r27 c39..40 fg=Live bg=Sidebar
 
 == light-256
 
-▎ Polish the workbar and update the
-▏ gallery.
+▎ Make the session picker readable in
+▏ narrow windows.
 
-
-● The changes are ready for review.
-
-
-
-
+● The session picker is ready for
+▏ review.
+▏ Search, numbering and selection
+▏ remain visible in narrow windows.
 
 ✓ Done                               6 s
 
 
 
+
+
+
+
 ╭──────────────────────────────────────╮
-│❯ Review the changes.                 │
-│                                  [↵] │
-╰ Enter send  Shift+Enter newline ─────╯
- ● ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+│  Also preserve the search            │
+│❯ shortcut.                       [↵] │
+╰──────────────────────────────────────╯
+ ● ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ────────────────────────────────────────
   Tasks    Fleet    Jobs    Files     ×
- Goal: Make the work dock reusable
- TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component
- 2 · ● Extract the native work dock
- 3 · ○ Document the reusable API
+ Goal: Make session navigation feel e…
+ TODO · 2/2 · done
+ ✓ Preserve session selection          ┃
 ---
 r0 c0..40 fg=Foreground
 r1 c0..1 fg=Primary bold
@@ -442,299 +438,287 @@ r1 c1..40 fg=Foreground
 r2 c0..2 fg=Muted|Hint|Dim
 r2 c2..40 fg=Foreground
 r3 c0..40 fg=Foreground
-r4 c0..40 fg=Foreground
-r5 c0..1 fg=Primary bold
-r5 c1..40 fg=Foreground
-r6 c0..40 fg=Foreground
-r7 c0..40 fg=Foreground
+r4 c0..1 fg=Primary bold
+r4 c1..40 fg=Foreground
+r5 c0..2 fg=Muted|Hint|Dim
+r5 c2..40 fg=Foreground
+r6 c0..2 fg=Muted|Hint|Dim
+r6 c2..40 fg=Foreground
+r7 c0..2 fg=Muted|Hint|Dim
+r7 c2..40 fg=Foreground
 r8 c0..40 fg=Foreground
-r9 c0..40 fg=Foreground
+r9 c0..1 fg=Live
+r9 c1..40 fg=Foreground
 r10 c0..40 fg=Foreground
-r11 c0..1 fg=Live
-r11 c1..40 fg=Foreground
+r11 c0..40 fg=Foreground
 r12 c0..40 fg=Foreground
 r13 c0..40 fg=Foreground
 r14 c0..40 fg=Foreground
-r15 c0..40 fg=Border
-r16 c0..1 fg=Border
-r16 c1..2 fg=Primary
-r16 c2..39 fg=Foreground
-r16 c39..40 fg=Border
-r17 c0..1 fg=Border
-r17 c1..35 fg=Foreground
-r17 c35..38 fg=Primary bold
-r17 c38..39 fg=Foreground
-r17 c39..40 fg=Border
-r18 c0..1 fg=Border
-r18 c1..34 fg=Primary
-r18 c34..40 fg=Border
-r19 c0..1 fg=Foreground
-r19 c1..6 fg=Attention bold
-r19 c6..9 fg=Muted|Hint|Dim
-r19 c9..13 fg=Primary
-r19 c13..30 fg=Muted|Hint|Dim
-r19 c30..40 fg=Foreground
-r20 c0..15 fg=Muted|Hint|Dim
-r20 c15..16 fg=Foreground
-r20 c16..19 fg=Muted|Hint|Dim
-r20 c19..40 fg=Foreground
-r21 c0..40 fg=Border
+r15 c0..40 fg=Foreground
+r16 c0..40 fg=Foreground
+r17 c0..40 fg=Primary
+r18 c0..1 fg=Primary
+r18 c1..39 fg=Foreground
+r18 c39..40 fg=Primary
+r19 c0..2 fg=Primary
+r19 c2..35 fg=Foreground
+r19 c35..38 fg=Primary bold
+r19 c38..39 fg=Foreground
+r19 c39..40 fg=Primary
+r20 c0..40 fg=Primary
+r21 c0..1 fg=Foreground
+r21 c1..6 fg=Attention bold
+r21 c6..20 fg=Muted|Hint|Dim
+r21 c20..24 fg=Primary
+r21 c24..37 fg=Muted|Hint|Dim
+r21 c37..40 fg=Foreground
 r22 c0..1 fg=Foreground
-r22 c1..8 fg=Foreground bg=Hover|Selected|DiffAddedTint|DiffRemovedTint bold
-r22 c8..10 fg=Foreground
-r22 c10..17 fg=Muted|Hint|Dim
-r22 c17..19 fg=Foreground
-r22 c19..25 fg=Muted|Hint|Dim
-r22 c25..27 fg=Foreground
-r22 c27..34 fg=Muted|Hint|Dim
-r22 c34..37 fg=Foreground
-r22 c37..40 fg=Muted|Hint|Dim
-r23 c0..1 fg=Foreground
-r23 c1..34 fg=Live bold
-r23 c34..40 fg=Foreground
+r22 c1..18 fg=Muted|Hint|Dim
+r22 c18..19 fg=Foreground
+r22 c19..22 fg=Muted|Hint|Dim
+r22 c22..40 fg=Foreground
+r23 c0..40 fg=Border
 r24 c0..1 fg=Foreground
-r24 c1..20 fg=Muted|Hint|Dim
-r24 c20..40 fg=Foreground
+r24 c1..8 fg=Foreground bg=Hover|Selected|DiffAddedTint|DiffRemovedTint bold
+r24 c8..10 fg=Foreground
+r24 c10..17 fg=Muted|Hint|Dim
+r24 c17..19 fg=Foreground
+r24 c19..25 fg=Muted|Hint|Dim
+r24 c25..27 fg=Foreground
+r24 c27..34 fg=Muted|Hint|Dim
+r24 c34..37 fg=Foreground
+r24 c37..40 fg=Muted|Hint|Dim
 r25 c0..1 fg=Foreground
-r25 c1..39 fg=Live
-r25 c39..40 fg=Foreground
+r25 c1..38 fg=Live bold
+r25 c38..40 fg=Foreground
 r26 c0..1 fg=Foreground
-r26 c1..39 fg=Live
-r26 c39..40 fg=Foreground
+r26 c1..18 fg=Muted|Hint|Dim
+r26 c18..40 fg=Foreground
 r27 c0..1 fg=Foreground
-r27 c1..39 fg=Muted|Hint|Dim
-r27 c39..40 fg=Foreground
+r27 c1..38 fg=Live
+r27 c38..39 fg=Foreground
+r27 c39..40 fg=Live
 
 == ansi-16
 
-▎ Polish the workbar and update the
-▏ gallery.
+▎ Make the session picker readable in
+▏ narrow windows.
 
-
-● The changes are ready for review.
-
-
-
-
+● The session picker is ready for
+▏ review.
+▏ Search, numbering and selection
+▏ remain visible in narrow windows.
 
 ✓ Done                               6 s
 
 
 
+
+
+
+
 ╭──────────────────────────────────────╮
-│❯ Review the changes.                 │
-│                                  [↵] │
-╰ Enter send  Shift+Enter newline ─────╯
- ● ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+│  Also preserve the search            │
+│❯ shortcut.                       [↵] │
+╰──────────────────────────────────────╯
+ ● ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ────────────────────────────────────────
   Tasks    Fleet    Jobs    Files     ×
- Goal: Make the work dock reusable
- TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component
- 2 · ● Extract the native work dock
- 3 · ○ Document the reusable API
+ Goal: Make session navigation feel e…
+ TODO · 2/2 · done
+ ✓ Preserve session selection          ┃
 ---
 r1 c0..1 fg=Primary bold
 r2 c0..2 dim
-r5 c0..1 fg=Primary bold
-r11 c0..1 fg=Live
-r15 c0..40 dim
-r16 c0..1 dim
-r16 c1..2 fg=Primary
-r16 c39..40 dim
-r17 c0..1 dim
-r17 c35..38 fg=Primary bold
-r17 c39..40 dim
-r18 c0..1 dim
-r18 c1..34 fg=Primary dim
-r18 c34..40 dim
-r19 c1..6 fg=Attention bold
-r19 c6..9 dim
-r19 c9..13 fg=Primary
-r19 c13..30 dim
-r20 c0..15 dim
-r20 c16..19 dim
-r21 c0..40 dim
-r22 c1..8 bold
-r22 c10..17 dim
-r22 c19..25 dim
-r22 c27..34 dim
-r22 c37..40 dim
-r23 c1..34 fg=Live bold
-r24 c1..20 dim
-r25 c1..39 fg=Live
-r26 c1..39 fg=Live
-r27 c1..39 dim
+r4 c0..1 fg=Primary bold
+r5 c0..2 dim
+r6 c0..2 dim
+r7 c0..2 dim
+r9 c0..1 fg=Live
+r17 c0..40 fg=Primary
+r18 c0..1 fg=Primary
+r18 c39..40 fg=Primary
+r19 c0..2 fg=Primary
+r19 c35..38 fg=Primary bold
+r19 c39..40 fg=Primary
+r20 c0..40 fg=Primary
+r21 c1..6 fg=Attention bold
+r21 c6..20 dim
+r21 c20..24 fg=Primary
+r21 c24..37 dim
+r22 c1..18 dim
+r22 c19..22 dim
+r23 c0..40 dim
+r24 c1..8 bold
+r24 c10..17 dim
+r24 c19..25 dim
+r24 c27..34 dim
+r24 c37..40 dim
+r25 c1..38 fg=Live bold
+r26 c1..18 dim
+r27 c1..38 fg=Live
+r27 c39..40 fg=Live
 
 == unknown-ground
 
-▎ Polish the workbar and update the
-▏ gallery.
+▎ Make the session picker readable in
+▏ narrow windows.
 
-
-● The changes are ready for review.
-
-
-
-
+● The session picker is ready for
+▏ review.
+▏ Search, numbering and selection
+▏ remain visible in narrow windows.
 
 ✓ Done                               6 s
 
 
 
+
+
+
+
 ╭──────────────────────────────────────╮
-│❯ Review the changes.                 │
-│                                  [↵] │
-╰ Enter send  Shift+Enter newline ─────╯
- ● ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+│  Also preserve the search            │
+│❯ shortcut.                       [↵] │
+╰──────────────────────────────────────╯
+ ● ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ────────────────────────────────────────
   Tasks    Fleet    Jobs    Files     ×
- Goal: Make the work dock reusable
- TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component
- 2 · ● Extract the native work dock
- 3 · ○ Document the reusable API
+ Goal: Make session navigation feel e…
+ TODO · 2/2 · done
+ ✓ Preserve session selection          ┃
 ---
 r1 c0..1 fg=Primary bold
 r2 c0..2 dim
-r5 c0..1 fg=Primary bold
-r11 c0..1 fg=Live
-r15 c0..40 dim
-r16 c0..1 dim
-r16 c1..2 fg=Primary
-r16 c39..40 dim
-r17 c0..1 dim
-r17 c35..38 fg=Primary bold
-r17 c39..40 dim
-r18 c0..1 dim
-r18 c1..34 fg=Primary dim
-r18 c34..40 dim
-r19 c1..6 fg=Attention bold
-r19 c6..9 dim
-r19 c9..13 fg=Primary
-r19 c13..30 dim
-r20 c0..15 dim
-r20 c16..19 dim
-r21 c0..40 dim
-r22 c1..8 bold
-r22 c10..17 dim
-r22 c19..25 dim
-r22 c27..34 dim
-r22 c37..40 dim
-r23 c1..34 fg=Live bold
-r24 c1..20 dim
-r25 c1..39 fg=Live
-r26 c1..39 fg=Live
-r27 c1..39 dim
+r4 c0..1 fg=Primary bold
+r5 c0..2 dim
+r6 c0..2 dim
+r7 c0..2 dim
+r9 c0..1 fg=Live
+r17 c0..40 fg=Primary
+r18 c0..1 fg=Primary
+r18 c39..40 fg=Primary
+r19 c0..2 fg=Primary
+r19 c35..38 fg=Primary bold
+r19 c39..40 fg=Primary
+r20 c0..40 fg=Primary
+r21 c1..6 fg=Attention bold
+r21 c6..20 dim
+r21 c20..24 fg=Primary
+r21 c24..37 dim
+r22 c1..18 dim
+r22 c19..22 dim
+r23 c0..40 dim
+r24 c1..8 bold
+r24 c10..17 dim
+r24 c19..25 dim
+r24 c27..34 dim
+r24 c37..40 dim
+r25 c1..38 fg=Live bold
+r26 c1..18 dim
+r27 c1..38 fg=Live
+r27 c39..40 fg=Live
 
 == no-color
 
-▎ Polish the workbar and update the
-▏ gallery.
+▎ Make the session picker readable in
+▏ narrow windows.
 
-
-● The changes are ready for review.
-
-
-
-
+● The session picker is ready for
+▏ review.
+▏ Search, numbering and selection
+▏ remain visible in narrow windows.
 
 ✓ Done                               6 s
 
 
 
+
+
+
+
 ╭──────────────────────────────────────╮
-│❯ Review the changes.                 │
-│                                  [↵] │
-╰ Enter send  Shift+Enter newline ─────╯
- ● ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+│  Also preserve the search            │
+│❯ shortcut.                       [↵] │
+╰──────────────────────────────────────╯
+ ● ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ────────────────────────────────────────
   Tasks    Fleet    Jobs    Files     ×
- Goal: Make the work dock reusable
- TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component
- 2 · ● Extract the native work dock
- 3 · ○ Document the reusable API
+ Goal: Make session navigation feel e…
+ TODO · 2/2 · done
+ ✓ Preserve session selection          ┃
 ---
 r1 c0..1 bold
 r2 c0..2 dim
-r5 c0..1 bold
-r15 c0..40 dim
-r16 c0..1 dim
-r16 c39..40 dim
-r17 c0..1 dim
-r17 c35..38 bold
-r17 c39..40 dim
-r18 c0..40 dim
-r19 c1..6 bold
-r19 c6..9 dim
-r19 c13..30 dim
-r20 c0..15 dim
-r20 c16..19 dim
-r21 c0..40 dim
-r22 c1..8 bold
-r22 c10..17 dim
-r22 c19..25 dim
-r22 c27..34 dim
-r22 c37..40 dim
-r23 c1..34 bold
-r24 c1..20 dim
-r27 c1..39 dim
+r4 c0..1 bold
+r5 c0..2 dim
+r6 c0..2 dim
+r7 c0..2 dim
+r19 c35..38 bold
+r21 c1..6 bold
+r21 c6..20 dim
+r21 c24..37 dim
+r22 c1..18 dim
+r22 c19..22 dim
+r23 c0..40 dim
+r24 c1..8 bold
+r24 c10..17 dim
+r24 c19..25 dim
+r24 c27..34 dim
+r24 c37..40 dim
+r25 c1..38 bold
+r26 c1..18 dim
 
 == ascii
 
-| Polish the workbar and update the
-| gallery.
+| Make the session picker readable in
+| narrow windows.
 
-
-. The changes are ready for review.
-
-
-
-
+. The session picker is ready for
+| review.
+| Search, numbering and selection
+| remain visible in narrow windows.
 
 Y Done                               6 s
 
 
 
+
+
+
+
 +--------------------------------------+
-|> Review the changes.                 |
-|                                  [>] |
-+ Enter send  Shift+Enter newline -----+
- . ask   work   Ctrl+X workbar
-codewhale   ctx 24%
+|  Also preserve the search            |
+|> shortcut.                       [>] |
++--------------------------------------+
+ . ask  Shift+Tab   work   worked 6 s
+ deepseek-v4   ctx 24%
 ----------------------------------------
   Tasks    Fleet    Jobs    Files     X
- Goal: Make the work dock reusable
- TODO . 1/3 . 2 left
- 1 . Y Read the existing component
- 2 . . Extract the native work dock
- 3 . o Document the reusable API
+ Goal: Make session navigation feel...
+ TODO . 2/2 . done
+ Y Preserve session selection          |
 ---
 r1 c0..1 bold
 r2 c0..2 dim
-r5 c0..1 bold
-r15 c0..40 dim
-r16 c0..1 dim
-r16 c39..40 dim
-r17 c0..1 dim
-r17 c35..38 bold
-r17 c39..40 dim
-r18 c0..40 dim
-r19 c1..6 bold
-r19 c6..9 dim
-r19 c13..30 dim
-r20 c0..15 dim
-r20 c16..19 dim
-r21 c0..40 dim
-r22 c1..8 bold
-r22 c10..17 dim
-r22 c19..25 dim
-r22 c27..34 dim
-r22 c37..40 dim
-r23 c1..34 bold
-r24 c1..20 dim
-r27 c1..39 dim
+r4 c0..1 bold
+r5 c0..2 dim
+r6 c0..2 dim
+r7 c0..2 dim
+r19 c35..38 bold
+r21 c1..6 bold
+r21 c6..20 dim
+r21 c24..37 dim
+r22 c1..18 dim
+r22 c19..22 dim
+r23 c0..40 dim
+r24 c1..8 bold
+r24 c10..17 dim
+r24 c19..25 dim
+r24 c27..34 dim
+r24 c37..40 dim
+r25 c1..38 bold
+r26 c1..18 dim

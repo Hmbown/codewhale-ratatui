@@ -2,7 +2,9 @@
 //!
 //! F1-F6 choose Work, Decisions, Controls, Color, Life and Components.
 //! F7 profile, F8 motion, F9 palette, F10 next work phase.
-//! Tab focuses a control; Enter edits. Escape preserves drafts, then closes.
+//! The composer starts focused. Enter queues while working; Escape interrupts
+//! the illustrative turn and preserves the draft. Ctrl+C closes the gallery.
+//! Shift+Tab changes permission; Ctrl+X focuses the native workbar.
 //! Life: Left/Right studies an action; Space plays all seventeen native acts.
 //! --frames DIR [--profile NAME] [--section NAME] exports actual-buffer SVGs.
 //! The fixture never executes its displayed command or contacts a provider.
@@ -48,6 +50,7 @@ struct Studio {
     stage: Stage,
     life_started: Duration,
     generation: u64,
+    viewport: Rect,
 }
 impl Studio {
     fn new(now: Instant) -> Self {
@@ -57,6 +60,7 @@ impl Studio {
             stage: Stage::new(),
             life_started: Duration::ZERO,
             generation: 0,
+            viewport: Rect::new(0, 0, 104, 30),
         }
     }
     fn elapsed(&self, now: Instant) -> Duration {
@@ -76,16 +80,23 @@ impl Studio {
         self.view.set_phase(next, elapsed);
         if next == ShowcasePhase::NeedsYou {
             self.view.section = ShowcaseSection::Decisions;
+        } else if next == ShowcasePhase::Done && !self.view.queued.is_empty() {
+            self.view.followups.push(self.view.queued.remove(0));
+            self.view.set_phase(ShowcasePhase::Working, elapsed);
+            self.view.section = ShowcaseSection::Work;
+            self.view.editing = true;
         }
     }
     fn restart(&mut self, elapsed: Duration) {
         self.generation = self.generation.saturating_add(1);
         self.view.set_phase(ShowcasePhase::Working, elapsed);
         self.view.section = ShowcaseSection::Work;
-        self.view.editing = false;
+        self.view.editing = true;
+        self.view.dock.focused = false;
         self.view.note = "Restarted the example; your draft is retained.".into();
     }
     fn actor(&mut self, now: Instant, area: Rect, theme: &Theme) -> Option<ColoredGrid> {
+        self.viewport = area;
         let elapsed = self.elapsed(now);
         if self.view.section == ShowcaseSection::Life && self.view.action_playing {
             self.view.action = ((elapsed.saturating_sub(self.life_started).as_millis() / 2_000)
@@ -171,7 +182,8 @@ impl Studio {
     }
     fn select_section(&mut self, index: usize) {
         self.view.section = ShowcaseSection::ALL[index];
-        self.view.editing = false;
+        self.view.editing = self.view.section == ShowcaseSection::Work;
+        self.view.dock.focused = false;
         self.view.focus = if self.view.section == ShowcaseSection::Controls {
             2
         } else {
@@ -239,18 +251,58 @@ impl Studio {
             }
             return false;
         }
-        if self.view.section == ShowcaseSection::Work && !self.view.editing {
+        if self.view.section == ShowcaseSection::Work {
+            if !key
+                .modifiers
+                .intersects(KeyModifiers::CONTROL | KeyModifiers::ALT | KeyModifiers::SUPER)
+                && (key.code == KeyCode::BackTab
+                    || (key.code == KeyCode::Tab && key.modifiers.contains(KeyModifiers::SHIFT)))
+            {
+                self.view.permission = self.view.permission.next();
+                return false;
+            }
+            if key.modifiers == KeyModifiers::ALT && key.code == KeyCode::Char('w') {
+                self.view.readouts.on = true;
+                if self.view.dock.focused {
+                    self.view.dock.focused = false;
+                } else {
+                    let rows = self.view.workbar().rows;
+                    self.view.dock.handle_key(key, &rows, 2);
+                }
+                self.view.editing = !self.view.dock.focused;
+                return false;
+            }
             if key.modifiers.contains(KeyModifiers::CONTROL) && key.code == KeyCode::Char('x') {
                 self.view.readouts.on = true;
                 self.view.dock.panel = WorkbarPanel::Fleet;
-                self.view.dock.focused = true;
+                self.view.dock.focused = false;
+                let rows = self.view.workbar().rows;
+                self.view.dock.handle_key(
+                    KeyEvent::new(KeyCode::Char('w'), KeyModifiers::ALT),
+                    &rows,
+                    2,
+                );
+                self.view.editing = false;
                 return false;
             }
+        }
+        let panel_chord = key.modifiers.contains(KeyModifiers::CONTROL)
+            && matches!(
+                key.code,
+                KeyCode::Tab | KeyCode::BackTab | KeyCode::Char(']')
+            );
+        if self.view.section == ShowcaseSection::Work && (!self.view.editing || panel_chord) {
             // The row facts are the same fixture supplied to the rendered dock.
-            let rows = codewhale_ratatui::gallery::showcase::workbar_rows(self.view.dock.panel);
-            match self.view.dock.handle_key(key, &rows, 2) {
+            let dock = self.view.workbar();
+            let theme = self.view.theme_for(&self.view.profile.theme());
+            let region = ShowcaseFrame::new(&self.view, elapsed)
+                .work_areas(self.viewport, &theme)
+                .workbar;
+            let visible_rows = dock.layout(region).visible_rows;
+            match self.view.dock.handle_key(key, &dock.rows, visible_rows) {
                 WorkbarOutcome::Close => {
                     self.view.readouts.on = false;
+                    self.view.editing = true;
                     return false;
                 }
                 WorkbarOutcome::Panel(_) | WorkbarOutcome::Changed => {
@@ -261,18 +313,40 @@ impl Studio {
                     self.view.note = format!("Selected {id}");
                     return false;
                 }
-                WorkbarOutcome::Ignored | WorkbarOutcome::ReleaseFocus => {}
+                WorkbarOutcome::ReleaseFocus => {
+                    self.view.editing = true;
+                }
+                WorkbarOutcome::Ignored => {}
             }
         }
         if self.view.editing {
             match self.view.section {
                 ShowcaseSection::Work => match self.view.draft.handle_key(key) {
                     TextInputOutcome::Submitted => {
-                        self.view.editing = false;
-                        self.view.set_phase(ShowcasePhase::NeedsYou, elapsed);
-                        self.view.section = ShowcaseSection::Decisions;
+                        if !self.view.draft.text().trim().is_empty() {
+                            if matches!(
+                                self.view.phase,
+                                ShowcasePhase::Working | ShowcasePhase::Verifying
+                            ) {
+                                self.view.queued.push(self.view.draft.text().to_owned());
+                                self.view.draft.set_text("");
+                            } else {
+                                self.view.editing = false;
+                                self.view.set_phase(ShowcasePhase::NeedsYou, elapsed);
+                                self.view.section = ShowcaseSection::Decisions;
+                            }
+                        }
                     }
-                    TextInputOutcome::Cancelled => self.view.editing = false,
+                    TextInputOutcome::Cancelled => {
+                        self.view.editing = false;
+                        if matches!(
+                            self.view.phase,
+                            ShowcasePhase::Working | ShowcasePhase::Verifying
+                        ) {
+                            self.view.set_phase(ShowcasePhase::NeedsYou, elapsed);
+                            self.view.approval_open = false;
+                        }
+                    }
                     _ => {}
                 },
                 ShowcaseSection::Controls => match self.view.form.handle_key(key) {
@@ -557,7 +631,14 @@ fn export_frames(export: Export) -> io::Result<()> {
     for index in 0..count {
         let elapsed = Duration::from_millis(index * 200);
         exported_state(&mut studio, elapsed, export.section);
-        let area = Rect::new(0, 0, 112, 38);
+        let area = if matches!(
+            export.section,
+            None | Some(ShowcaseSection::Work | ShowcaseSection::Decisions)
+        ) {
+            Rect::new(0, 0, 104, 30)
+        } else {
+            Rect::new(0, 0, 112, 38)
+        };
         let actor = studio.actor(base + elapsed, area, &theme);
         let buf = testing::render(area.width, area.height, |area, buf| {
             let frame = ShowcaseFrame::new(&studio.view, elapsed);
@@ -690,16 +771,137 @@ mod tests {
         let base = Instant::now();
         let mut studio = Studio::new(base);
         studio.view.draft.set_text("鲸鱼 cafe\u{301}");
-        studio.key(key(KeyCode::Enter), base);
         assert!(studio.view.editing);
         assert!(!studio.key(key(KeyCode::Char('q')), base));
         assert_eq!(studio.view.draft.text(), "鲸鱼 cafe\u{301}q");
         assert!(!studio.key(key(KeyCode::Esc), base));
         assert!(!studio.view.editing);
         assert_eq!(studio.view.draft.text(), "鲸鱼 cafe\u{301}q");
-        assert_eq!(studio.view.phase, ShowcasePhase::Working);
+        assert_eq!(studio.view.phase, ShowcasePhase::NeedsYou);
         studio.restart(Duration::from_secs(2));
         assert_eq!(studio.view.draft.text(), "鲸鱼 cafe\u{301}q");
+    }
+
+    #[test]
+    fn composer_focus_queue_permission_and_dock_keys_match_the_visible_chrome() {
+        let now = Instant::now();
+        let mut studio = Studio::new(now);
+        assert!(studio.view.editing && !studio.view.dock.focused);
+        let draft = studio.view.draft.text().to_owned();
+        studio.key(key(KeyCode::Enter), now);
+        assert_eq!(studio.view.queued, [draft]);
+        assert!(studio.view.draft.text().is_empty());
+        assert_eq!(studio.view.phase, ShowcasePhase::Working);
+        studio.key(KeyEvent::new(KeyCode::BackTab, KeyModifiers::SHIFT), now);
+        assert_eq!(studio.view.permission.word(), "auto-review");
+        studio.key(
+            KeyEvent::new(KeyCode::Char('x'), KeyModifiers::CONTROL),
+            now,
+        );
+        assert!(studio.view.dock.focused && !studio.view.editing);
+        studio.key(key(KeyCode::Esc), now);
+        assert!(studio.view.editing && !studio.view.dock.focused);
+        studio.view.dock.panel = WorkbarPanel::Tasks;
+        assert_eq!(studio.view.workbar().rows.len(), 2);
+        studio
+            .view
+            .set_phase(ShowcasePhase::Done, Duration::from_secs(6));
+        assert!(
+            studio
+                .view
+                .workbar()
+                .rows
+                .iter()
+                .all(|row| row.tone == codewhale_ratatui::WorkbarTone::Success)
+        );
+        assert_eq!(
+            studio.view.workbar().progress.as_deref(),
+            Some("TODO · 2/2 · done")
+        );
+    }
+
+    #[test]
+    fn dock_preserves_first_typed_key_panel_chords_and_narrow_selection() {
+        let now = Instant::now();
+        let mut studio = Studio::new(now);
+        studio.viewport = Rect::new(0, 0, 40, 28);
+        studio.key(KeyEvent::new(KeyCode::Char('w'), KeyModifiers::ALT), now);
+        assert!(studio.view.dock.focused && studio.view.dock.selected.is_some());
+        studio.key(key(KeyCode::Down), now);
+        assert_eq!(studio.view.dock.offset, 1);
+        let before = studio.view.draft.text().to_owned();
+        studio.key(key(KeyCode::Char('q')), now);
+        assert!(studio.view.editing && !studio.view.dock.focused);
+        assert_eq!(studio.view.draft.text(), format!("{before}q"));
+        studio.key(
+            KeyEvent::new(
+                KeyCode::BackTab,
+                KeyModifiers::CONTROL | KeyModifiers::SHIFT,
+            ),
+            now,
+        );
+        assert_eq!(studio.view.dock.panel, WorkbarPanel::Cost);
+        assert_eq!(studio.view.permission.word(), "ask");
+        for word in ["auto-review", "full access", "ask"] {
+            studio.key(KeyEvent::new(KeyCode::BackTab, KeyModifiers::SHIFT), now);
+            assert_eq!(studio.view.permission.word(), word);
+        }
+        studio.key(key(KeyCode::BackTab), now);
+        assert_eq!(studio.view.permission.word(), "auto-review");
+        studio.key(KeyEvent::new(KeyCode::Tab, KeyModifiers::SHIFT), now);
+        assert_eq!(studio.view.permission.word(), "full access");
+    }
+
+    #[test]
+    fn queued_followup_advances_after_completion_and_restart_keeps_pending_input() {
+        let now = Instant::now();
+        let mut studio = Studio::new(now);
+        let draft = studio.view.draft.text().to_owned();
+        studio.key(key(KeyCode::Enter), now);
+        studio.restart(Duration::from_secs(1));
+        assert_eq!(studio.view.queued, [draft.clone()]);
+        studio
+            .view
+            .set_phase(ShowcasePhase::Verifying, Duration::from_secs(2));
+        studio.advance_phase(Duration::from_secs(6));
+        assert!(studio.view.queued.is_empty());
+        assert_eq!(studio.view.followups, [draft]);
+        assert_eq!(studio.view.phase, ShowcasePhase::Working);
+        assert_eq!(studio.view.phase_started, Duration::from_secs(6));
+    }
+
+    #[test]
+    fn work_surface_shares_native_water_and_light_has_no_underwater_habitat() {
+        use codewhale_ratatui::{OceanColumn, OceanPhase};
+        let state = ShowcaseState::new();
+        let elapsed = Duration::from_millis(1_600);
+        let frame = ShowcaseFrame::new(&state, elapsed);
+        let theme = state.theme_for(&Profile::DarkTrue.theme());
+        let area = Rect::new(0, 0, 104, 30);
+        let regions = frame.work_areas(area, &theme);
+        assert_eq!(regions.composer.height, 3);
+        assert_eq!(regions.workbar.height, 5);
+        let buf = testing::render(area.width, area.height, |a, b| frame.paint(a, b, &theme));
+        let column = OceanColumn::new(elapsed, MotionMode::Full)
+            .phase(OceanPhase::Working)
+            .context_percent(24)
+            .viewport(area);
+        for y in [
+            regions.composer.y + 1,
+            regions.posture.y,
+            regions.metrics.y,
+            regions.workbar.y + 4,
+        ] {
+            assert_eq!(buf[(0, y)].bg, column.color_at_y(y, area, &theme).unwrap());
+        }
+        let text = testing::text(&buf);
+        assert!(text.contains("send after this turn") && text.contains("ctx 24%"));
+        assert!(!text.contains("Shift+Enter newline"));
+        let light = state.theme_for(&Profile::LightTrue.theme());
+        let buf = testing::render(area.width, area.height, |a, b| frame.paint(a, b, &light));
+        for y in 12..regions.conversation.bottom() {
+            assert!((0..area.width).all(|x| buf[(x, y)].symbol() == " "));
+        }
     }
 
     #[test]
@@ -814,7 +1016,7 @@ mod tests {
         );
         let text = testing::text(&frame(base, Duration::from_secs(20)));
         assert!(text.contains("Done"));
-        assert!(text.contains("Tasks") && text.contains("The changes are ready for review."));
+        assert!(text.contains("Tasks") && text.contains("The session picker is ready for review."));
         assert!(!text.contains("queued") && !text.contains("Send now / Edit / Drop"));
     }
     #[test]

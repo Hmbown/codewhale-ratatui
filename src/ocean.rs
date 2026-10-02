@@ -11,6 +11,8 @@
 //! grounds, custom fills, symbols, inks and modifiers remain theirs. The
 //! authored dark field is available only on known dark truecolor Ocean
 //! grounds. Graphite, light, unknown grounds and lower depths keep the theme.
+//! Native chrome can join the same column with [`OceanColumn::apply_matching`]
+//! over its own region and explicit base ground.
 
 use std::time::Duration;
 
@@ -304,13 +306,39 @@ impl OceanColumn {
     /// buffer. Other fills remain exact. Visible inks must retain their
     /// contrast floor; unknown terminal inks and reversed cells are spared.
     pub fn apply(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        self.apply_grounds(
+            area,
+            buf,
+            theme,
+            &[theme.bg(Role::Background).bg, theme.bg(Role::Sidebar).bg],
+        );
+    }
+
+    /// Continue the column through cells with the caller's explicit base
+    /// `ground`, restricted to `area`. Use [`Self::viewport`] to share one
+    /// absolute water column across conversation, composer and footer bands.
+    ///
+    /// Other grounds, symbols, inks and modifiers remain untouched. The
+    /// existing theme, clipping and contrast policy still applies, including
+    /// protection for unknown inks and reversed cells. The caller chooses a
+    /// region containing ordinary chrome: a semantic surface using this same
+    /// base color must be kept outside that region.
+    pub fn apply_matching(&self, area: Rect, buf: &mut Buffer, theme: &Theme, ground: Color) {
+        self.apply_grounds(area, buf, theme, &[Some(ground)]);
+    }
+
+    fn apply_grounds(
+        &self,
+        area: Rect,
+        buf: &mut Buffer,
+        theme: &Theme,
+        grounds: &[Option<Color>],
+    ) {
         let Some(ramp) = OceanRamp::for_theme(theme) else {
             return;
         };
         let viewport = self.viewport.unwrap_or(area);
         let area = area.intersection(buf.area);
-        let background = theme.bg(Role::Background).bg;
-        let sidebar = theme.bg(Role::Sidebar).bg;
         for y in area.top()..area.bottom() {
             let water = self.sample(y, viewport, ramp);
             // Text runs repeat the same ink on one shared row ground. Reuse
@@ -319,9 +347,7 @@ impl OceanColumn {
             let mut previous_ink = None;
             for x in area.left()..area.right() {
                 let cell = &mut buf[(x, y)];
-                if (Some(cell.bg) == background || Some(cell.bg) == sidebar)
-                    && !cell.modifier.contains(Modifier::REVERSED)
-                {
+                if grounds.contains(&Some(cell.bg)) && !cell.modifier.contains(Modifier::REVERSED) {
                     let safe = cell.symbol() == " " || {
                         if let Some((ink, safe)) = previous_ink
                             && ink == cell.fg
