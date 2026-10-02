@@ -814,7 +814,8 @@ mod tests {
         );
         let text = testing::text(&frame(base, Duration::from_secs(20)));
         assert!(text.contains("Done"));
-        assert!(text.contains("Tasks") && text.contains("README.md"));
+        assert!(text.contains("Tasks") && text.contains("The changes are ready for review."));
+        assert!(!text.contains("queued") && !text.contains("Send now / Edit / Drop"));
     }
     #[test]
     fn native_theme_appearance_and_workbar_keys_share_the_rendered_state() {

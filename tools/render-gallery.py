@@ -25,12 +25,13 @@ import xml.etree.ElementTree as ET
 
 SVG = "http://www.w3.org/2000/svg"
 ET.register_namespace("", SVG)
-TOKENS = json.loads((Path(__file__).resolve().parents[1] / "vendor/codewhale-design/tokens.json").read_text(encoding="utf-8"))
+ROOT = Path(__file__).resolve().parents[1]
+TOKENS = json.loads((ROOT / "vendor/codewhale-design/tokens.json").read_text(encoding="utf-8"))
+NATIVE_PALETTES = json.loads((ROOT / "assets/tui-palettes.json").read_text(encoding="utf-8"))
 WIDTH = 1040
-SCENE_WIDTH = 1280
 MARGIN = TOKENS["spacing"]["page"]
 GAP = TOKENS["spacing"]["large"]
-TOP = 208
+TOP = 96
 MAX_HEIGHT = 2200
 MONO = "'DejaVu Sans Mono','Cascadia Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace"
 SANS = ",".join(f"'{family}'" for family in [TOKENS["typography"]["family"], *TOKENS["typography"]["fallbacks"]]) + ",-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
@@ -113,11 +114,19 @@ def classify(name):
 
 
 def palette(profile):
-    colors = TOKENS["colors"]["light" if profile.startswith("light") else "dark"]
-    return {name: "#" + colors[role] for name, role in {
-        "bg": "background", "surface": "surface", "sidebar": "sidebar", "edge": "border",
-        "fg": "foreground", "muted": "muted_foreground", "accent": "primary",
-    }.items()}
+    light = profile.startswith("light")
+    native = next(p for p in NATIVE_PALETTES
+                  if p["variant"] == ("WhaleLight" if light else "Underwater"))
+    colors = TOKENS["colors"]["light" if light else "dark"]
+    roles = {"bg": (1, "background"), "surface": (2, "surface"),
+             "sidebar": (0, "sidebar"), "edge": (7, "border"),
+             "fg": (5, "foreground"), "muted": (6, "muted_foreground"),
+             "accent": (9, "primary")}
+    # Native terminal-owned grounds have no fixed RGB; the export uses white.
+    return {name: "#" + ("".join(f"{channel:02x}" for channel in native["roles"][index])
+                         if isinstance(native["roles"][index], list)
+                         else "ffffff" if light else colors[role])
+            for name, (index, role) in roles.items()}
 
 
 def read_inputs(source, profiles):
@@ -192,11 +201,9 @@ def label_lines(value, width, size, mono=False):
 
 
 def specimen_labels(name, span, width, height):
-    typography = TOKENS["typography"]
-    title = label_lines(specimen_title(name), span, typography["heading_px"])
-    metadata = label_lines(f"{name}  ·  {int(width / 10)} × {int(height / 20)} cells", span, typography["caption_px"], True)
-    header = len(title) * GAP + len(metadata) * TOKENS["spacing"]["section"] + TOKENS["spacing"]["section"]
-    return title, metadata, header
+    title = label_lines(specimen_title(name), span, TOKENS["typography"]["heading_px"])
+    # Dimensions and slugs stay in the manifest and accessible SVG metadata.
+    return title, [], len(title) * GAP + TOKENS["spacing"]["section"]
 
 
 def layout(items, group=None):
@@ -206,7 +213,7 @@ def layout(items, group=None):
     if group in {"scenes", "studio", "water", "native-views"}:
         pages = []
         for name, buffer, width, height in items:
-            board_width = max(640 if width <= 640 else SCENE_WIDTH, math.ceil(width) + 2 * MARGIN)
+            board_width = max(640, math.ceil(width) + 2 * MARGIN)
             span = board_width - 2 * MARGIN
             title, metadata, header = specimen_labels(name, span, width, height)
             pages.append({"width": board_width, "specimens": [{"name": name, "buffer": buffer,
@@ -244,21 +251,13 @@ def atlas_frame(title, subtitle, width, height, colors, detail, description):
     root = ET.Element(f"{{{SVG}}}svg", {"width": f"{width:g}", "height": f"{height:g}",
         "viewBox": f"0 0 {width:g} {height:g}", "role": "img", "aria-labelledby": "title desc"})
     element(root, "title", {"id": "title"}, title + " — " + detail)
-    element(root, "desc", {"id": "desc"}, description)
+    element(root, "desc", {"id": "desc"}, subtitle + ". " + description)
     element(root, "rect", {"width": "100%", "height": "100%", "fill": colors["bg"]})
-    element(root, "text", {"x": str(MARGIN), "y": "80", "fill": colors["fg"], "font-family": SANS,
-        "font-size": str(2 * TOKENS["typography"]["title_px"]), "font-weight": "600"}, title)
-    for i, line in enumerate(label_lines(subtitle, width - 2 * MARGIN, TOKENS["typography"]["prose_px"])):
-        element(root, "text", {"x": str(MARGIN), "y": str(116 + i * GAP), "fill": colors["muted"],
-            "font-family": SANS, "font-size": str(TOKENS["typography"]["prose_px"])}, line)
-    element(root, "text", {"x": str(MARGIN), "y": "164", "fill": colors["muted"], "font-family": SANS,
-        "font-size": str(TOKENS["typography"]["caption_px"])}, "Codewhale ratatui · rendered fixtures")
-    element(root, "text", {"x": f"{width - MARGIN:g}", "y": "164", "fill": colors["accent"],
+    element(root, "text", {"x": str(MARGIN), "y": "48", "fill": colors["fg"], "font-family": SANS,
+        "font-size": str(TOKENS["typography"]["title_px"]), "font-weight": "600"}, title)
+    element(root, "text", {"x": f"{width - MARGIN:g}", "y": "72", "fill": colors["muted"],
         "font-family": MONO, "font-size": str(TOKENS["typography"]["caption_px"]), "text-anchor": "end"}, detail)
-    element(root, "path", {"d": f"M{MARGIN} 184H{width - MARGIN:g}", "stroke": colors["edge"], "stroke-width": "1"})
-    element(root, "text", {"x": str(MARGIN), "y": f"{height - TOKENS['spacing']['section']:g}",
-        "fill": colors["muted"], "font-family": MONO, "font-size": str(TOKENS["typography"]["caption_px"])},
-        f"codewhale-ratatui · tokens {TOKENS['version']}")
+    element(root, "path", {"d": f"M{MARGIN} 80H{width - MARGIN:g}", "stroke": colors["edge"], "stroke-width": "1"})
     return root
 
 
@@ -275,6 +274,16 @@ def paint_specimen(root, specimen, colors, center=False):
         element(section, "text", {"x": f"{x:g}", "y": f"{metadata_y + i * TOKENS['spacing']['section']:g}",
             "fill": colors["muted"], "font-family": MONO, "font-size": str(TOKENS["typography"]["caption_px"])}, line)
     drawing = copy.deepcopy(specimen["buffer"])
+    # Nested specimens retain their own accessible names without reusing the
+    # board's title/description IDs or another specimen's IDs.
+    identifiers = {node.attrib["id"]: f"{name}-{node.attrib['id']}"
+                   for node in drawing.iter() if "id" in node.attrib}
+    for node in drawing.iter():
+        if "id" in node.attrib:
+            node.attrib["id"] = identifiers[node.attrib["id"]]
+        if "aria-labelledby" in node.attrib:
+            node.attrib["aria-labelledby"] = " ".join(
+                identifiers.get(value, value) for value in node.attrib["aria-labelledby"].split())
     drawing_x = x + (span - specimen["width"]) / 2 if center else x
     # Native viewport dimensions, and the buffer's own 16px text, survive
     # unchanged. There is no transform, faux terminal frame, or extra card.
@@ -284,6 +293,9 @@ def paint_specimen(root, specimen, colors, center=False):
 
 
 def board(group, profile, page, number, total):
+    if group == "studio" and len(page["specimens"]) == 1 and page["specimens"][0]["name"] == "showcase-work":
+        # The opening is the native terminal itself, without a second masthead.
+        return ET.tostring(page["specimens"][0]["buffer"], encoding="unicode") + "\n"
     colors = palette(profile)
     title, subtitle = GROUPS[group]
     width = page["width"]
@@ -298,7 +310,7 @@ def board(group, profile, page, number, total):
         element(root, "path", {"d": f"M{MARGIN} {y - GAP:g}H{width - MARGIN:g}",
             "stroke": colors["edge"], "stroke-width": "1"})
     for item in specimens:
-        paint_specimen(root, item, colors, group in {"whales", "whale-actions"})
+        paint_specimen(root, item, colors, group in {"whales", "whale-actions", "studio", "native-views", "scenes", "water"})
     return ET.tostring(root, encoding="unicode", xml_declaration=False) + "\n"
 
 
@@ -364,62 +376,61 @@ def readme_gallery(readme, destination, index):
         raise ValueError(f"{readme}: gallery markers are reversed")
 
     def embed(item):
-        title = GROUPS.get(item["group"], ("Terminal profile comparison", ""))[0]
+        title = ", ".join(specimen_title(name) for name in item["entries"])
         profile = item["profile"].replace("-", " ")
-        alt = f"{title} — {profile}" if item["profile"] != "all" else title
+        alt = f"{title} — {profile}" if item["profile"] != "all" else "The same status marks in all nine terminal profiles"
         path = Path(os.path.relpath(destination / item["file"], readme.parent)).as_posix()
         return f"![{alt}](<{path}>)"
 
     primary = [item for item in index
                if item["profile"] != "all" and not item["profile"].startswith("light")]
     families = list(dict.fromkeys(item["group"] for item in primary))
+    sections = {
+        "Native Codewhale": ["studio", "native-views", "native-chrome", "workbar"],
+        "Color and atmosphere": ["tui-palettes", "water"],
+        "Inputs and controls": ["foundation", "input", "chrome"],
+        "Conversation and work": ["transcript", "components", "display", "scenes"],
+        "Motion and marine life": ["motion", "habitat", "whales", "whale-actions"],
+    }
+    if set(families) != {family for group in sections.values() for family in group}:
+        raise ValueError("README sections must cover every gallery family")
+    lines = [start, ""]
+    for heading, groups in sections.items():
+        lines.extend(["### " + heading, ""])
+        for family in groups:
+            title, description = GROUPS[family]
+            anchor = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+            boards = [item for item in primary if item["group"] == family]
+            count = len({entry for item in boards for entry in item["entries"]})
+            lines.extend([f'<a id="{anchor}"></a>', "<details>",
+                          f"<summary>{title} · {count} examples</summary>", "", description + ".", ""])
+            lines.extend(embed(item) + "\n" for item in boards)
+            light = [item for item in index if item["group"] == family and item["profile"].startswith("light")]
+            if light:
+                lines.extend(["<details>", "<summary>Light appearance</summary>", ""])
+                lines.extend(embed(item) + "\n" for item in light)
+                lines.extend(["</details>", ""])
+            movies = {
+                "studio": [("showcase.gif", "Native work, approval and completion"),
+                           ("showcase-light.gif", "The same native layout in WhaleLight")],
+                "motion": [("motion-demo.gif", "Working and verification spinners — Ocean"),
+                           ("motion-demo-light.gif", "Working and verification spinners — Paper")],
+                "habitat": [("habitat-motion.gif", "Native fish, jellyfish and bubbles")],
+                "whale-actions": [("whale-performance.gif", "All seventeen native whale actions")],
+            }.get(family, [])
+            if movies:
+                lines.extend(["<details>", "<summary>Watch the animation</summary>", ""])
+                for filename, alt in movies:
+                    path = Path(os.path.relpath(destination / filename, readme.parent)).as_posix()
+                    lines.extend([f"![{alt}](<{path}>)", ""])
+                lines.extend(["</details>", ""])
+            lines.extend(["</details>", ""])
     comparison = [item for item in index if item["file"] == "profile-comparison.svg"]
-    titles = [GROUPS[family][0] for family in families]
     if comparison:
-        titles.append("Terminal profiles")
-    navigation = " · ".join(f"[{title}](#{re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')})"
-                            for title in titles)
-    lines = [start, "", "Generated from the real ratatui buffers. Every catalogue entry is shown below.", ""]
-    if navigation:
-        lines.extend(["Jump to: " + navigation, ""])
-    for family in families:
-        lines.extend(["### " + GROUPS[family][0], ""])
-        lines.extend(embed(item) + "\n" for item in primary if item["group"] == family)
-        if family == "studio":
-            paths = [Path(os.path.relpath(destination / filename, readme.parent)).as_posix()
-                     for filename in ("showcase.gif", "showcase-light.gif", "whale-performance.gif")]
-            lines.extend([
-                "<details>", "<summary>Watch the WhaleLight gallery and all seventeen native whale actions</summary>", "",
-                f"![The same native layout in WhaleLight](<{paths[1]}>)", "",
-                f"![All seventeen native whale performances, with colored props and marine life](<{paths[2]}>)", "",
-                "Actual terminal buffers from the live showcase renderer, sampled at its terminal cadence.",
-                "The demonstration supplies its work phases; no displayed command runs.",
-                "The whale uses the native Director's springs and authored clips, with one host clock.",
-                "Run `cargo run --example showcase` to edit, answer, change the palette and explore every component.", "",
-                "</details>", "",
-            ])
-        if family == "motion":
-            paths = [Path(os.path.relpath(destination / filename, readme.parent)).as_posix()
-                     for filename in ("motion-demo.gif", "motion-demo-light.gif")]
-            lines.extend([
-                "<details>", "<summary>Watch the working and verification spinners, then the receipt arrive</summary>", "",
-                f"![Working, verifying and settling into a receipt — Ocean](<{paths[0]}>)", "",
-                f"![Working, verifying and settling into a receipt — Paper](<{paths[1]}>)", "",
-                "A demonstration of the actual components at their normal cadence: the working swell,",
-                "verification tick, state ink, selection movement and detail reveal.",
-                "The demonstration supplies each state change; the component supplies its motion.",
-                "Reduced and still modes use readable static marks and settle transitions immediately.",
-                "Run `cargo run --example motion` to finish, restart, switch phases and change motion policy yourself.", "",
-                "</details>", "",
-            ])
-    light = [item for item in index if item["profile"].startswith("light")]
-    if light:
-        lines.extend(["<details>", "<summary>Light theme</summary>", ""])
-        lines.extend(embed(item) + "\n" for item in light)
-        lines.extend(["</details>", ""])
-    if comparison:
-        lines.extend(["### Terminal profiles", ""])
+        lines.extend(['<a id="terminal-profiles"></a>', "<details>",
+                      "<summary>All nine terminal profiles</summary>", ""])
         lines.extend(embed(item) + "\n" for item in comparison)
+        lines.extend(["</details>", ""])
     lines.append(end)
     generated = "\n".join(lines)
     return original[:begin] + generated + original[finish + len(end):]

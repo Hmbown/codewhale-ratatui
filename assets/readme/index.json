@@ -432,7 +432,10 @@
         "posture-compact",
         "metrics-line",
         "metrics-narrow",
-        "metrics-compact"
+        "metrics-compact",
+        "metrics-startup",
+        "workflow-tree",
+        "workflow-tree-selected"
       ]
     },
     {
@@ -440,9 +443,6 @@
       "profile": "dark-truecolor",
       "group": "native-chrome",
       "entries": [
-        "metrics-startup",
-        "workflow-tree",
-        "workflow-tree-selected",
         "workflow-tree-clipped",
         "workflow-tree-long"
       ]
@@ -459,7 +459,8 @@
         "workbar-notes",
         "workbar-context",
         "workbar-git",
-        "workbar-cost"
+        "workbar-cost",
+        "workbar-top"
       ]
     },
     {
@@ -467,7 +468,6 @@
       "profile": "dark-truecolor",
       "group": "workbar",
       "entries": [
-        "workbar-top",
         "workbar-narrow",
         "workbar-left",
         "workbar-right"
@@ -630,7 +630,8 @@
         "attention-queue",
         "attention-focused",
         "attention-narrow",
-        "attention-empty"
+        "attention-empty",
+        "message"
       ]
     },
     {
@@ -638,7 +639,6 @@
       "profile": "dark-truecolor",
       "group": "components",
       "entries": [
-        "message",
         "composer",
         "tool-card",
         "agent-card",
@@ -672,7 +672,11 @@
         "text-input-empty",
         "text-input-typed",
         "text-input-unfocused",
-        "text-input-invalid"
+        "text-input-invalid",
+        "text-input-disabled",
+        "text-input-secret",
+        "text-input-long",
+        "text-input-wide-text"
       ]
     },
     {
@@ -680,24 +684,13 @@
       "profile": "dark-truecolor",
       "group": "input",
       "entries": [
-        "text-input-disabled",
-        "text-input-secret",
-        "text-input-long",
-        "text-input-wide-text",
         "form",
         "list",
         "list-scrolling",
         "list-tall-rows",
         "list-long",
         "list-empty",
-        "empty-state"
-      ]
-    },
-    {
-      "file": "input.dark-truecolor-3.svg",
-      "profile": "dark-truecolor",
-      "group": "input",
-      "entries": [
+        "empty-state",
         "empty-state-small"
       ]
     },
@@ -728,7 +721,8 @@
         "receipt-row",
         "receipt-table",
         "receipt-table-compact",
-        "receipt-table-minimal"
+        "receipt-table-minimal",
+        "receipt-table-clipped"
       ]
     },
     {
@@ -736,10 +730,11 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
-        "receipt-table-clipped",
         "diff",
         "diff-wrapped",
-        "diff-no-numbers"
+        "diff-no-numbers",
+        "diff-highlighted",
+        "count-bars"
       ]
     },
     {
@@ -747,11 +742,10 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
-        "diff-highlighted",
-        "count-bars",
         "approval-command",
         "approval-outside",
-        "approval-patch"
+        "approval-patch",
+        "approval-elevation"
       ]
     },
     {
@@ -759,17 +753,9 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
-        "approval-elevation",
         "approval-clipped",
         "approval-spoofed",
-        "review-verdicts"
-      ]
-    },
-    {
-      "file": "display.dark-truecolor-5.svg",
-      "profile": "dark-truecolor",
-      "group": "display",
-      "entries": [
+        "review-verdicts",
         "review-aggregate"
       ]
     },
@@ -794,21 +780,14 @@
       ]
     },
     {
-      "file": "habitat.dark-truecolor-1.svg",
+      "file": "habitat.dark-truecolor.svg",
       "profile": "dark-truecolor",
       "group": "habitat",
       "entries": [
         "fish-school",
         "jellyfish",
         "bubble-field",
-        "habitat-ascii"
-      ]
-    },
-    {
-      "file": "habitat.dark-truecolor-2.svg",
-      "profile": "dark-truecolor",
-      "group": "habitat",
-      "entries": [
+        "habitat-ascii",
         "habitat-reduced"
       ]
     },
@@ -1110,7 +1089,10 @@
         "posture-compact",
         "metrics-line",
         "metrics-narrow",
-        "metrics-compact"
+        "metrics-compact",
+        "metrics-startup",
+        "workflow-tree",
+        "workflow-tree-selected"
       ]
     },
     {
@@ -1118,9 +1100,6 @@
       "profile": "light-truecolor",
       "group": "native-chrome",
       "entries": [
-        "metrics-startup",
-        "workflow-tree",
-        "workflow-tree-selected",
         "workflow-tree-clipped",
         "workflow-tree-long"
       ]
@@ -1137,7 +1116,8 @@
         "workbar-notes",
         "workbar-context",
         "workbar-git",
-        "workbar-cost"
+        "workbar-cost",
+        "workbar-top"
       ]
     },
     {
@@ -1145,7 +1125,6 @@
       "profile": "light-truecolor",
       "group": "workbar",
       "entries": [
-        "workbar-top",
         "workbar-narrow",
         "workbar-left",
         "workbar-right"
@@ -1308,7 +1287,8 @@
         "attention-queue",
         "attention-focused",
         "attention-narrow",
-        "attention-empty"
+        "attention-empty",
+        "message"
       ]
     },
     {
@@ -1316,7 +1296,6 @@
       "profile": "light-truecolor",
       "group": "components",
       "entries": [
-        "message",
         "composer",
         "tool-card",
         "agent-card",
@@ -1350,7 +1329,11 @@
         "text-input-empty",
         "text-input-typed",
         "text-input-unfocused",
-        "text-input-invalid"
+        "text-input-invalid",
+        "text-input-disabled",
+        "text-input-secret",
+        "text-input-long",
+        "text-input-wide-text"
       ]
     },
     {
@@ -1358,24 +1341,13 @@
       "profile": "light-truecolor",
       "group": "input",
       "entries": [
-        "text-input-disabled",
-        "text-input-secret",
-        "text-input-long",
-        "text-input-wide-text",
         "form",
         "list",
         "list-scrolling",
         "list-tall-rows",
         "list-long",
         "list-empty",
-        "empty-state"
-      ]
-    },
-    {
-      "file": "input.light-truecolor-3.svg",
-      "profile": "light-truecolor",
-      "group": "input",
-      "entries": [
+        "empty-state",
         "empty-state-small"
       ]
     },
@@ -1406,7 +1378,8 @@
         "receipt-row",
         "receipt-table",
         "receipt-table-compact",
-        "receipt-table-minimal"
+        "receipt-table-minimal",
+        "receipt-table-clipped"
       ]
     },
     {
@@ -1414,10 +1387,11 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
-        "receipt-table-clipped",
         "diff",
         "diff-wrapped",
-        "diff-no-numbers"
+        "diff-no-numbers",
+        "diff-highlighted",
+        "count-bars"
       ]
     },
     {
@@ -1425,11 +1399,10 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
-        "diff-highlighted",
-        "count-bars",
         "approval-command",
         "approval-outside",
-        "approval-patch"
+        "approval-patch",
+        "approval-elevation"
       ]
     },
     {
@@ -1437,17 +1410,9 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
-        "approval-elevation",
         "approval-clipped",
         "approval-spoofed",
-        "review-verdicts"
-      ]
-    },
-    {
-      "file": "display.light-truecolor-5.svg",
-      "profile": "light-truecolor",
-      "group": "display",
-      "entries": [
+        "review-verdicts",
         "review-aggregate"
       ]
     },
@@ -1472,21 +1437,14 @@
       ]
     },
     {
-      "file": "habitat.light-truecolor-1.svg",
+      "file": "habitat.light-truecolor.svg",
       "profile": "light-truecolor",
       "group": "habitat",
       "entries": [
         "fish-school",
         "jellyfish",
         "bubble-field",
-        "habitat-ascii"
-      ]
-    },
-    {
-      "file": "habitat.light-truecolor-2.svg",
-      "profile": "light-truecolor",
-      "group": "habitat",
-      "entries": [
+        "habitat-ascii",
         "habitat-reduced"
       ]
     },

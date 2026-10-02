@@ -4,43 +4,43 @@ expression: dump(&entry)
 ---
 == dark-truecolor
 
-▎ Update the terminal components and show them in the README.
+▎ Polish the workbar and update the gallery.
 
 
 
-● The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-▏ part in your own Ratatui application.
+● The native layout is in place. I'm checking the narrow view.
 
 
 
 
-⣀ Updating the component library · 6 s
+
+⣀ Checking the narrow view · 6 s
+
+
+
+
 
                                                                                              ⠴⡭⢭⠦
                                                                                              ⢠⠃⡇
 
  °
-                                                                                            ˚
-                                                               ⠕⠪⠕⠂   ⠐⡤⣒⠤  ⢀⠦⣒⠤
-                ·                                                ⢀⠦⣒⠤           ⠪⠪⠕⠂
-      ·                                                              ⠐⠕⠭⠒⠨⠒⠭⠒ ·
 
-1 queued
-▸ ○ queued: Keep the narrow view readable  Send now / Edit / Drop
-✓ included / README.md
-Send now / Edit / Drop
+                                                                       ⡰⢔⡢⠄
+                                                                          ⠐⠕⠭⠒
+      ·                                                             ⠕⠪⠕⠂
+
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│❯ Review the changes, then continue.                                                                          │
+│❯ Review the changes.                                                                                         │
 │                                                                                                          [↵] │
 ╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────────────────╯
  ● ask  Shift+Tab   work   Working   Ctrl+X workbar
- • Update the component library  ███████░░░░░░░░░░░░░  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views · F7 profile · F8 motion · F9 theme
+codewhale   ctx 24%                                                                     F6 components · F9 theme
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                ×
- Goal: Make the work dock reusable                                                         TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component                                                                   completed ┃
-                                                                                                      ↓ 2 more │
+ Goal: Make the work dock reusable                                                          TODO · 1/3 · 2 left
+ 1 · ✓ Read the existing component                                                                    completed
+ 2 · ● Extract the native work dock                                                                 in progress
+ 3 · ○ Document the reusable API                                                                        pending
 ---
 r0 c0..112 fg=Foreground bg=Hover
 r1 c0..1 fg=Primary bg=#102a44 bold
@@ -50,74 +50,46 @@ r3 c0..112 fg=Foreground bg=#102842
 r4 c0..112 fg=Foreground bg=#0e2842
 r5 c0..1 fg=Primary bg=#0e2741 bold
 r5 c1..112 fg=Foreground bg=#0e2741
-r6 c0..2 fg=Hint|Dim bg=#0e2740
-r6 c2..112 fg=Foreground bg=#0e2740
+r6 c0..112 fg=Foreground bg=#0e2740
 r7 c0..112 fg=Foreground bg=#0e273f
 r8 c0..112 fg=Foreground bg=#0e263e
 r9 c0..112 fg=Foreground bg=#0e253d
 r10 c0..112 fg=Foreground bg=#0d253c
 r11 c0..1 fg=Live bg=#0d243b
-r11 c1..32 fg=Foreground bg=#0d243b
-r11 c32..35 fg=Border bg=#0d243b
-r11 c35..38 fg=Muted bg=#0d243b
-r11 c38..112 fg=Foreground bg=#0d243b
+r11 c1..26 fg=Foreground bg=#0d243b
+r11 c26..29 fg=Border bg=#0d243b
+r11 c29..32 fg=Muted bg=#0d243b
+r11 c32..112 fg=Foreground bg=#0d243b
 r12 c0..112 fg=Foreground bg=#0c233a
-r13 c0..93 fg=Foreground bg=#0c2339
-r13 c93..98 fg=Hint|Dim bg=#0c2339
-r13 c98..112 fg=Foreground bg=#0c2339
-r14 c0..93 fg=Foreground bg=#0d2238
-r14 c93..98 fg=Hint|Dim bg=#0d2238
-r14 c98..112 fg=Foreground bg=#0d2238
-r15 c0..93 fg=Foreground bg=#0d2237
-r15 c93..98 fg=Hint|Dim bg=#0d2237
-r15 c98..112 fg=Foreground bg=#0d2237
-r16 c0..1 fg=Foreground bg=#0c2136
-r16 c1..2 fg=Hint|Dim bg=#0c2136
-r16 c2..112 fg=Foreground bg=#0c2136
-r17 c0..92 fg=Foreground bg=#0c2035
-r17 c92..93 fg=Hint|Dim bg=#0c2035
-r17 c93..112 fg=Foreground bg=#0c2035
-r18 c0..63 fg=Foreground bg=#0c2034
-r18 c63..67 fg=Hint|Dim bg=#0c2034
-r18 c67..70 fg=Foreground bg=#0c2034
-r18 c70..74 fg=Hint|Dim bg=#0c2034
-r18 c74..76 fg=Foreground bg=#0c2034
-r18 c76..80 fg=Hint|Dim bg=#0c2034
-r18 c80..112 fg=Foreground bg=#0c2034
-r19 c0..16 fg=Foreground bg=#0b1f33
-r19 c16..17 fg=Hint|Dim bg=#0b1f33
-r19 c17..65 fg=Foreground bg=#0b1f33
-r19 c65..69 fg=Hint|Dim bg=#0b1f33
-r19 c69..80 fg=Foreground bg=#0b1f33
-r19 c80..84 fg=Primary bg=#0b1f33
-r19 c84..112 fg=Foreground bg=#0b1f33
-r20 c0..6 fg=Foreground bg=#0b1f32
-r20 c6..7 fg=Hint|Dim bg=#0b1f32
-r20 c7..69 fg=Foreground bg=#0b1f32
-r20 c69..77 fg=Hint|Dim bg=#0b1f32
-r20 c77..78 fg=Foreground bg=#0b1f32
-r20 c78..79 fg=Hint|Dim bg=#0b1f32
-r20 c79..112 fg=Foreground bg=#0b1f32
+r13 c0..112 fg=Foreground bg=#0c2339
+r14 c0..112 fg=Foreground bg=#0d2238
+r15 c0..112 fg=Foreground bg=#0d2237
+r16 c0..112 fg=Foreground bg=#0c2136
+r17 c0..93 fg=Foreground bg=#0c2035
+r17 c93..98 fg=Hint|Dim bg=#0c2035
+r17 c98..112 fg=Foreground bg=#0c2035
+r18 c0..93 fg=Foreground bg=#0c2034
+r18 c93..98 fg=Hint|Dim bg=#0c2034
+r18 c98..112 fg=Foreground bg=#0c2034
+r19 c0..93 fg=Foreground bg=#0b1f33
+r19 c93..98 fg=Hint|Dim bg=#0b1f33
+r19 c98..112 fg=Foreground bg=#0b1f33
+r20 c0..1 fg=Foreground bg=#0b1f32
+r20 c1..2 fg=Hint|Dim bg=#0b1f32
+r20 c2..112 fg=Foreground bg=#0b1f32
 r21 c0..112 fg=Foreground bg=#0b1e31
-r22 c0..8 fg=Primary bg=#0b1d30
-r22 c8..112 fg=Foreground bg=#0b1d30
-r23 c0..3 fg=Primary bg=Selected
-r23 c3..4 fg=Foreground bg=Selected
-r23 c4..10 fg=Primary bg=Selected bold
-r23 c10..12 fg=BorderStrong bg=Selected
-r23 c12..43 fg=Foreground bg=Selected
-r23 c43..51 fg=Primary bg=Selected
-r23 c51..54 fg=BorderStrong bg=Selected
-r23 c54..58 fg=Foreground bg=Selected
-r23 c58..61 fg=BorderStrong bg=Selected
-r23 c61..65 fg=Danger bg=Selected
-r23 c65..112 fg=Foreground bg=Selected
-r24 c0..1 fg=Live bg=#0a1c2e
-r24 c1..2 fg=Foreground bg=#0a1c2e
-r24 c2..10 fg=Live bg=#0a1c2e
-r24 c10..112 fg=Foreground bg=#0a1c2e
-r25 c0..22 fg=Primary bg=#0a1c2e
-r25 c22..112 fg=Foreground bg=#0a1c2e
+r22 c0..71 fg=Foreground bg=#0b1d30
+r22 c71..75 fg=Hint|Dim bg=#0b1d30
+r22 c75..112 fg=Foreground bg=#0b1d30
+r23 c0..74 fg=Foreground bg=#0b1d2f
+r23 c74..78 fg=Primary bg=#0b1d2f
+r23 c78..112 fg=Foreground bg=#0b1d2f
+r24 c0..6 fg=Foreground bg=#0a1c2e
+r24 c6..7 fg=Hint|Dim bg=#0a1c2e
+r24 c7..68 fg=Foreground bg=#0a1c2e
+r24 c68..72 fg=Hint|Dim bg=#0a1c2e
+r24 c72..112 fg=Foreground bg=#0a1c2e
+r25 c0..112 fg=Foreground bg=#0a1c2e
 r26 c0..112 fg=Border bg=Surface
 r27 c0..1 fg=Border bg=Surface
 r27 c1..2 fg=Primary bg=Surface
@@ -139,95 +111,85 @@ r30 c24..27 fg=Hint|Dim bg=#091829
 r30 c27..34 fg=Live bg=#091829
 r30 c34..51 fg=Hint|Dim bg=#091829
 r30 c51..112 fg=Foreground bg=#091829
-r31 c0..1 fg=Foreground bg=#091828
-r31 c1..3 fg=Live bg=#091828
-r31 c3..31 fg=Foreground bg=#091828 bold
-r31 c31..33 fg=Foreground bg=#091828
-r31 c33..40 fg=#9bd66f bg=#091828
-r31 c40..53 fg=Hint|Dim bg=#091828
-r31 c53..55 fg=Foreground bg=#091828
-r31 c55..63 fg=Muted bg=#091828
-r31 c63..65 fg=Foreground bg=#091828
-r31 c65..67 fg=Muted bg=#091828
-r31 c67..112 fg=Foreground bg=#091828
-r32 c0..9 fg=Primary bg=#091727
-r32 c9..12 fg=Hint|Dim bg=#091727
-r32 c12..15 fg=Muted bg=#091727
-r32 c15..16 fg=Foreground bg=#091727
-r32 c16..19 fg=Primary bg=#091727
-r32 c19..65 fg=Foreground bg=#091727
-r32 c65..112 fg=Hint|Dim bg=#091727
-r33 c0..112 fg=Border bg=#081726
+r31 c0..9 fg=Muted bg=#091828
+r31 c9..12 fg=Hint|Dim bg=#091828
+r31 c12..15 fg=Muted bg=#091828
+r31 c15..16 fg=Foreground bg=#091828
+r31 c16..19 fg=Muted bg=#091828
+r31 c19..88 fg=Foreground bg=#091828
+r31 c88..112 fg=Hint|Dim bg=#091828
+r32 c0..112 fg=Border bg=#091727
+r33 c0..1 fg=Foreground bg=#081726
+r33 c1..10 fg=Foreground bg=Selected bold
+r33 c10..12 fg=Foreground bg=#081726
+r33 c12..21 fg=Muted bg=#081726
+r33 c21..23 fg=Foreground bg=#081726
+r33 c23..31 fg=Muted bg=#081726
+r33 c31..33 fg=Foreground bg=#081726
+r33 c33..42 fg=Muted bg=#081726
+r33 c42..44 fg=Foreground bg=#081726
+r33 c44..53 fg=Muted bg=#081726
+r33 c53..55 fg=Foreground bg=#081726
+r33 c55..64 fg=Muted bg=#081726
+r33 c64..66 fg=Foreground bg=#081726
+r33 c66..71 fg=Muted bg=#081726
+r33 c71..73 fg=Foreground bg=#081726
+r33 c73..79 fg=Muted bg=#081726
+r33 c79..109 fg=Foreground bg=#081726
+r33 c109..112 fg=Hint|Dim bg=#081726
 r34 c0..1 fg=Foreground bg=#071725
-r34 c1..10 fg=Foreground bg=Selected bold
-r34 c10..12 fg=Foreground bg=#071725
-r34 c12..21 fg=Muted bg=#071725
-r34 c21..23 fg=Foreground bg=#071725
-r34 c23..31 fg=Muted bg=#071725
-r34 c31..33 fg=Foreground bg=#071725
-r34 c33..42 fg=Muted bg=#071725
-r34 c42..44 fg=Foreground bg=#071725
-r34 c44..53 fg=Muted bg=#071725
-r34 c53..55 fg=Foreground bg=#071725
-r34 c55..64 fg=Muted bg=#071725
-r34 c64..66 fg=Foreground bg=#071725
-r34 c66..71 fg=Muted bg=#071725
-r34 c71..73 fg=Foreground bg=#071725
-r34 c73..79 fg=Muted bg=#071725
-r34 c79..109 fg=Foreground bg=#071725
-r34 c109..112 fg=Hint|Dim bg=#071725
+r34 c1..34 fg=Live bg=#071725 bold
+r34 c34..111 fg=Muted bg=#071725
+r34 c111..112 fg=Foreground bg=#071725
 r35 c0..1 fg=Foreground bg=#071724
-r35 c1..34 fg=Live bg=#071724 bold
-r35 c34..110 fg=Muted bg=#071724
-r35 c110..112 fg=Foreground bg=#071724
+r35 c1..111 fg=#9bd66f bg=#071724
+r35 c111..112 fg=Foreground bg=#071724
 r36 c0..1 fg=Foreground bg=#071523
-r36 c1..110 fg=#9bd66f bg=#071523
-r36 c110..111 fg=Foreground bg=#071523
-r36 c111..112 fg=Live bg=#071523
+r36 c1..111 fg=Live bg=#071523
+r36 c111..112 fg=Foreground bg=#071523
 r37 c0..1 fg=Foreground bg=#071522
-r37 c1..110 fg=Muted bg=#071522
-r37 c110..111 fg=Foreground bg=#071522
-r37 c111..112 fg=Border bg=#071522
+r37 c1..111 fg=Muted bg=#071522
+r37 c111..112 fg=Foreground bg=#071522
 
 == dark-graphite
 
-▎ Update the terminal components and show them in the README.
+▎ Polish the workbar and update the gallery.
 
 
 
-● The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-▏ part in your own Ratatui application.
+● The native layout is in place. I'm checking the narrow view.
 
 
 
 
-⣀ Updating the component library · 6 s
+
+⣀ Checking the narrow view · 6 s
+
+
+
+
 
                                                                                              ⠴⡭⢭⠦
                                                                                              ⢠⠃⡇
 
  °
-                                                                                            ˚
-                                                               ⠕⠪⠕⠂   ⠐⡤⣒⠤  ⢀⠦⣒⠤
-                ·                                                ⢀⠦⣒⠤           ⠪⠪⠕⠂
-      ·                                                              ⠐⠕⠭⠒⠨⠒⠭⠒ ·
 
-1 queued
-▸ ○ queued: Keep the narrow view readable  Send now / Edit / Drop
-✓ included / README.md
-Send now / Edit / Drop
+                                                                       ⡰⢔⡢⠄
+                                                                          ⠐⠕⠭⠒
+      ·                                                             ⠕⠪⠕⠂
+
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│❯ Review the changes, then continue.                                                                          │
+│❯ Review the changes.                                                                                         │
 │                                                                                                          [↵] │
 ╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────────────────╯
  ● ask  Shift+Tab   work   Working   Ctrl+X workbar
- • Update the component library  ███████░░░░░░░░░░░░░  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views · F7 profile · F8 motion · F9 theme
+codewhale   ctx 24%                                                                     F6 components · F9 theme
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                ×
- Goal: Make the work dock reusable                                                         TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component                                                                   completed ┃
-                                                                                                      ↓ 2 more │
+ Goal: Make the work dock reusable                                                          TODO · 1/3 · 2 left
+ 1 · ✓ Read the existing component                                                                    completed
+ 2 · ● Extract the native work dock                                                                 in progress
+ 3 · ○ Document the reusable API                                                                        pending
 ---
 r0 c0..112 fg=Foreground bg=Hover
 r1 c0..1 fg=Primary bg=#102a44 bold
@@ -237,74 +199,46 @@ r3 c0..112 fg=Foreground bg=#102842
 r4 c0..112 fg=Foreground bg=#0e2842
 r5 c0..1 fg=Primary bg=#0e2741 bold
 r5 c1..112 fg=Foreground bg=#0e2741
-r6 c0..2 fg=Hint|Dim bg=#0e2740
-r6 c2..112 fg=Foreground bg=#0e2740
+r6 c0..112 fg=Foreground bg=#0e2740
 r7 c0..112 fg=Foreground bg=#0e273f
 r8 c0..112 fg=Foreground bg=#0e263e
 r9 c0..112 fg=Foreground bg=#0e253d
 r10 c0..112 fg=Foreground bg=#0d253c
 r11 c0..1 fg=Live bg=#0d243b
-r11 c1..32 fg=Foreground bg=#0d243b
-r11 c32..35 fg=Border bg=#0d243b
-r11 c35..38 fg=Muted bg=#0d243b
-r11 c38..112 fg=Foreground bg=#0d243b
+r11 c1..26 fg=Foreground bg=#0d243b
+r11 c26..29 fg=Border bg=#0d243b
+r11 c29..32 fg=Muted bg=#0d243b
+r11 c32..112 fg=Foreground bg=#0d243b
 r12 c0..112 fg=Foreground bg=#0c233a
-r13 c0..93 fg=Foreground bg=#0c2339
-r13 c93..98 fg=Hint|Dim bg=#0c2339
-r13 c98..112 fg=Foreground bg=#0c2339
-r14 c0..93 fg=Foreground bg=#0d2238
-r14 c93..98 fg=Hint|Dim bg=#0d2238
-r14 c98..112 fg=Foreground bg=#0d2238
-r15 c0..93 fg=Foreground bg=#0d2237
-r15 c93..98 fg=Hint|Dim bg=#0d2237
-r15 c98..112 fg=Foreground bg=#0d2237
-r16 c0..1 fg=Foreground bg=#0c2136
-r16 c1..2 fg=Hint|Dim bg=#0c2136
-r16 c2..112 fg=Foreground bg=#0c2136
-r17 c0..92 fg=Foreground bg=#0c2035
-r17 c92..93 fg=Hint|Dim bg=#0c2035
-r17 c93..112 fg=Foreground bg=#0c2035
-r18 c0..63 fg=Foreground bg=#0c2034
-r18 c63..67 fg=Hint|Dim bg=#0c2034
-r18 c67..70 fg=Foreground bg=#0c2034
-r18 c70..74 fg=Hint|Dim bg=#0c2034
-r18 c74..76 fg=Foreground bg=#0c2034
-r18 c76..80 fg=Hint|Dim bg=#0c2034
-r18 c80..112 fg=Foreground bg=#0c2034
-r19 c0..16 fg=Foreground bg=#0b1f33
-r19 c16..17 fg=Hint|Dim bg=#0b1f33
-r19 c17..65 fg=Foreground bg=#0b1f33
-r19 c65..69 fg=Hint|Dim bg=#0b1f33
-r19 c69..80 fg=Foreground bg=#0b1f33
-r19 c80..84 fg=Primary bg=#0b1f33
-r19 c84..112 fg=Foreground bg=#0b1f33
-r20 c0..6 fg=Foreground bg=#0b1f32
-r20 c6..7 fg=Hint|Dim bg=#0b1f32
-r20 c7..69 fg=Foreground bg=#0b1f32
-r20 c69..77 fg=Hint|Dim bg=#0b1f32
-r20 c77..78 fg=Foreground bg=#0b1f32
-r20 c78..79 fg=Hint|Dim bg=#0b1f32
-r20 c79..112 fg=Foreground bg=#0b1f32
+r13 c0..112 fg=Foreground bg=#0c2339
+r14 c0..112 fg=Foreground bg=#0d2238
+r15 c0..112 fg=Foreground bg=#0d2237
+r16 c0..112 fg=Foreground bg=#0c2136
+r17 c0..93 fg=Foreground bg=#0c2035
+r17 c93..98 fg=Hint|Dim bg=#0c2035
+r17 c98..112 fg=Foreground bg=#0c2035
+r18 c0..93 fg=Foreground bg=#0c2034
+r18 c93..98 fg=Hint|Dim bg=#0c2034
+r18 c98..112 fg=Foreground bg=#0c2034
+r19 c0..93 fg=Foreground bg=#0b1f33
+r19 c93..98 fg=Hint|Dim bg=#0b1f33
+r19 c98..112 fg=Foreground bg=#0b1f33
+r20 c0..1 fg=Foreground bg=#0b1f32
+r20 c1..2 fg=Hint|Dim bg=#0b1f32
+r20 c2..112 fg=Foreground bg=#0b1f32
 r21 c0..112 fg=Foreground bg=#0b1e31
-r22 c0..8 fg=Primary bg=#0b1d30
-r22 c8..112 fg=Foreground bg=#0b1d30
-r23 c0..3 fg=Primary bg=Selected
-r23 c3..4 fg=Foreground bg=Selected
-r23 c4..10 fg=Primary bg=Selected bold
-r23 c10..12 fg=BorderStrong bg=Selected
-r23 c12..43 fg=Foreground bg=Selected
-r23 c43..51 fg=Primary bg=Selected
-r23 c51..54 fg=BorderStrong bg=Selected
-r23 c54..58 fg=Foreground bg=Selected
-r23 c58..61 fg=BorderStrong bg=Selected
-r23 c61..65 fg=Danger bg=Selected
-r23 c65..112 fg=Foreground bg=Selected
-r24 c0..1 fg=Live bg=#0a1c2e
-r24 c1..2 fg=Foreground bg=#0a1c2e
-r24 c2..10 fg=Live bg=#0a1c2e
-r24 c10..112 fg=Foreground bg=#0a1c2e
-r25 c0..22 fg=Primary bg=#0a1c2e
-r25 c22..112 fg=Foreground bg=#0a1c2e
+r22 c0..71 fg=Foreground bg=#0b1d30
+r22 c71..75 fg=Hint|Dim bg=#0b1d30
+r22 c75..112 fg=Foreground bg=#0b1d30
+r23 c0..74 fg=Foreground bg=#0b1d2f
+r23 c74..78 fg=Primary bg=#0b1d2f
+r23 c78..112 fg=Foreground bg=#0b1d2f
+r24 c0..6 fg=Foreground bg=#0a1c2e
+r24 c6..7 fg=Hint|Dim bg=#0a1c2e
+r24 c7..68 fg=Foreground bg=#0a1c2e
+r24 c68..72 fg=Hint|Dim bg=#0a1c2e
+r24 c72..112 fg=Foreground bg=#0a1c2e
+r25 c0..112 fg=Foreground bg=#0a1c2e
 r26 c0..112 fg=Border bg=Surface
 r27 c0..1 fg=Border bg=Surface
 r27 c1..2 fg=Primary bg=Surface
@@ -326,95 +260,85 @@ r30 c24..27 fg=Hint|Dim bg=#091829
 r30 c27..34 fg=Live bg=#091829
 r30 c34..51 fg=Hint|Dim bg=#091829
 r30 c51..112 fg=Foreground bg=#091829
-r31 c0..1 fg=Foreground bg=#091828
-r31 c1..3 fg=Live bg=#091828
-r31 c3..31 fg=Foreground bg=#091828 bold
-r31 c31..33 fg=Foreground bg=#091828
-r31 c33..40 fg=#9bd66f bg=#091828
-r31 c40..53 fg=Hint|Dim bg=#091828
-r31 c53..55 fg=Foreground bg=#091828
-r31 c55..63 fg=Muted bg=#091828
-r31 c63..65 fg=Foreground bg=#091828
-r31 c65..67 fg=Muted bg=#091828
-r31 c67..112 fg=Foreground bg=#091828
-r32 c0..9 fg=Primary bg=#091727
-r32 c9..12 fg=Hint|Dim bg=#091727
-r32 c12..15 fg=Muted bg=#091727
-r32 c15..16 fg=Foreground bg=#091727
-r32 c16..19 fg=Primary bg=#091727
-r32 c19..65 fg=Foreground bg=#091727
-r32 c65..112 fg=Hint|Dim bg=#091727
-r33 c0..112 fg=Border bg=#081726
+r31 c0..9 fg=Muted bg=#091828
+r31 c9..12 fg=Hint|Dim bg=#091828
+r31 c12..15 fg=Muted bg=#091828
+r31 c15..16 fg=Foreground bg=#091828
+r31 c16..19 fg=Muted bg=#091828
+r31 c19..88 fg=Foreground bg=#091828
+r31 c88..112 fg=Hint|Dim bg=#091828
+r32 c0..112 fg=Border bg=#091727
+r33 c0..1 fg=Foreground bg=#081726
+r33 c1..10 fg=Foreground bg=Selected bold
+r33 c10..12 fg=Foreground bg=#081726
+r33 c12..21 fg=Muted bg=#081726
+r33 c21..23 fg=Foreground bg=#081726
+r33 c23..31 fg=Muted bg=#081726
+r33 c31..33 fg=Foreground bg=#081726
+r33 c33..42 fg=Muted bg=#081726
+r33 c42..44 fg=Foreground bg=#081726
+r33 c44..53 fg=Muted bg=#081726
+r33 c53..55 fg=Foreground bg=#081726
+r33 c55..64 fg=Muted bg=#081726
+r33 c64..66 fg=Foreground bg=#081726
+r33 c66..71 fg=Muted bg=#081726
+r33 c71..73 fg=Foreground bg=#081726
+r33 c73..79 fg=Muted bg=#081726
+r33 c79..109 fg=Foreground bg=#081726
+r33 c109..112 fg=Hint|Dim bg=#081726
 r34 c0..1 fg=Foreground bg=#071725
-r34 c1..10 fg=Foreground bg=Selected bold
-r34 c10..12 fg=Foreground bg=#071725
-r34 c12..21 fg=Muted bg=#071725
-r34 c21..23 fg=Foreground bg=#071725
-r34 c23..31 fg=Muted bg=#071725
-r34 c31..33 fg=Foreground bg=#071725
-r34 c33..42 fg=Muted bg=#071725
-r34 c42..44 fg=Foreground bg=#071725
-r34 c44..53 fg=Muted bg=#071725
-r34 c53..55 fg=Foreground bg=#071725
-r34 c55..64 fg=Muted bg=#071725
-r34 c64..66 fg=Foreground bg=#071725
-r34 c66..71 fg=Muted bg=#071725
-r34 c71..73 fg=Foreground bg=#071725
-r34 c73..79 fg=Muted bg=#071725
-r34 c79..109 fg=Foreground bg=#071725
-r34 c109..112 fg=Hint|Dim bg=#071725
+r34 c1..34 fg=Live bg=#071725 bold
+r34 c34..111 fg=Muted bg=#071725
+r34 c111..112 fg=Foreground bg=#071725
 r35 c0..1 fg=Foreground bg=#071724
-r35 c1..34 fg=Live bg=#071724 bold
-r35 c34..110 fg=Muted bg=#071724
-r35 c110..112 fg=Foreground bg=#071724
+r35 c1..111 fg=#9bd66f bg=#071724
+r35 c111..112 fg=Foreground bg=#071724
 r36 c0..1 fg=Foreground bg=#071523
-r36 c1..110 fg=#9bd66f bg=#071523
-r36 c110..111 fg=Foreground bg=#071523
-r36 c111..112 fg=Live bg=#071523
+r36 c1..111 fg=Live bg=#071523
+r36 c111..112 fg=Foreground bg=#071523
 r37 c0..1 fg=Foreground bg=#071522
-r37 c1..110 fg=Muted bg=#071522
-r37 c110..111 fg=Foreground bg=#071522
-r37 c111..112 fg=Border bg=#071522
+r37 c1..111 fg=Muted bg=#071522
+r37 c111..112 fg=Foreground bg=#071522
 
 == light-truecolor
 
-▎ Update the terminal components and show them in the README.
+▎ Polish the workbar and update the gallery.
 
 
 
-● The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-▏ part in your own Ratatui application.
+● The native layout is in place. I'm checking the narrow view.
 
 
 
 
-⣀ Updating the component library · 6 s
+
+⣀ Checking the narrow view · 6 s
+
+
+
+
 
                                                                                              ⠴⡭⢭⠦
                                                                                              ⢠⠃⡇
 
  °
-                                                                                            ˚
-                                                               ⠕⠪⠕⠂   ⠐⡤⣒⠤  ⢀⠦⣒⠤
-                ·                                                ⢀⠦⣒⠤           ⠪⠪⠕⠂
-      ·                                                              ⠐⠕⠭⠒⠨⠒⠭⠒ ·
 
-1 queued
-▸ ○ queued: Keep the narrow view readable  Send now / Edit / Drop
-✓ included / README.md
-Send now / Edit / Drop
+                                                                       ⡰⢔⡢⠄
+                                                                          ⠐⠕⠭⠒
+      ·                                                             ⠕⠪⠕⠂
+
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│❯ Review the changes, then continue.                                                                          │
+│❯ Review the changes.                                                                                         │
 │                                                                                                          [↵] │
 ╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────────────────╯
  ● ask  Shift+Tab   work   Working   Ctrl+X workbar
- • Update the component library  ███████░░░░░░░░░░░░░  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views · F7 profile · F8 motion · F9 theme
+codewhale   ctx 24%                                                                     F6 components · F9 theme
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                ×
- Goal: Make the work dock reusable                                                         TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component                                                                   completed ┃
-                                                                                                      ↓ 2 more │
+ Goal: Make the work dock reusable                                                          TODO · 1/3 · 2 left
+ 1 · ✓ Read the existing component                                                                    completed
+ 2 · ● Extract the native work dock                                                                 in progress
+ 3 · ○ Document the reusable API                                                                        pending
 ---
 r0 c0..112 fg=Foreground
 r1 c0..1 fg=Primary bold
@@ -424,74 +348,46 @@ r3 c0..112 fg=Foreground
 r4 c0..112 fg=Foreground
 r5 c0..1 fg=Primary bold
 r5 c1..112 fg=Foreground
-r6 c0..2 fg=Hint|Dim
-r6 c2..112 fg=Foreground
+r6 c0..112 fg=Foreground
 r7 c0..112 fg=Foreground
 r8 c0..112 fg=Foreground
 r9 c0..112 fg=Foreground
 r10 c0..112 fg=Foreground
 r11 c0..1 fg=Live
-r11 c1..32 fg=Foreground
-r11 c32..35 fg=Border
-r11 c35..38 fg=Muted
-r11 c38..112 fg=Foreground
+r11 c1..26 fg=Foreground
+r11 c26..29 fg=Border
+r11 c29..32 fg=Muted
+r11 c32..112 fg=Foreground
 r12 c0..112 fg=Foreground
-r13 c0..93 fg=Foreground
-r13 c93..98 fg=Hint|Dim
-r13 c98..112 fg=Foreground
-r14 c0..93 fg=Foreground
-r14 c93..98 fg=Hint|Dim
-r14 c98..112 fg=Foreground
-r15 c0..93 fg=Foreground
-r15 c93..98 fg=Hint|Dim
-r15 c98..112 fg=Foreground
-r16 c0..1 fg=Foreground
-r16 c1..2 fg=Hint|Dim
-r16 c2..112 fg=Foreground
-r17 c0..92 fg=Foreground
-r17 c92..93 fg=Hint|Dim
-r17 c93..112 fg=Foreground
-r18 c0..63 fg=Foreground
-r18 c63..67 fg=Hint|Dim
-r18 c67..70 fg=Foreground
-r18 c70..74 fg=Hint|Dim
-r18 c74..76 fg=Foreground
-r18 c76..80 fg=Hint|Dim
-r18 c80..112 fg=Foreground
-r19 c0..16 fg=Foreground
-r19 c16..17 fg=Hint|Dim
-r19 c17..65 fg=Foreground
-r19 c65..69 fg=Hint|Dim
-r19 c69..80 fg=Foreground
-r19 c80..84 fg=Primary
-r19 c84..112 fg=Foreground
-r20 c0..6 fg=Foreground
-r20 c6..7 fg=Hint|Dim
-r20 c7..69 fg=Foreground
-r20 c69..77 fg=Hint|Dim
-r20 c77..78 fg=Foreground
-r20 c78..79 fg=Hint|Dim
-r20 c79..112 fg=Foreground
+r13 c0..112 fg=Foreground
+r14 c0..112 fg=Foreground
+r15 c0..112 fg=Foreground
+r16 c0..112 fg=Foreground
+r17 c0..93 fg=Foreground
+r17 c93..98 fg=Hint|Dim
+r17 c98..112 fg=Foreground
+r18 c0..93 fg=Foreground
+r18 c93..98 fg=Hint|Dim
+r18 c98..112 fg=Foreground
+r19 c0..93 fg=Foreground
+r19 c93..98 fg=Hint|Dim
+r19 c98..112 fg=Foreground
+r20 c0..1 fg=Foreground
+r20 c1..2 fg=Hint|Dim
+r20 c2..112 fg=Foreground
 r21 c0..112 fg=Foreground
-r22 c0..8 fg=Primary
-r22 c8..112 fg=Foreground
-r23 c0..3 fg=Primary bg=Selected
-r23 c3..4 fg=Foreground bg=Selected
-r23 c4..10 fg=Primary bg=Selected bold
-r23 c10..12 fg=BorderStrong bg=Selected
-r23 c12..43 fg=Foreground bg=Selected
-r23 c43..51 fg=Primary bg=Selected
-r23 c51..54 fg=BorderStrong bg=Selected
-r23 c54..58 fg=Foreground bg=Selected
-r23 c58..61 fg=BorderStrong bg=Selected
-r23 c61..65 fg=Danger bg=Selected
-r23 c65..112 fg=Foreground bg=Selected
-r24 c0..1 fg=Live
-r24 c1..2 fg=Foreground
-r24 c2..10 fg=Live
-r24 c10..112 fg=Foreground
-r25 c0..22 fg=Primary
-r25 c22..112 fg=Foreground
+r22 c0..71 fg=Foreground
+r22 c71..75 fg=Hint|Dim
+r22 c75..112 fg=Foreground
+r23 c0..74 fg=Foreground
+r23 c74..78 fg=Primary
+r23 c78..112 fg=Foreground
+r24 c0..6 fg=Foreground
+r24 c6..7 fg=Hint|Dim
+r24 c7..68 fg=Foreground
+r24 c68..72 fg=Hint|Dim
+r24 c72..112 fg=Foreground
+r25 c0..112 fg=Foreground
 r26 c0..112 fg=Border
 r27 c0..1 fg=Border
 r27 c1..2 fg=Primary
@@ -513,95 +409,85 @@ r30 c24..27 fg=Hint|Dim
 r30 c27..34 fg=Live
 r30 c34..51 fg=Hint|Dim
 r30 c51..112 fg=Foreground
-r31 c0..1 fg=Foreground
-r31 c1..3 fg=Live
-r31 c3..31 fg=Foreground bold
-r31 c31..33 fg=Foreground
-r31 c33..40 fg=#14763d
-r31 c40..53 fg=Hint|Dim
-r31 c53..55 fg=Foreground
-r31 c55..63 fg=Muted
-r31 c63..65 fg=Foreground
-r31 c65..67 fg=Muted
-r31 c67..112 fg=Foreground
-r32 c0..9 fg=Primary
-r32 c9..12 fg=Hint|Dim
-r32 c12..15 fg=Muted
-r32 c15..16 fg=Foreground
-r32 c16..19 fg=Primary
-r32 c19..65 fg=Foreground
-r32 c65..112 fg=Hint|Dim
-r33 c0..112 fg=Border
+r31 c0..9 fg=Muted
+r31 c9..12 fg=Hint|Dim
+r31 c12..15 fg=Muted
+r31 c15..16 fg=Foreground
+r31 c16..19 fg=Muted
+r31 c19..88 fg=Foreground
+r31 c88..112 fg=Hint|Dim
+r32 c0..112 fg=Border
+r33 c0..1 fg=Foreground
+r33 c1..10 fg=Foreground bg=Selected bold
+r33 c10..12 fg=Foreground
+r33 c12..21 fg=Muted
+r33 c21..23 fg=Foreground
+r33 c23..31 fg=Muted
+r33 c31..33 fg=Foreground
+r33 c33..42 fg=Muted
+r33 c42..44 fg=Foreground
+r33 c44..53 fg=Muted
+r33 c53..55 fg=Foreground
+r33 c55..64 fg=Muted
+r33 c64..66 fg=Foreground
+r33 c66..71 fg=Muted
+r33 c71..73 fg=Foreground
+r33 c73..79 fg=Muted
+r33 c79..109 fg=Foreground
+r33 c109..112 fg=Hint|Dim
 r34 c0..1 fg=Foreground
-r34 c1..10 fg=Foreground bg=Selected bold
-r34 c10..12 fg=Foreground
-r34 c12..21 fg=Muted
-r34 c21..23 fg=Foreground
-r34 c23..31 fg=Muted
-r34 c31..33 fg=Foreground
-r34 c33..42 fg=Muted
-r34 c42..44 fg=Foreground
-r34 c44..53 fg=Muted
-r34 c53..55 fg=Foreground
-r34 c55..64 fg=Muted
-r34 c64..66 fg=Foreground
-r34 c66..71 fg=Muted
-r34 c71..73 fg=Foreground
-r34 c73..79 fg=Muted
-r34 c79..109 fg=Foreground
-r34 c109..112 fg=Hint|Dim
+r34 c1..34 fg=Live bold
+r34 c34..111 fg=Muted
+r34 c111..112 fg=Foreground
 r35 c0..1 fg=Foreground
-r35 c1..34 fg=Live bold
-r35 c34..110 fg=Muted
-r35 c110..112 fg=Foreground
+r35 c1..111 fg=#14763d
+r35 c111..112 fg=Foreground
 r36 c0..1 fg=Foreground
-r36 c1..110 fg=#14763d
-r36 c110..111 fg=Foreground
-r36 c111..112 fg=Live
+r36 c1..111 fg=Live
+r36 c111..112 fg=Foreground
 r37 c0..1 fg=Foreground
-r37 c1..110 fg=Muted
-r37 c110..111 fg=Foreground
-r37 c111..112 fg=Border
+r37 c1..111 fg=Muted
+r37 c111..112 fg=Foreground
 
 == dark-256
 
-▎ Update the terminal components and show them in the README.
+▎ Polish the workbar and update the gallery.
 
 
 
-● The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-▏ part in your own Ratatui application.
+● The native layout is in place. I'm checking the narrow view.
 
 
 
 
-⣀ Updating the component library · 6 s
+
+⣀ Checking the narrow view · 6 s
+
+
+
+
 
                                                                                              ⠴⡭⢭⠦
                                                                                              ⢠⠃⡇
 
  °
-                                                                                            ˚
-                                                               ⠕⠪⠕⠂   ⠐⡤⣒⠤  ⢀⠦⣒⠤
-                ·                                                ⢀⠦⣒⠤           ⠪⠪⠕⠂
-      ·                                                              ⠐⠕⠭⠒⠨⠒⠭⠒ ·
 
-1 queued
-▸ ○ queued: Keep the narrow view readable  Send now / Edit / Drop
-✓ included / README.md
-Send now / Edit / Drop
+                                                                       ⡰⢔⡢⠄
+                                                                          ⠐⠕⠭⠒
+      ·                                                             ⠕⠪⠕⠂
+
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│❯ Review the changes, then continue.                                                                          │
+│❯ Review the changes.                                                                                         │
 │                                                                                                          [↵] │
 ╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────────────────╯
  ● ask  Shift+Tab   work   Working   Ctrl+X workbar
- • Update the component library  ███████░░░░░░░░░░░░░  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views · F7 profile · F8 motion · F9 theme
+codewhale   ctx 24%                                                                     F6 components · F9 theme
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                ×
- Goal: Make the work dock reusable                                                         TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component                                                                   completed ┃
-                                                                                                      ↓ 2 more │
+ Goal: Make the work dock reusable                                                          TODO · 1/3 · 2 left
+ 1 · ✓ Read the existing component                                                                    completed
+ 2 · ● Extract the native work dock                                                                 in progress
+ 3 · ○ Document the reusable API                                                                        pending
 ---
 r0 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r1 c0..1 fg=Primary bg=Background|DiffAddedTint bold
@@ -611,74 +497,46 @@ r3 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r4 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r5 c0..1 fg=Primary bg=Background|DiffAddedTint bold
 r5 c1..112 fg=Foreground bg=Background|DiffAddedTint
-r6 c0..2 fg=Hint|Dim bg=Background|DiffAddedTint
-r6 c2..112 fg=Foreground bg=Background|DiffAddedTint
+r6 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r7 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r8 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r9 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r10 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r11 c0..1 fg=Live bg=Background|DiffAddedTint
-r11 c1..32 fg=Foreground bg=Background|DiffAddedTint
-r11 c32..35 fg=Border bg=Background|DiffAddedTint
-r11 c35..38 fg=Muted bg=Background|DiffAddedTint
-r11 c38..112 fg=Foreground bg=Background|DiffAddedTint
+r11 c1..26 fg=Foreground bg=Background|DiffAddedTint
+r11 c26..29 fg=Border bg=Background|DiffAddedTint
+r11 c29..32 fg=Muted bg=Background|DiffAddedTint
+r11 c32..112 fg=Foreground bg=Background|DiffAddedTint
 r12 c0..112 fg=Foreground bg=Background|DiffAddedTint
-r13 c0..93 fg=Foreground bg=Background|DiffAddedTint
-r13 c93..98 fg=Hint|Dim bg=Background|DiffAddedTint
-r13 c98..112 fg=Foreground bg=Background|DiffAddedTint
-r14 c0..93 fg=Foreground bg=Background|DiffAddedTint
-r14 c93..98 fg=Hint|Dim bg=Background|DiffAddedTint
-r14 c98..112 fg=Foreground bg=Background|DiffAddedTint
-r15 c0..93 fg=Foreground bg=Background|DiffAddedTint
-r15 c93..98 fg=Hint|Dim bg=Background|DiffAddedTint
-r15 c98..112 fg=Foreground bg=Background|DiffAddedTint
-r16 c0..1 fg=Foreground bg=Background|DiffAddedTint
-r16 c1..2 fg=Hint|Dim bg=Background|DiffAddedTint
-r16 c2..112 fg=Foreground bg=Background|DiffAddedTint
-r17 c0..92 fg=Foreground bg=Background|DiffAddedTint
-r17 c92..93 fg=Hint|Dim bg=Background|DiffAddedTint
-r17 c93..112 fg=Foreground bg=Background|DiffAddedTint
-r18 c0..63 fg=Foreground bg=Background|DiffAddedTint
-r18 c63..67 fg=Hint|Dim bg=Background|DiffAddedTint
-r18 c67..70 fg=Foreground bg=Background|DiffAddedTint
-r18 c70..74 fg=Hint|Dim bg=Background|DiffAddedTint
-r18 c74..76 fg=Foreground bg=Background|DiffAddedTint
-r18 c76..80 fg=Hint|Dim bg=Background|DiffAddedTint
-r18 c80..112 fg=Foreground bg=Background|DiffAddedTint
-r19 c0..16 fg=Foreground bg=Background|DiffAddedTint
-r19 c16..17 fg=Hint|Dim bg=Background|DiffAddedTint
-r19 c17..65 fg=Foreground bg=Background|DiffAddedTint
-r19 c65..69 fg=Hint|Dim bg=Background|DiffAddedTint
-r19 c69..80 fg=Foreground bg=Background|DiffAddedTint
-r19 c80..84 fg=Primary bg=Background|DiffAddedTint
-r19 c84..112 fg=Foreground bg=Background|DiffAddedTint
-r20 c0..6 fg=Foreground bg=Background|DiffAddedTint
-r20 c6..7 fg=Hint|Dim bg=Background|DiffAddedTint
-r20 c7..69 fg=Foreground bg=Background|DiffAddedTint
-r20 c69..77 fg=Hint|Dim bg=Background|DiffAddedTint
-r20 c77..78 fg=Foreground bg=Background|DiffAddedTint
-r20 c78..79 fg=Hint|Dim bg=Background|DiffAddedTint
-r20 c79..112 fg=Foreground bg=Background|DiffAddedTint
+r13 c0..112 fg=Foreground bg=Background|DiffAddedTint
+r14 c0..112 fg=Foreground bg=Background|DiffAddedTint
+r15 c0..112 fg=Foreground bg=Background|DiffAddedTint
+r16 c0..112 fg=Foreground bg=Background|DiffAddedTint
+r17 c0..93 fg=Foreground bg=Background|DiffAddedTint
+r17 c93..98 fg=Hint|Dim bg=Background|DiffAddedTint
+r17 c98..112 fg=Foreground bg=Background|DiffAddedTint
+r18 c0..93 fg=Foreground bg=Background|DiffAddedTint
+r18 c93..98 fg=Hint|Dim bg=Background|DiffAddedTint
+r18 c98..112 fg=Foreground bg=Background|DiffAddedTint
+r19 c0..93 fg=Foreground bg=Background|DiffAddedTint
+r19 c93..98 fg=Hint|Dim bg=Background|DiffAddedTint
+r19 c98..112 fg=Foreground bg=Background|DiffAddedTint
+r20 c0..1 fg=Foreground bg=Background|DiffAddedTint
+r20 c1..2 fg=Hint|Dim bg=Background|DiffAddedTint
+r20 c2..112 fg=Foreground bg=Background|DiffAddedTint
 r21 c0..112 fg=Foreground bg=Background|DiffAddedTint
-r22 c0..8 fg=Primary bg=Background|DiffAddedTint
-r22 c8..112 fg=Foreground bg=Background|DiffAddedTint
-r23 c0..3 fg=Primary bg=Selected
-r23 c3..4 fg=Foreground bg=Selected
-r23 c4..10 fg=Primary bg=Selected bold
-r23 c10..12 fg=BorderStrong bg=Selected
-r23 c12..43 fg=Foreground bg=Selected
-r23 c43..51 fg=Primary bg=Selected
-r23 c51..54 fg=BorderStrong bg=Selected
-r23 c54..58 fg=Foreground bg=Selected
-r23 c58..61 fg=BorderStrong bg=Selected
-r23 c61..65 fg=Danger bg=Selected
-r23 c65..112 fg=Foreground bg=Selected
-r24 c0..1 fg=Live bg=Background|DiffAddedTint
-r24 c1..2 fg=Foreground bg=Background|DiffAddedTint
-r24 c2..10 fg=Live bg=Background|DiffAddedTint
-r24 c10..112 fg=Foreground bg=Background|DiffAddedTint
-r25 c0..22 fg=Primary bg=Background|DiffAddedTint
-r25 c22..112 fg=Foreground bg=Background|DiffAddedTint
+r22 c0..71 fg=Foreground bg=Background|DiffAddedTint
+r22 c71..75 fg=Hint|Dim bg=Background|DiffAddedTint
+r22 c75..112 fg=Foreground bg=Background|DiffAddedTint
+r23 c0..74 fg=Foreground bg=Background|DiffAddedTint
+r23 c74..78 fg=Primary bg=Background|DiffAddedTint
+r23 c78..112 fg=Foreground bg=Background|DiffAddedTint
+r24 c0..6 fg=Foreground bg=Background|DiffAddedTint
+r24 c6..7 fg=Hint|Dim bg=Background|DiffAddedTint
+r24 c7..68 fg=Foreground bg=Background|DiffAddedTint
+r24 c68..72 fg=Hint|Dim bg=Background|DiffAddedTint
+r24 c72..112 fg=Foreground bg=Background|DiffAddedTint
+r25 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r26 c0..112 fg=Border bg=Surface|Hover|DiffRemovedTint
 r27 c0..1 fg=Border bg=Surface|Hover|DiffRemovedTint
 r27 c1..2 fg=Primary bg=Surface|Hover|DiffRemovedTint
@@ -700,95 +558,85 @@ r30 c24..27 fg=Hint|Dim bg=Background|DiffAddedTint
 r30 c27..34 fg=Live bg=Background|DiffAddedTint
 r30 c34..51 fg=Hint|Dim bg=Background|DiffAddedTint
 r30 c51..112 fg=Foreground bg=Background|DiffAddedTint
-r31 c0..1 fg=Foreground bg=Background|DiffAddedTint
-r31 c1..3 fg=Live bg=Background|DiffAddedTint
-r31 c3..31 fg=Foreground bg=Background|DiffAddedTint bold
-r31 c31..33 fg=Foreground bg=Background|DiffAddedTint
-r31 c33..40 fg=idx113 bg=Background|DiffAddedTint
-r31 c40..53 fg=Hint|Dim bg=Background|DiffAddedTint
-r31 c53..55 fg=Foreground bg=Background|DiffAddedTint
-r31 c55..63 fg=Muted bg=Background|DiffAddedTint
-r31 c63..65 fg=Foreground bg=Background|DiffAddedTint
-r31 c65..67 fg=Muted bg=Background|DiffAddedTint
-r31 c67..112 fg=Foreground bg=Background|DiffAddedTint
-r32 c0..9 fg=Primary bg=Background|DiffAddedTint
-r32 c9..12 fg=Hint|Dim bg=Background|DiffAddedTint
-r32 c12..15 fg=Muted bg=Background|DiffAddedTint
-r32 c15..16 fg=Foreground bg=Background|DiffAddedTint
-r32 c16..19 fg=Primary bg=Background|DiffAddedTint
-r32 c19..65 fg=Foreground bg=Background|DiffAddedTint
-r32 c65..112 fg=Hint|Dim bg=Background|DiffAddedTint
-r33 c0..112 fg=Border bg=Sidebar
+r31 c0..9 fg=Muted bg=Background|DiffAddedTint
+r31 c9..12 fg=Hint|Dim bg=Background|DiffAddedTint
+r31 c12..15 fg=Muted bg=Background|DiffAddedTint
+r31 c15..16 fg=Foreground bg=Background|DiffAddedTint
+r31 c16..19 fg=Muted bg=Background|DiffAddedTint
+r31 c19..88 fg=Foreground bg=Background|DiffAddedTint
+r31 c88..112 fg=Hint|Dim bg=Background|DiffAddedTint
+r32 c0..112 fg=Border bg=Sidebar
+r33 c0..1 fg=Foreground bg=Sidebar
+r33 c1..10 fg=Foreground bg=Selected bold
+r33 c10..12 fg=Foreground bg=Sidebar
+r33 c12..21 fg=Muted bg=Sidebar
+r33 c21..23 fg=Foreground bg=Sidebar
+r33 c23..31 fg=Muted bg=Sidebar
+r33 c31..33 fg=Foreground bg=Sidebar
+r33 c33..42 fg=Muted bg=Sidebar
+r33 c42..44 fg=Foreground bg=Sidebar
+r33 c44..53 fg=Muted bg=Sidebar
+r33 c53..55 fg=Foreground bg=Sidebar
+r33 c55..64 fg=Muted bg=Sidebar
+r33 c64..66 fg=Foreground bg=Sidebar
+r33 c66..71 fg=Muted bg=Sidebar
+r33 c71..73 fg=Foreground bg=Sidebar
+r33 c73..79 fg=Muted bg=Sidebar
+r33 c79..109 fg=Foreground bg=Sidebar
+r33 c109..112 fg=Hint|Dim bg=Sidebar
 r34 c0..1 fg=Foreground bg=Sidebar
-r34 c1..10 fg=Foreground bg=Selected bold
-r34 c10..12 fg=Foreground bg=Sidebar
-r34 c12..21 fg=Muted bg=Sidebar
-r34 c21..23 fg=Foreground bg=Sidebar
-r34 c23..31 fg=Muted bg=Sidebar
-r34 c31..33 fg=Foreground bg=Sidebar
-r34 c33..42 fg=Muted bg=Sidebar
-r34 c42..44 fg=Foreground bg=Sidebar
-r34 c44..53 fg=Muted bg=Sidebar
-r34 c53..55 fg=Foreground bg=Sidebar
-r34 c55..64 fg=Muted bg=Sidebar
-r34 c64..66 fg=Foreground bg=Sidebar
-r34 c66..71 fg=Muted bg=Sidebar
-r34 c71..73 fg=Foreground bg=Sidebar
-r34 c73..79 fg=Muted bg=Sidebar
-r34 c79..109 fg=Foreground bg=Sidebar
-r34 c109..112 fg=Hint|Dim bg=Sidebar
+r34 c1..34 fg=Live bg=Sidebar bold
+r34 c34..111 fg=Muted bg=Sidebar
+r34 c111..112 fg=Foreground bg=Sidebar
 r35 c0..1 fg=Foreground bg=Sidebar
-r35 c1..34 fg=Live bg=Sidebar bold
-r35 c34..110 fg=Muted bg=Sidebar
-r35 c110..112 fg=Foreground bg=Sidebar
+r35 c1..111 fg=idx113 bg=Sidebar
+r35 c111..112 fg=Foreground bg=Sidebar
 r36 c0..1 fg=Foreground bg=Sidebar
-r36 c1..110 fg=idx113 bg=Sidebar
-r36 c110..111 fg=Foreground bg=Sidebar
-r36 c111..112 fg=Live bg=Sidebar
+r36 c1..111 fg=Live bg=Sidebar
+r36 c111..112 fg=Foreground bg=Sidebar
 r37 c0..1 fg=Foreground bg=Sidebar
-r37 c1..110 fg=Muted bg=Sidebar
-r37 c110..111 fg=Foreground bg=Sidebar
-r37 c111..112 fg=Border bg=Sidebar
+r37 c1..111 fg=Muted bg=Sidebar
+r37 c111..112 fg=Foreground bg=Sidebar
 
 == light-256
 
-▎ Update the terminal components and show them in the README.
+▎ Polish the workbar and update the gallery.
 
 
 
-● The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-▏ part in your own Ratatui application.
+● The native layout is in place. I'm checking the narrow view.
 
 
 
 
-⣀ Updating the component library · 6 s
+
+⣀ Checking the narrow view · 6 s
+
+
+
+
 
                                                                                              ⠴⡭⢭⠦
                                                                                              ⢠⠃⡇
 
  °
-                                                                                            ˚
-                                                               ⠕⠪⠕⠂   ⠐⡤⣒⠤  ⢀⠦⣒⠤
-                ·                                                ⢀⠦⣒⠤           ⠪⠪⠕⠂
-      ·                                                              ⠐⠕⠭⠒⠨⠒⠭⠒ ·
 
-1 queued
-▸ ○ queued: Keep the narrow view readable  Send now / Edit / Drop
-✓ included / README.md
-Send now / Edit / Drop
+                                                                       ⡰⢔⡢⠄
+                                                                          ⠐⠕⠭⠒
+      ·                                                             ⠕⠪⠕⠂
+
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│❯ Review the changes, then continue.                                                                          │
+│❯ Review the changes.                                                                                         │
 │                                                                                                          [↵] │
 ╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────────────────╯
  ● ask  Shift+Tab   work   Working   Ctrl+X workbar
- • Update the component library  ███████░░░░░░░░░░░░░  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views · F7 profile · F8 motion · F9 theme
+codewhale   ctx 24%                                                                     F6 components · F9 theme
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                ×
- Goal: Make the work dock reusable                                                         TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component                                                                   completed ┃
-                                                                                                      ↓ 2 more │
+ Goal: Make the work dock reusable                                                          TODO · 1/3 · 2 left
+ 1 · ✓ Read the existing component                                                                    completed
+ 2 · ● Extract the native work dock                                                                 in progress
+ 3 · ○ Document the reusable API                                                                        pending
 ---
 r0 c0..112 fg=Foreground
 r1 c0..1 fg=Primary bold
@@ -798,74 +646,46 @@ r3 c0..112 fg=Foreground
 r4 c0..112 fg=Foreground
 r5 c0..1 fg=Primary bold
 r5 c1..112 fg=Foreground
-r6 c0..2 fg=Muted|Hint|Dim
-r6 c2..112 fg=Foreground
+r6 c0..112 fg=Foreground
 r7 c0..112 fg=Foreground
 r8 c0..112 fg=Foreground
 r9 c0..112 fg=Foreground
 r10 c0..112 fg=Foreground
 r11 c0..1 fg=Live
-r11 c1..32 fg=Foreground
-r11 c32..35 fg=Border
-r11 c35..38 fg=Muted|Hint|Dim
-r11 c38..112 fg=Foreground
+r11 c1..26 fg=Foreground
+r11 c26..29 fg=Border
+r11 c29..32 fg=Muted|Hint|Dim
+r11 c32..112 fg=Foreground
 r12 c0..112 fg=Foreground
-r13 c0..93 fg=Foreground
-r13 c93..98 fg=Muted|Hint|Dim
-r13 c98..112 fg=Foreground
-r14 c0..93 fg=Foreground
-r14 c93..98 fg=Muted|Hint|Dim
-r14 c98..112 fg=Foreground
-r15 c0..93 fg=Foreground
-r15 c93..98 fg=Muted|Hint|Dim
-r15 c98..112 fg=Foreground
-r16 c0..1 fg=Foreground
-r16 c1..2 fg=Muted|Hint|Dim
-r16 c2..112 fg=Foreground
-r17 c0..92 fg=Foreground
-r17 c92..93 fg=Muted|Hint|Dim
-r17 c93..112 fg=Foreground
-r18 c0..63 fg=Foreground
-r18 c63..67 fg=Muted|Hint|Dim
-r18 c67..70 fg=Foreground
-r18 c70..74 fg=Muted|Hint|Dim
-r18 c74..76 fg=Foreground
-r18 c76..80 fg=Muted|Hint|Dim
-r18 c80..112 fg=Foreground
-r19 c0..16 fg=Foreground
-r19 c16..17 fg=Muted|Hint|Dim
-r19 c17..65 fg=Foreground
-r19 c65..69 fg=Muted|Hint|Dim
-r19 c69..80 fg=Foreground
-r19 c80..84 fg=Primary
-r19 c84..112 fg=Foreground
-r20 c0..6 fg=Foreground
-r20 c6..7 fg=Muted|Hint|Dim
-r20 c7..69 fg=Foreground
-r20 c69..77 fg=Muted|Hint|Dim
-r20 c77..78 fg=Foreground
-r20 c78..79 fg=Muted|Hint|Dim
-r20 c79..112 fg=Foreground
+r13 c0..112 fg=Foreground
+r14 c0..112 fg=Foreground
+r15 c0..112 fg=Foreground
+r16 c0..112 fg=Foreground
+r17 c0..93 fg=Foreground
+r17 c93..98 fg=Muted|Hint|Dim
+r17 c98..112 fg=Foreground
+r18 c0..93 fg=Foreground
+r18 c93..98 fg=Muted|Hint|Dim
+r18 c98..112 fg=Foreground
+r19 c0..93 fg=Foreground
+r19 c93..98 fg=Muted|Hint|Dim
+r19 c98..112 fg=Foreground
+r20 c0..1 fg=Foreground
+r20 c1..2 fg=Muted|Hint|Dim
+r20 c2..112 fg=Foreground
 r21 c0..112 fg=Foreground
-r22 c0..8 fg=Primary
-r22 c8..112 fg=Foreground
-r23 c0..3 fg=Primary bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c3..4 fg=Foreground bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c4..10 fg=Primary bg=Hover|Selected|DiffAddedTint|DiffRemovedTint bold
-r23 c10..12 fg=BorderStrong bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c12..43 fg=Foreground bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c43..51 fg=Primary bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c51..54 fg=BorderStrong bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c54..58 fg=Foreground bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c58..61 fg=BorderStrong bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c61..65 fg=Danger bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r23 c65..112 fg=Foreground bg=Hover|Selected|DiffAddedTint|DiffRemovedTint
-r24 c0..1 fg=Live
-r24 c1..2 fg=Foreground
-r24 c2..10 fg=Live
-r24 c10..112 fg=Foreground
-r25 c0..22 fg=Primary
-r25 c22..112 fg=Foreground
+r22 c0..71 fg=Foreground
+r22 c71..75 fg=Muted|Hint|Dim
+r22 c75..112 fg=Foreground
+r23 c0..74 fg=Foreground
+r23 c74..78 fg=Primary
+r23 c78..112 fg=Foreground
+r24 c0..6 fg=Foreground
+r24 c6..7 fg=Muted|Hint|Dim
+r24 c7..68 fg=Foreground
+r24 c68..72 fg=Muted|Hint|Dim
+r24 c72..112 fg=Foreground
+r25 c0..112 fg=Foreground
 r26 c0..112 fg=Border
 r27 c0..1 fg=Border
 r27 c1..2 fg=Primary
@@ -887,122 +707,96 @@ r30 c24..27 fg=Muted|Hint|Dim
 r30 c27..34 fg=Live
 r30 c34..51 fg=Muted|Hint|Dim
 r30 c51..112 fg=Foreground
-r31 c0..1 fg=Foreground
-r31 c1..3 fg=Live
-r31 c3..31 fg=Foreground bold
-r31 c31..33 fg=Foreground
-r31 c33..40 fg=Live
-r31 c40..53 fg=Muted|Hint|Dim
-r31 c53..55 fg=Foreground
-r31 c55..63 fg=Muted|Hint|Dim
-r31 c63..65 fg=Foreground
-r31 c65..67 fg=Muted|Hint|Dim
-r31 c67..112 fg=Foreground
-r32 c0..9 fg=Primary
-r32 c9..15 fg=Muted|Hint|Dim
-r32 c15..16 fg=Foreground
-r32 c16..19 fg=Primary
-r32 c19..65 fg=Foreground
-r32 c65..112 fg=Muted|Hint|Dim
-r33 c0..112 fg=Border
+r31 c0..15 fg=Muted|Hint|Dim
+r31 c15..16 fg=Foreground
+r31 c16..19 fg=Muted|Hint|Dim
+r31 c19..88 fg=Foreground
+r31 c88..112 fg=Muted|Hint|Dim
+r32 c0..112 fg=Border
+r33 c0..1 fg=Foreground
+r33 c1..10 fg=Foreground bg=Hover|Selected|DiffAddedTint|DiffRemovedTint bold
+r33 c10..12 fg=Foreground
+r33 c12..21 fg=Muted|Hint|Dim
+r33 c21..23 fg=Foreground
+r33 c23..31 fg=Muted|Hint|Dim
+r33 c31..33 fg=Foreground
+r33 c33..42 fg=Muted|Hint|Dim
+r33 c42..44 fg=Foreground
+r33 c44..53 fg=Muted|Hint|Dim
+r33 c53..55 fg=Foreground
+r33 c55..64 fg=Muted|Hint|Dim
+r33 c64..66 fg=Foreground
+r33 c66..71 fg=Muted|Hint|Dim
+r33 c71..73 fg=Foreground
+r33 c73..79 fg=Muted|Hint|Dim
+r33 c79..109 fg=Foreground
+r33 c109..112 fg=Muted|Hint|Dim
 r34 c0..1 fg=Foreground
-r34 c1..10 fg=Foreground bg=Hover|Selected|DiffAddedTint|DiffRemovedTint bold
-r34 c10..12 fg=Foreground
-r34 c12..21 fg=Muted|Hint|Dim
-r34 c21..23 fg=Foreground
-r34 c23..31 fg=Muted|Hint|Dim
-r34 c31..33 fg=Foreground
-r34 c33..42 fg=Muted|Hint|Dim
-r34 c42..44 fg=Foreground
-r34 c44..53 fg=Muted|Hint|Dim
-r34 c53..55 fg=Foreground
-r34 c55..64 fg=Muted|Hint|Dim
-r34 c64..66 fg=Foreground
-r34 c66..71 fg=Muted|Hint|Dim
-r34 c71..73 fg=Foreground
-r34 c73..79 fg=Muted|Hint|Dim
-r34 c79..109 fg=Foreground
-r34 c109..112 fg=Muted|Hint|Dim
+r34 c1..34 fg=Live bold
+r34 c34..111 fg=Muted|Hint|Dim
+r34 c111..112 fg=Foreground
 r35 c0..1 fg=Foreground
-r35 c1..34 fg=Live bold
-r35 c34..110 fg=Muted|Hint|Dim
-r35 c110..112 fg=Foreground
+r35 c1..111 fg=Live
+r35 c111..112 fg=Foreground
 r36 c0..1 fg=Foreground
-r36 c1..110 fg=Live
-r36 c110..111 fg=Foreground
-r36 c111..112 fg=Live
+r36 c1..111 fg=Live
+r36 c111..112 fg=Foreground
 r37 c0..1 fg=Foreground
-r37 c1..110 fg=Muted|Hint|Dim
-r37 c110..111 fg=Foreground
-r37 c111..112 fg=Border
+r37 c1..111 fg=Muted|Hint|Dim
+r37 c111..112 fg=Foreground
 
 == ansi-16
 
-▎ Update the terminal components and show them in the README.
+▎ Polish the workbar and update the gallery.
 
 
 
-● The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-▏ part in your own Ratatui application.
+● The native layout is in place. I'm checking the narrow view.
 
 
 
 
-⣀ Updating the component library · 6 s
+
+⣀ Checking the narrow view · 6 s
+
+
+
+
 
                                                                                              ⠴⡭⢭⠦
                                                                                              ⢠⠃⡇
 
  °
-                                                                                            ˚
-                                                               ⠕⠪⠕⠂   ⠐⡤⣒⠤  ⢀⠦⣒⠤
-                ·                                                ⢀⠦⣒⠤           ⠪⠪⠕⠂
-      ·                                                              ⠐⠕⠭⠒⠨⠒⠭⠒ ·
 
-1 queued
-▸ ○ queued: Keep the narrow view readable  Send now / Edit / Drop
-✓ included / README.md
-Send now / Edit / Drop
+                                                                       ⡰⢔⡢⠄
+                                                                          ⠐⠕⠭⠒
+      ·                                                             ⠕⠪⠕⠂
+
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│❯ Review the changes, then continue.                                                                          │
+│❯ Review the changes.                                                                                         │
 │                                                                                                          [↵] │
 ╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────────────────╯
  ● ask  Shift+Tab   work   Working   Ctrl+X workbar
- • Update the component library  ███████░░░░░░░░░░░░░  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views · F7 profile · F8 motion · F9 theme
+codewhale   ctx 24%                                                                     F6 components · F9 theme
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                ×
- Goal: Make the work dock reusable                                                         TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component                                                                   completed ┃
-                                                                                                      ↓ 2 more │
+ Goal: Make the work dock reusable                                                          TODO · 1/3 · 2 left
+ 1 · ✓ Read the existing component                                                                    completed
+ 2 · ● Extract the native work dock                                                                 in progress
+ 3 · ○ Document the reusable API                                                                        pending
 ---
 r1 c0..1 fg=Primary bold
 r5 c0..1 fg=Primary bold
-r6 c0..2 dim
 r11 c0..1 fg=Live
-r11 c32..38 dim
-r13 c93..98 dim
-r14 c93..98 dim
-r15 c93..98 dim
-r16 c1..2 dim
-r17 c92..93 dim
-r18 c63..67 dim
-r18 c70..74 dim
-r18 c76..80 dim
-r19 c16..17 dim
-r19 c65..69 dim
-r19 c80..84 fg=Primary
-r20 c6..7 dim
-r20 c69..77 dim
-r20 c78..79 dim
-r22 c0..8 fg=Primary
-r23 c0..3 fg=Primary
-r23 c4..10 fg=Primary bold
-r23 c43..51 fg=Primary
-r23 c61..65 fg=Danger
-r24 c0..1 fg=Live
-r24 c2..10 fg=Live
-r25 c0..22 fg=Primary
+r11 c26..32 dim
+r17 c93..98 dim
+r18 c93..98 dim
+r19 c93..98 dim
+r20 c1..2 dim
+r22 c71..75 dim
+r23 c74..78 fg=Primary
+r24 c6..7 dim
+r24 c68..72 dim
 r26 c0..112 dim
 r27 c0..1 dim
 r27 c1..2 fg=Primary
@@ -1019,100 +813,77 @@ r30 c20..24 fg=Primary
 r30 c24..27 dim
 r30 c27..34 fg=Live
 r30 c34..51 dim
-r31 c1..3 fg=Live
-r31 c3..31 bold
-r31 c33..40 fg=Live
-r31 c40..53 dim
-r31 c55..63 dim
-r31 c65..67 dim
-r32 c0..9 fg=Primary
-r32 c9..15 dim
-r32 c16..19 fg=Primary
-r32 c65..112 dim
-r33 c0..112 dim
-r34 c1..10 bold
-r34 c12..21 dim
-r34 c23..31 dim
-r34 c33..42 dim
-r34 c44..53 dim
-r34 c55..64 dim
-r34 c66..71 dim
-r34 c73..79 dim
-r34 c109..112 dim
-r35 c1..34 fg=Live bold
-r35 c34..110 dim
-r36 c1..110 fg=Live
-r36 c111..112 fg=Live
-r37 c1..110 dim
-r37 c111..112 dim
+r31 c0..15 dim
+r31 c16..19 dim
+r31 c88..112 dim
+r32 c0..112 dim
+r33 c1..10 bold
+r33 c12..21 dim
+r33 c23..31 dim
+r33 c33..42 dim
+r33 c44..53 dim
+r33 c55..64 dim
+r33 c66..71 dim
+r33 c73..79 dim
+r33 c109..112 dim
+r34 c1..34 fg=Live bold
+r34 c34..111 dim
+r35 c1..111 fg=Live
+r36 c1..111 fg=Live
+r37 c1..111 dim
 
 == unknown-ground
 
-▎ Update the terminal components and show them in the README.
+▎ Polish the workbar and update the gallery.
 
 
 
-● The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-▏ part in your own Ratatui application.
+● The native layout is in place. I'm checking the narrow view.
 
 
 
 
-⣀ Updating the component library · 6 s
+
+⣀ Checking the narrow view · 6 s
+
+
+
+
 
                                                                                              ⠴⡭⢭⠦
                                                                                              ⢠⠃⡇
 
  °
-                                                                                            ˚
-                                                               ⠕⠪⠕⠂   ⠐⡤⣒⠤  ⢀⠦⣒⠤
-                ·                                                ⢀⠦⣒⠤           ⠪⠪⠕⠂
-      ·                                                              ⠐⠕⠭⠒⠨⠒⠭⠒ ·
 
-1 queued
-▸ ○ queued: Keep the narrow view readable  Send now / Edit / Drop
-✓ included / README.md
-Send now / Edit / Drop
+                                                                       ⡰⢔⡢⠄
+                                                                          ⠐⠕⠭⠒
+      ·                                                             ⠕⠪⠕⠂
+
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│❯ Review the changes, then continue.                                                                          │
+│❯ Review the changes.                                                                                         │
 │                                                                                                          [↵] │
 ╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────────────────╯
  ● ask  Shift+Tab   work   Working   Ctrl+X workbar
- • Update the component library  ███████░░░░░░░░░░░░░  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views · F7 profile · F8 motion · F9 theme
+codewhale   ctx 24%                                                                     F6 components · F9 theme
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                ×
- Goal: Make the work dock reusable                                                         TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component                                                                   completed ┃
-                                                                                                      ↓ 2 more │
+ Goal: Make the work dock reusable                                                          TODO · 1/3 · 2 left
+ 1 · ✓ Read the existing component                                                                    completed
+ 2 · ● Extract the native work dock                                                                 in progress
+ 3 · ○ Document the reusable API                                                                        pending
 ---
 r1 c0..1 fg=Primary bold
 r5 c0..1 fg=Primary bold
-r6 c0..2 dim
 r11 c0..1 fg=Live
-r11 c32..38 dim
-r13 c93..98 dim
-r14 c93..98 dim
-r15 c93..98 dim
-r16 c1..2 dim
-r17 c92..93 dim
-r18 c63..67 dim
-r18 c70..74 dim
-r18 c76..80 dim
-r19 c16..17 dim
-r19 c65..69 dim
-r19 c80..84 fg=Primary
-r20 c6..7 dim
-r20 c69..77 dim
-r20 c78..79 dim
-r22 c0..8 fg=Primary
-r23 c0..3 fg=Primary
-r23 c4..10 fg=Primary bold
-r23 c43..51 fg=Primary
-r23 c61..65 fg=Danger
-r24 c0..1 fg=Live
-r24 c2..10 fg=Live
-r25 c0..22 fg=Primary
+r11 c26..32 dim
+r17 c93..98 dim
+r18 c93..98 dim
+r19 c93..98 dim
+r20 c1..2 dim
+r22 c71..75 dim
+r23 c74..78 fg=Primary
+r24 c6..7 dim
+r24 c68..72 dim
 r26 c0..112 dim
 r27 c0..1 dim
 r27 c1..2 fg=Primary
@@ -1129,91 +900,75 @@ r30 c20..24 fg=Primary
 r30 c24..27 dim
 r30 c27..34 fg=Live
 r30 c34..51 dim
-r31 c1..3 fg=Live
-r31 c3..31 bold
-r31 c33..40 fg=Live
-r31 c40..53 dim
-r31 c55..63 dim
-r31 c65..67 dim
-r32 c0..9 fg=Primary
-r32 c9..15 dim
-r32 c16..19 fg=Primary
-r32 c65..112 dim
-r33 c0..112 dim
-r34 c1..10 bold
-r34 c12..21 dim
-r34 c23..31 dim
-r34 c33..42 dim
-r34 c44..53 dim
-r34 c55..64 dim
-r34 c66..71 dim
-r34 c73..79 dim
-r34 c109..112 dim
-r35 c1..34 fg=Live bold
-r35 c34..110 dim
-r36 c1..110 fg=Live
-r36 c111..112 fg=Live
-r37 c1..110 dim
-r37 c111..112 dim
+r31 c0..15 dim
+r31 c16..19 dim
+r31 c88..112 dim
+r32 c0..112 dim
+r33 c1..10 bold
+r33 c12..21 dim
+r33 c23..31 dim
+r33 c33..42 dim
+r33 c44..53 dim
+r33 c55..64 dim
+r33 c66..71 dim
+r33 c73..79 dim
+r33 c109..112 dim
+r34 c1..34 fg=Live bold
+r34 c34..111 dim
+r35 c1..111 fg=Live
+r36 c1..111 fg=Live
+r37 c1..111 dim
 
 == no-color
 
-▎ Update the terminal components and show them in the README.
+▎ Polish the workbar and update the gallery.
 
 
 
-● The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-▏ part in your own Ratatui application.
+● The native layout is in place. I'm checking the narrow view.
 
 
 
 
-⣀ Updating the component library · 6 s
+
+⣀ Checking the narrow view · 6 s
+
+
+
+
 
                                                                                              ⠴⡭⢭⠦
                                                                                              ⢠⠃⡇
 
  °
-                                                                                            ˚
-                                                               ⠕⠪⠕⠂   ⠐⡤⣒⠤  ⢀⠦⣒⠤
-                ·                                                ⢀⠦⣒⠤           ⠪⠪⠕⠂
-      ·                                                              ⠐⠕⠭⠒⠨⠒⠭⠒ ·
 
-1 queued
-▸ ○ queued: Keep the narrow view readable  Send now / Edit / Drop
-✓ included / README.md
-Send now / Edit / Drop
+                                                                       ⡰⢔⡢⠄
+                                                                          ⠐⠕⠭⠒
+      ·                                                             ⠕⠪⠕⠂
+
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│❯ Review the changes, then continue.                                                                          │
+│❯ Review the changes.                                                                                         │
 │                                                                                                          [↵] │
 ╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────────────────╯
  ● ask  Shift+Tab   work   Working   Ctrl+X workbar
- • Update the component library  ███████░░░░░░░░░░░░░  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views · F7 profile · F8 motion · F9 theme
+codewhale   ctx 24%                                                                     F6 components · F9 theme
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                ×
- Goal: Make the work dock reusable                                                         TODO · 1/3 · 2 left
- 1 · ✓ Read the existing component                                                                   completed ┃
-                                                                                                      ↓ 2 more │
+ Goal: Make the work dock reusable                                                          TODO · 1/3 · 2 left
+ 1 · ✓ Read the existing component                                                                    completed
+ 2 · ● Extract the native work dock                                                                 in progress
+ 3 · ○ Document the reusable API                                                                        pending
 ---
 r1 c0..1 bold
 r5 c0..1 bold
-r6 c0..2 dim
-r11 c32..38 dim
-r13 c93..98 dim
-r14 c93..98 dim
-r15 c93..98 dim
-r16 c1..2 dim
-r17 c92..93 dim
-r18 c63..67 dim
-r18 c70..74 dim
-r18 c76..80 dim
-r19 c16..17 dim
-r19 c65..69 dim
-r20 c6..7 dim
-r20 c69..77 dim
-r20 c78..79 dim
-r23 c4..10 bold
+r11 c26..32 dim
+r17 c93..98 dim
+r18 c93..98 dim
+r19 c93..98 dim
+r20 c1..2 dim
+r22 c71..75 dim
+r24 c6..7 dim
+r24 c68..72 dim
 r26 c0..112 dim
 r27 c0..1 dim
 r27 c111..112 dim
@@ -1225,84 +980,73 @@ r30 c1..6 bold
 r30 c6..20 dim
 r30 c24..27 dim
 r30 c34..51 dim
-r31 c3..31 bold
-r31 c40..53 dim
-r31 c55..63 dim
-r31 c65..67 dim
-r32 c9..15 dim
-r32 c65..112 dim
-r33 c0..112 dim
-r34 c1..10 bold
-r34 c12..21 dim
-r34 c23..31 dim
-r34 c33..42 dim
-r34 c44..53 dim
-r34 c55..64 dim
-r34 c66..71 dim
-r34 c73..79 dim
-r34 c109..112 dim
-r35 c1..34 bold
-r35 c34..110 dim
-r37 c1..110 dim
-r37 c111..112 dim
+r31 c0..15 dim
+r31 c16..19 dim
+r31 c88..112 dim
+r32 c0..112 dim
+r33 c1..10 bold
+r33 c12..21 dim
+r33 c23..31 dim
+r33 c33..42 dim
+r33 c44..53 dim
+r33 c55..64 dim
+r33 c66..71 dim
+r33 c73..79 dim
+r33 c109..112 dim
+r34 c1..34 bold
+r34 c34..111 dim
+r37 c1..111 dim
 
 == ascii
 
-| Update the terminal components and show them in the README.
+| Polish the workbar and update the gallery.
 
 
 
-. The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each
-| part in your own Ratatui application.
+. The native layout is in place. I'm checking the narrow view.
 
 
 
 
-- Updating the component library - 6 s
+
+- Checking the narrow view - 6 s
+
+
+
+
 
                                                                                              .-~-.
                                                                                              \___/
                                                                                               / \
  O
-                                                                                            o
-                                                                ><>
-                .                                                       ><>  ><>><o>
-      .                                                            ><>><>  ><>
 
-1 queued
-> o queued: Keep the narrow view readable  Send now / Edit / Drop
-+ included / README.md
-Send now / Edit / Drop
+
+                                                                       ><>><o>
+      .                                                              ><>
+
 +--------------------------------------------------------------------------------------------------------------+
-|> Review the changes, then continue.                                                                          |
+|> Review the changes.                                                                                         |
 |                                                                                                          [>] |
 + Enter send  Shift+Enter newline -----------------------------------------------------------------------------+
  . ask  Shift+Tab   work   Working   Ctrl+X workbar
- . Update the component library  #######:::::::::::::  1/3 done  6s
-codewhale   ctx 24%                                              F1-F6 views . F7 profile . F8 motion . F9 theme
+codewhale   ctx 24%                                                                     F6 components . F9 theme
 ----------------------------------------------------------------------------------------------------------------
   Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                                X
- Goal: Make the work dock reusable                                                         TODO . 1/3 . 2 left
- 1 . Y Read the existing component                                                                   completed |
-                                                                                                      v 2 more |
+ Goal: Make the work dock reusable                                                          TODO . 1/3 . 2 left
+ 1 . Y Read the existing component                                                                    completed
+ 2 . . Extract the native work dock                                                                 in progress
+ 3 . o Document the reusable API                                                                        pending
 ---
 r1 c0..1 bold
 r5 c0..1 bold
-r6 c0..2 dim
-r11 c32..38 dim
-r13 c93..98 dim
-r14 c93..98 dim
-r15 c93..98 dim
-r16 c1..2 dim
-r17 c92..93 dim
-r18 c64..67 dim
-r19 c16..17 dim
-r19 c72..75 dim
-r19 c77..80 dim
-r20 c6..7 dim
-r20 c67..73 dim
-r20 c75..78 dim
-r23 c4..10 bold
+r11 c26..32 dim
+r17 c93..98 dim
+r18 c93..98 dim
+r19 c93..98 dim
+r20 c1..2 dim
+r23 c71..74 dim
+r24 c6..7 dim
+r24 c69..72 dim
 r26 c0..112 dim
 r27 c0..1 dim
 r27 c111..112 dim
@@ -1314,23 +1058,19 @@ r30 c1..6 bold
 r30 c6..20 dim
 r30 c24..27 dim
 r30 c34..51 dim
-r31 c3..31 bold
-r31 c40..53 dim
-r31 c55..63 dim
-r31 c65..67 dim
-r32 c9..15 dim
-r32 c65..112 dim
-r33 c0..112 dim
-r34 c1..10 bold
-r34 c12..21 dim
-r34 c23..31 dim
-r34 c33..42 dim
-r34 c44..53 dim
-r34 c55..64 dim
-r34 c66..71 dim
-r34 c73..79 dim
-r34 c109..112 dim
-r35 c1..34 bold
-r35 c34..110 dim
-r37 c1..110 dim
-r37 c111..112 dim
+r31 c0..15 dim
+r31 c16..19 dim
+r31 c88..112 dim
+r32 c0..112 dim
+r33 c1..10 bold
+r33 c12..21 dim
+r33 c23..31 dim
+r33 c33..42 dim
+r33 c44..53 dim
+r33 c55..64 dim
+r33 c66..71 dim
+r33 c73..79 dim
+r33 c109..112 dim
+r34 c1..34 bold
+r34 c34..111 dim
+r37 c1..111 dim

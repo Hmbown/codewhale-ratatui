@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Simplify the native showcase: concise conversation, sparse ambient life,
+  muted metrics and optional workflow progress, with the original workbar
+  given room for its rows.
+- Present a still native preview first and organize every dark/light component
+  preview into named collections, with animations available on demand.
+- Reduce gallery framing and use native terminal palette colors around the
+  unchanged Ratatui buffers.
+
 - Render themed components by reference, and use `Themed::new` with a
   heterogeneous collection of `dyn Paint` components.
 - Render lists and pickers with Ratatui's `StatefulWidget`, persisting the
