@@ -250,3 +250,175 @@ fn narrow_code_elides_chrome_before_hiding_source_and_tables_keep_separation() {
             .any(|line| line.to_string().contains("first second"))
     );
 }
+
+#[test]
+fn mounted_viewport_pinned_offset_repaint_and_style_facts_are_exact() {
+    use codewhale_ratatui::TranscriptViewport;
+    use ratatui::{
+        buffer::{Buffer, Cell},
+        style::{Color, Modifier, Style},
+        text::{Line, Span},
+    };
+    let styles = [
+        Style::default().fg(Color::Rgb(31, 43, 59)),
+        Style::default()
+            .bg(Color::Rgb(71, 83, 97))
+            .add_modifier(Modifier::BOLD),
+    ];
+    let rows = vec![
+        Line::styled("Pinned source", styles[0]),
+        Line::from("old row"),
+        Line::from(vec![
+            Span::styled("中 cafe\u{0301} ", styles[0]),
+            Span::styled("selected", styles[1]),
+        ]),
+    ];
+    let raw = rows.clone();
+    let area = Rect::new(7, 5, 40, 6);
+    let mut buf = Buffer::filled(area, Cell::new("~"));
+    let mut viewport = TranscriptViewport::new(&rows);
+    viewport.pinned_rows = 1;
+    viewport.offset = 1;
+    viewport.style = Style::default().bg(Color::Rgb(11, 23, 37));
+    let plan = viewport.render(area, &mut buf);
+    assert_eq!(rows, raw);
+    assert_eq!(plan.body_area, Rect::new(7, 6, 40, 5));
+    assert!(testing::text(&buf).contains("Pinned source"));
+    assert!(!testing::text(&buf).contains("old row"));
+    // Paragraph paints source rows and preserves unused symbols in this
+    // non-filling projection; the host owns the surrounding frame substrate.
+    assert_eq!(buf[(7, 10)].symbol(), "~");
+    assert_eq!(buf[(7, 6)].fg, Color::Rgb(31, 43, 59));
+    let selected = &buf[(15, 6)];
+    assert_eq!(selected.symbol(), "s");
+    assert_eq!(selected.bg, Color::Rgb(71, 83, 97));
+    assert!(selected.modifier.contains(Modifier::BOLD));
+    viewport.offset = usize::MAX;
+    assert_eq!(viewport.height(40, &Profile::DarkTrue.theme()), 1);
+    assert_eq!(viewport.height(0, &Profile::DarkTrue.theme()), 0);
+    let wrapped = [Line::from("alpha beta gamma")];
+    let mut viewport = TranscriptViewport::new(&wrapped);
+    viewport.wrap = true;
+    assert_eq!(viewport.height(6, &Profile::DarkTrue.theme()), 3);
+}
+#[test]
+fn mounted_viewport_link_bounds_exclude_scroll_rail_and_opaque_jump_cells() {
+    use codewhale_ratatui::{TranscriptScrollFacts, TranscriptViewport};
+    use ratatui::text::Line;
+    let rows = vec![Line::from("visible guide"); 8];
+    let mut viewport = TranscriptViewport::new(&rows);
+    viewport.pinned_rows = 1;
+    viewport.scrollbar = Some(TranscriptScrollFacts {
+        top: 3,
+        visible: 7,
+        total: 20,
+    });
+    viewport.jump_to_latest = true;
+    let plan = viewport.plan(Rect::new(7, 5, 20, 8));
+    let button = plan.jump.unwrap();
+    assert_eq!(plan.link_area.width, 19);
+    assert!(plan.link_rects(8, 0, 2).is_empty());
+    assert!(plan.link_rects(0, usize::MAX, usize::MAX).is_empty());
+    assert!(plan.link_rects(0, 4, 2).is_empty());
+    for row in 0..8 {
+        for rect in plan.link_rects(row, 0, usize::MAX) {
+            assert_eq!(rect.intersection(plan.link_area), rect);
+            assert!(rect.intersection(button).is_empty());
+        }
+    }
+    assert_eq!(plan.link_rects(0, 2, 40), vec![Rect::new(9, 5, 17, 1)]);
+}
+#[test]
+fn mounted_viewport_guards_every_styled_field_without_changing_copy_source() {
+    use codewhale_ratatui::{TranscriptViewport, transcript_selected_spans_measured};
+    use ratatui::{
+        style::{Modifier, Style},
+        text::{Line, Span},
+    };
+    let source = "unsafe\u{202e} text\x1b after";
+    let raw = Line::from(vec![
+        Span::styled(source, Style::default().add_modifier(Modifier::ITALIC)),
+        Span::raw(" 1\u{20e3}① 中 e\u{0301} 👩\u{200d}💻"),
+    ]);
+    let selected = transcript_selected_spans_measured(
+        &raw,
+        1,
+        6,
+        Style::default().add_modifier(Modifier::REVERSED),
+        |g| {
+            if g.contains('\u{20e3}') || g == "①" {
+                2
+            } else {
+                codewhale_ratatui::text::width(g)
+            }
+        },
+    );
+    let extreme =
+        transcript_selected_spans_measured(&raw, 0, usize::MAX, Style::default(), |_| usize::MAX);
+    assert_eq!(extreme.len(), raw.spans.len());
+    let line = Line::from(selected);
+    let theme = Profile::DarkTrue.theme();
+    let buf = render(60, 3, |area, buf| {
+        TranscriptViewport::new(std::slice::from_ref(&line)).paint(area, buf, &theme)
+    });
+    let shown = testing::text(&buf);
+    assert!(!shown.contains(['\u{202e}', '\x1b']));
+    assert!(shown.contains("unsafe text after"));
+    assert_eq!(raw.spans[0].content, source);
+    assert!(buf.content.iter().any(|cell| {
+        cell.modifier
+            .contains(Modifier::REVERSED | Modifier::ITALIC)
+    }));
+}
+#[test]
+fn mounted_viewport_offset_buffers_empty_resize_and_real_gallery_stay_bounded() {
+    use codewhale_ratatui::{TranscriptScrollFacts, TranscriptViewport};
+    use ratatui::{
+        buffer::{Buffer, Cell},
+        text::Line,
+    };
+    let rows = vec![Line::from("tail 中 and cafe\u{0301}"); 8];
+    let mut viewport = TranscriptViewport::new(&rows);
+    viewport.scrollbar = Some(TranscriptScrollFacts {
+        top: 4,
+        visible: 3,
+        total: 12,
+    });
+    viewport.jump_to_latest = true;
+    let canvas = Rect::new(7, 5, 20, 8);
+    for requested in [
+        Rect::new(9, 6, 40, 12),
+        Rect::new(0, 0, 100, 100),
+        Rect::new(7, 5, 0, 8),
+        Rect::new(7, 5, 20, 0),
+    ] {
+        let mut buf = Buffer::filled(canvas, Cell::new("~"));
+        let before = buf.clone();
+        let plan = viewport.render(requested, &mut buf);
+        let visible = requested.intersection(canvas);
+        assert_eq!(plan.area, visible);
+        for y in canvas.y..canvas.bottom() {
+            for x in canvas.x..canvas.right() {
+                if !visible.contains((x, y).into()) {
+                    assert_eq!(buf[(x, y)], before[(x, y)]);
+                }
+            }
+        }
+        if visible.is_empty() {
+            assert!(plan.jump.is_none());
+            assert!(plan.link_rects(0, 0, 9).is_empty());
+        }
+    }
+    // Public staged chrome painting also clips independently supplied buffers.
+    let plan = viewport.plan(Rect::new(0, 0, 100, 100));
+    plan.paint_chrome(&mut Buffer::empty(canvas));
+    for name in ["transcript-mounted", "transcript-mounted-focus"] {
+        let entry = codewhale_ratatui::gallery::entries()
+            .into_iter()
+            .find(|e| e.name == name)
+            .unwrap();
+        testing::assert_rules(entry.height, |area, buf, theme| {
+            (entry.draw)(area, buf, theme)
+        });
+    }
+}
