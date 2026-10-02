@@ -391,16 +391,16 @@ Headings, tabs, toggles and keyboard maps.
 
 <a id="conversation-and-queued-input"></a>
 <details>
-<summary>Conversation and queued input · 10 examples</summary>
+<summary>Conversation and queued input · 12 examples</summary>
 
 Rich prose, code, attached context and the next instruction.
 
-![Pending queued, Pending steering, Pending paused, Pending context, Pending native mixed, Pending native queued, Transcript prose, Transcript list table, Transcript code, Transcript links — dark truecolor](<assets/readme/transcript.dark-truecolor.svg>)
+![Pending queued, Pending steering, Pending paused, Pending context, Pending native mixed, Pending native queued, Transcript mounted, Transcript mounted focus, Transcript prose, Transcript list table, Transcript code, Transcript links — dark truecolor](<assets/readme/transcript.dark-truecolor.svg>)
 
 <details>
 <summary>Light appearance</summary>
 
-![Pending queued, Pending steering, Pending paused, Pending context, Pending native mixed, Pending native queued, Transcript prose, Transcript list table, Transcript code, Transcript links — light truecolor](<assets/readme/transcript.light-truecolor.svg>)
+![Pending queued, Pending steering, Pending paused, Pending context, Pending native mixed, Pending native queued, Transcript mounted, Transcript mounted focus, Transcript prose, Transcript list table, Transcript code, Transcript links — light truecolor](<assets/readme/transcript.light-truecolor.svg>)
 
 </details>
 
@@ -982,3 +982,17 @@ characters; display content is guarded before width measurement and paint.
 API. The actual `native-composer-rich-selection` and `native-composer-rich-search` gallery
 entries show both presentations. Editing, bindings, IME, completion filtering
 and submit dispatch stay with the host.
+
+
+### Mounted transcript viewport
+
+`TranscriptViewport` projects host-parsed styled rows through one clipped
+content/chrome plan, retaining pinned rows, offsets, semantic styles and exact
+scrollbar/jump geometry. `TranscriptViewportPlan::link_rects` returns only
+visible cells and excludes opaque jump chrome; targets never enter kit data.
+The measured selection helper accepts a host's existing terminal column grammar
+without owning its parser, clipboard, streaming cache or selection state.
+Staged content/chrome paint lets a host retain semantic Ocean finishing between
+them. The actual `transcript-mounted` and `transcript-mounted-focus` gallery
+entries use this API. Existing authored `Transcript`/`TranscriptBlock` remain
+the structured content option; this viewport does not reparse native rows.

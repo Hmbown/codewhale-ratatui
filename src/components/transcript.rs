@@ -14,6 +14,10 @@ use ratatui::{
     layout::Rect,
     style::{Modifier, Style},
     text::{Line, Span},
+    widgets::{
+        Block, BorderType, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState,
+        StatefulWidget, Widget, Wrap,
+    },
 };
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -927,4 +931,388 @@ impl Paint for Transcript<'_> {
     fn height(&self, width: u16, theme: &Theme) -> u16 {
         u16::try_from(self.lines(width, theme).len()).unwrap_or(u16::MAX)
     }
+}
+
+// Native viewport and selection adapted from Codewhale TUI presentation.
+// Adapted from Codewhale, licensed under the MIT License:
+// Copyright (c) 2024-2025 DeepSeek-TUI Contributors
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+/// Caller-owned scroll facts. This never changes a session's scroll state.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TranscriptScrollFacts {
+    pub top: usize,
+    pub visible: usize,
+    pub total: usize,
+}
+
+/// Exact caller styles for the native transcript's independent chrome slots.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct TranscriptViewportStyles {
+    pub background: Style,
+    pub track: Style,
+    pub thumb: Style,
+    pub jump_border: Style,
+    pub jump_arrow: Style,
+}
+
+/// One pure projection of already parsed/wrapped host rows. The parser, raw
+/// copy source, streaming/cache receipts, selection endpoints and scroll intent
+/// remain with the host. Targets never enter this type or its painted cells.
+/// Metadata must describe guarded, prewrapped display rows; `offset` counts
+/// logical rows after the pinned prefix. Optional wrapping is Ratatui-owned.
+#[derive(Clone, Debug)]
+pub struct TranscriptViewport<'a> {
+    pub rows: &'a [Line<'static>],
+    pub offset: usize,
+    pub pinned_rows: u16,
+    pub wrap: bool,
+    pub fill: bool,
+    pub ascii: bool,
+    pub style: Style,
+    pub styles: TranscriptViewportStyles,
+    pub scrollbar: Option<TranscriptScrollFacts>,
+    pub jump_to_latest: bool,
+}
+
+/// Final clipped content/chrome rectangles and guarded styled rows.
+#[derive(Clone, Debug)]
+pub struct TranscriptViewportPlan {
+    pub area: Rect,
+    pub body_area: Rect,
+    pub link_area: Rect,
+    pub jump: Option<Rect>,
+    rows: Vec<Line<'static>>,
+    wrap: bool,
+    fill: bool,
+    ascii: bool,
+    style: Style,
+    styles: TranscriptViewportStyles,
+    scrollbar: Option<TranscriptScrollFacts>,
+}
+
+fn safe_transcript_line(line: &Line<'static>) -> Line<'static> {
+    let mut safe = line.clone();
+    safe.spans = line
+        .spans
+        .iter()
+        .map(|span| Span::styled(text::display_safe(&span.content).into_owned(), span.style))
+        .collect();
+    safe
+}
+
+impl<'a> TranscriptViewport<'a> {
+    pub fn new(rows: &'a [Line<'static>]) -> Self {
+        Self {
+            rows,
+            offset: 0,
+            pinned_rows: 0,
+            wrap: false,
+            fill: false,
+            ascii: false,
+            style: Style::default(),
+            styles: TranscriptViewportStyles::default(),
+            scrollbar: None,
+            jump_to_latest: false,
+        }
+    }
+    pub fn plan(&self, area: Rect) -> TranscriptViewportPlan {
+        let pinned = self.pinned_rows.min(area.height);
+        let body_area = Rect::new(
+            area.x,
+            area.y.saturating_add(pinned),
+            area.width,
+            area.height.saturating_sub(pinned),
+        );
+        let scrollbar = self.scrollbar.filter(|facts| {
+            facts.total > facts.visible && body_area.width > 1 && body_area.height > 0
+        });
+        let link_area = Rect::new(
+            area.x,
+            area.y,
+            area.width.saturating_sub(u16::from(scrollbar.is_some())),
+            area.height,
+        );
+        let prefix = usize::from(pinned).min(self.rows.len());
+        let mut rows: Vec<_> = self.rows[..prefix]
+            .iter()
+            .map(safe_transcript_line)
+            .collect();
+        rows.extend(
+            self.rows
+                .iter()
+                .skip(prefix.saturating_add(self.offset))
+                .take(usize::from(body_area.height))
+                .map(safe_transcript_line),
+        );
+        TranscriptViewportPlan {
+            area,
+            body_area,
+            link_area,
+            jump: self
+                .jump_to_latest
+                .then(|| transcript_jump_rect(body_area, scrollbar.is_some()))
+                .flatten(),
+            rows,
+            wrap: self.wrap,
+            fill: self.fill,
+            ascii: self.ascii,
+            style: self.style,
+            styles: self.styles,
+            scrollbar,
+        }
+    }
+    /// Paint content first. A host's existing semantic Ocean finishing may run
+    /// before `plan.paint_chrome`; it does not need another text compositor.
+    pub fn render_content(&self, area: Rect, buf: &mut Buffer) -> TranscriptViewportPlan {
+        let plan = self.plan(area.intersection(buf.area));
+        plan.paint_content(buf);
+        plan
+    }
+    pub fn render(&self, area: Rect, buf: &mut Buffer) -> TranscriptViewportPlan {
+        let plan = self.render_content(area, buf);
+        plan.paint_chrome(buf);
+        plan
+    }
+}
+
+impl TranscriptViewportPlan {
+    /// Visible hyperlink cells, excluding scroll chrome and the opaque jump button.
+    /// Hosts retain the corresponding target outside these rectangles.
+    pub fn link_rects(&self, row: usize, start: usize, end: usize) -> Vec<Rect> {
+        let Some(rect) = transcript_link_rect(self.link_area, row, start, end) else {
+            return Vec::new();
+        };
+        let Some(button) = self
+            .jump
+            .filter(|button| !rect.intersection(*button).is_empty())
+        else {
+            return vec![rect];
+        };
+        let mut visible = Vec::with_capacity(2);
+        if rect.x < button.x {
+            visible.push(Rect::new(rect.x, rect.y, button.x - rect.x, 1));
+        }
+        if rect.right() > button.right() {
+            visible.push(Rect::new(
+                button.right(),
+                rect.y,
+                rect.right() - button.right(),
+                1,
+            ));
+        }
+        visible
+    }
+    fn paint_content(&self, buf: &mut Buffer) {
+        if self.area.is_empty() {
+            return;
+        }
+        if self.fill {
+            Block::default()
+                .style(self.styles.background)
+                .render(self.area, buf);
+        }
+        let mut paragraph = Paragraph::new(self.rows.clone()).style(self.style);
+        if self.wrap {
+            paragraph = paragraph.wrap(Wrap { trim: false });
+        }
+        paragraph.render(self.area, buf);
+    }
+    pub fn paint_chrome(&self, buf: &mut Buffer) {
+        if self.area.intersection(buf.area).is_empty() {
+            return;
+        }
+        if let Some(facts) = self.scrollbar {
+            let range = facts.total.saturating_sub(facts.visible);
+            let mut state = ScrollbarState::new(range)
+                .position(facts.top.min(range))
+                .viewport_content_length(facts.visible);
+            Scrollbar::new(ScrollbarOrientation::VerticalRight)
+                .begin_symbol(None)
+                .end_symbol(None)
+                .track_symbol(Some(if self.ascii { "|" } else { "│" }))
+                .track_style(self.styles.track)
+                .thumb_symbol(if self.ascii { "|" } else { "┃" })
+                .thumb_style(self.styles.thumb)
+                .render(self.body_area.intersection(buf.area), buf, &mut state);
+        }
+        if let Some(area) = self.jump {
+            let mut block = Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
+                .border_style(self.styles.jump_border)
+                .style(self.styles.background);
+            if self.ascii {
+                block = block.border_set(ratatui::symbols::border::Set {
+                    top_left: "+",
+                    top_right: "+",
+                    bottom_left: "+",
+                    bottom_right: "+",
+                    vertical_left: "|",
+                    vertical_right: "|",
+                    horizontal_top: "-",
+                    horizontal_bottom: "-",
+                });
+            }
+            block.render(area.intersection(buf.area), buf);
+            let arrow = (area.x.saturating_add(1), area.y.saturating_add(1));
+            if buf.area.contains(arrow.into()) {
+                buf[arrow]
+                    .set_symbol(if self.ascii { "v" } else { "↓" })
+                    .set_style(self.styles.jump_arrow.add_modifier(Modifier::BOLD));
+            }
+        }
+    }
+}
+impl Paint for TranscriptViewport<'_> {
+    fn paint(&self, area: Rect, buf: &mut Buffer, _theme: &Theme) {
+        self.render(area, buf);
+    }
+    fn height(&self, width: u16, _theme: &Theme) -> u16 {
+        if width == 0 {
+            return 0;
+        }
+        let pinned = usize::from(self.pinned_rows).min(self.rows.len());
+        if self.wrap {
+            let rows: Vec<_> = self.rows[..pinned]
+                .iter()
+                .chain(self.rows.iter().skip(pinned.saturating_add(self.offset)))
+                .map(safe_transcript_line)
+                .collect();
+            return u16::try_from(
+                Paragraph::new(rows)
+                    .wrap(Wrap { trim: false })
+                    .line_count(width),
+            )
+            .unwrap_or(u16::MAX);
+        }
+        u16::try_from(
+            pinned.saturating_add(
+                self.rows
+                    .len()
+                    .saturating_sub(pinned.saturating_add(self.offset)),
+            ),
+        )
+        .unwrap_or(u16::MAX)
+    }
+}
+
+/// Native three-cell jump affordance, never overlapping an owned scroll rail.
+/// The host decides whether it is appropriate and dispatches the click.
+pub fn transcript_jump_rect(area: Rect, scrollbar: bool) -> Option<Rect> {
+    if area.width < 3 + u16::from(scrollbar) || area.height < 3 {
+        return None;
+    }
+    Some(Rect::new(
+        area.right()
+            .saturating_sub(u16::from(scrollbar))
+            .saturating_sub(3),
+        area.bottom().saturating_sub(3),
+        3,
+        3,
+    ))
+}
+
+/// Project inclusive display-column metadata to a clipped terminal row. The
+/// opaque target and terminal/browser opening policy stay entirely with hosts.
+pub fn transcript_link_rect(area: Rect, row: usize, start: usize, end: usize) -> Option<Rect> {
+    if area.is_empty()
+        || row >= usize::from(area.height)
+        || end < start
+        || start >= usize::from(area.width)
+    {
+        return None;
+    }
+    let end = end.min(usize::from(area.width).saturating_sub(1));
+    let x = area
+        .x
+        .saturating_add(u16::try_from(start).unwrap_or(u16::MAX));
+    let y = area
+        .y
+        .saturating_add(u16::try_from(row).unwrap_or(u16::MAX));
+    let rect = Rect::new(x, y, u16::try_from(end - start + 1).unwrap_or(u16::MAX), 1);
+    let clipped = rect.intersection(area);
+    (!clipped.is_empty()).then_some(clipped)
+}
+
+/// Whole-grapheme selection projection, preserving every source span's style
+/// facts and applying the supplied selection style only to covered cells.
+pub fn transcript_selected_spans(
+    line: &Line<'static>,
+    start: usize,
+    end: usize,
+    selection: Style,
+) -> Vec<Span<'static>> {
+    transcript_selected_spans_measured(line, start, end, selection, text::width)
+}
+
+/// The host may supply its existing terminal-column grammar (for example CJK
+/// ambiguous characters and non-VS keycaps) without another selection painter.
+pub fn transcript_selected_spans_measured(
+    line: &Line<'static>,
+    start: usize,
+    end: usize,
+    selection: Style,
+    measure_grapheme: impl Fn(&str) -> usize,
+) -> Vec<Span<'static>> {
+    let mut result = Vec::with_capacity(line.spans.len().saturating_add(2));
+    let mut column = 0usize;
+    for span in &line.spans {
+        let value = text::display_safe(&span.content);
+        let span_end =
+            column.saturating_add(value.graphemes(true).fold(0usize, |width, grapheme| {
+                width.saturating_add(measure_grapheme(grapheme))
+            }));
+        if span_end <= start || column >= end {
+            result.push(Span::styled(value.into_owned(), span.style));
+        } else if column >= start && span_end <= end {
+            result.push(Span::styled(
+                value.into_owned(),
+                span.style.patch(selection),
+            ));
+        } else {
+            let (mut before, mut selected, mut after) =
+                (String::new(), String::new(), String::new());
+            let mut position = column;
+            for grapheme in value.graphemes(true) {
+                let next = position.saturating_add(measure_grapheme(grapheme));
+                if next <= start {
+                    before.push_str(grapheme);
+                } else if position >= end {
+                    after.push_str(grapheme);
+                } else {
+                    selected.push_str(grapheme);
+                }
+                position = next;
+            }
+            for (text, style) in [
+                (before, span.style),
+                (selected, span.style.patch(selection)),
+                (after, span.style),
+            ] {
+                if !text.is_empty() {
+                    result.push(Span::styled(text, style));
+                }
+            }
+        }
+        column = span_end;
+    }
+    result
 }

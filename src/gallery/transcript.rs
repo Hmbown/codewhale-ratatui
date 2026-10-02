@@ -3,7 +3,12 @@
 
 use std::borrow::Cow;
 
-use ratatui::{buffer::Buffer, layout::Rect};
+use ratatui::{
+    buffer::Buffer,
+    layout::Rect,
+    style::Modifier,
+    text::{Line, Span},
+};
 
 use super::Entry;
 use crate::{CodeBlock, Paint, Theme, Transcript, TranscriptBlock, TranscriptSpan};
@@ -74,8 +79,103 @@ fn linked(area: Rect, buf: &mut Buffer, theme: &Theme) {
     .paint(area, buf, theme);
 }
 
+fn mounted(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    use crate::{Role, TranscriptScrollFacts, TranscriptViewport, TranscriptViewportStyles};
+    let plain = theme.fg(Role::Foreground);
+    let selected = plain.patch(theme.bg(Role::Selected)).add_modifier(
+        if theme.color(Role::Foreground).is_none() {
+            Modifier::REVERSED
+        } else {
+            Modifier::empty()
+        },
+    );
+    let rows = vec![
+        Line::styled("User: Review the changed source", theme.fg(Role::Attention)),
+        Line::from(vec![
+            Span::styled("The ", plain),
+            Span::styled("selected words", selected),
+            Span::styled(" retain their source.", plain),
+        ]),
+        Line::styled(
+            if theme.ascii() {
+                "A composed cafe draft"
+            } else {
+                "A composed cafe\u{0301} draft with 鲸鱼"
+            },
+            plain,
+        ),
+        Line::styled(
+            "let source = exact_source;",
+            theme.fg(Role::Live).patch(theme.bg(Role::Surface)),
+        ),
+        Line::styled(
+            "Keep the permission receipt visible",
+            theme.fg(Role::Attention),
+        ),
+        Line::styled(
+            "Read the linked guide",
+            theme.fg(Role::Primary).add_modifier(Modifier::UNDERLINED),
+        ),
+    ];
+    let background = theme.bg(Role::Surface);
+    let mut viewport = TranscriptViewport::new(&rows);
+    viewport.style = background;
+    viewport.fill = true;
+    viewport.ascii = theme.ascii();
+    viewport.scrollbar = Some(TranscriptScrollFacts {
+        top: 4,
+        visible: usize::from(area.height),
+        total: 30,
+    });
+    viewport.jump_to_latest = true;
+    viewport.styles = TranscriptViewportStyles {
+        background,
+        track: theme.fg(Role::Border),
+        thumb: theme.fg(Role::Live),
+        jump_border: theme.fg(Role::Border),
+        jump_arrow: theme.fg(Role::Live),
+    };
+    viewport.paint(area, buf, theme);
+}
+fn focused(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let rows = vec![
+        Line::styled(
+            "Worker: Builder | paused",
+            theme
+                .fg(crate::Role::Attention)
+                .add_modifier(Modifier::BOLD),
+        ),
+        Line::styled("Old source row", theme.fg(crate::Role::Muted)),
+        Line::styled(
+            "The host supplies the current source rows",
+            theme.fg(crate::Role::Foreground),
+        ),
+        Line::styled(
+            "The pure viewport keeps the banner pinned",
+            theme.fg(crate::Role::Foreground),
+        ),
+    ];
+    let mut viewport = crate::TranscriptViewport::new(&rows);
+    viewport.pinned_rows = 1;
+    viewport.offset = 1;
+    viewport.style = theme.bg(crate::Role::Surface);
+    viewport.paint(area, buf, theme);
+}
+
 pub(crate) fn entries() -> Vec<Entry> {
     vec![
+        Entry {
+            name: "transcript-mounted",
+            width: 52,
+            height: 9,
+            draw: mounted,
+        },
+        Entry {
+            name: "transcript-mounted-focus",
+            width: 52,
+            height: 6,
+            draw: focused,
+        },
         Entry {
             name: "transcript-prose",
             width: 40,
