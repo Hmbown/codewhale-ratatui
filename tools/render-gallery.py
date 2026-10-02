@@ -6,7 +6,7 @@
     python3 tools/render-gallery.py target/readme-buffers assets/readme --check
 
 Every input entry appears once in a board for each requested profile. The
-default profiles are dark-truecolor and light-truecolor; --profiles accepts
+default profiles are dark-truecolor (Ocean) and light-truecolor; --profiles accepts
 any exported profiles. Whale states have their own boards, and the complete
 action sheet stands alone. SVGs embed the buffer drawing directly and need no
 JavaScript, foreignObject, remote image or font resource to display on GitHub.
@@ -15,35 +15,46 @@ JavaScript, foreignObject, remote image or font resource to display on GitHub.
 import argparse
 import copy
 import json
+import math
 import os
 from pathlib import Path
 import re
 import sys
+import textwrap
 import xml.etree.ElementTree as ET
 
 SVG = "http://www.w3.org/2000/svg"
 ET.register_namespace("", SVG)
+TOKENS = json.loads((Path(__file__).resolve().parents[1] / "vendor/codewhale-design/tokens.json").read_text(encoding="utf-8"))
 WIDTH = 1040
-MARGIN = 48
-GAP = 24
-CARD_PAD = 20
-CARD_HEADER = 48
-TOP = 154
+SCENE_WIDTH = 1280
+MARGIN = TOKENS["spacing"]["page"]
+GAP = TOKENS["spacing"]["large"]
+TOP = 208
 MAX_HEIGHT = 2200
 MONO = "'DejaVu Sans Mono','Cascadia Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace"
-SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+SANS = ",".join(f"'{family}'" for family in [TOKENS["typography"]["family"], *TOKENS["typography"]["fallbacks"]]) + ",-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
 GROUPS = {
+    "scenes": ("Codewhale at work", "Conversation, review and parallel work, composed from the same components"),
     "components": ("Sessions and fleets", "Messages, tools, workspaces and parallel agents"),
+    "workbar": ("The workbar", "TODO, context, git, price and plugins; summoned, configurable and caller-owned"),
     "foundation": ("The Codewhale language", "Depth, rules, marks, hints and terminal chrome"),
     "input": ("Input and selection", "Editable fields, forms, lists and focused choices"),
     "chrome": ("Navigation and controls", "Headings, tabs, toggles and keyboard maps"),
     "display": ("Work and receipts", "Diffs, trees, progress, approvals and durable outcomes"),
     "motion": ("Motion and feedback", "Spinners, notifications and calm transitions"),
+    "habitat": ("Life in the water", "Fish, jellyfish and bubbles, drawn in terminal cells"),
     "whales": ("A whale with a job", "Session state, attention, completion and the pod"),
     "whale-actions": ("Every whale action", "The complete v2 state vocabulary, in terminal cells"),
 }
 PROFILES = ["dark-truecolor", "dark-graphite", "light-truecolor", "dark-256", "light-256",
             "ansi-16", "unknown-ground", "no-color", "ascii"]
+PROFILE_LABELS = {
+    "dark-truecolor": "Truecolor / Ocean", "dark-graphite": "Truecolor / Graphite",
+    "light-truecolor": "Truecolor / Paper", "dark-256": "256 colors / Dark",
+    "light-256": "256 colors / Light", "ansi-16": "16 colors",
+    "unknown-ground": "Unmeasured ground", "no-color": "NO_COLOR", "ascii": "ASCII safe",
+}
 
 
 def element(parent, tag, attrs=None, text=None):
@@ -54,6 +65,14 @@ def element(parent, tag, attrs=None, text=None):
 
 
 def classify(name):
+    if name.startswith(("workspace-scene", "review-scene", "fleet-scene", "habitat-scene")):
+        return "scenes"
+    if re.search(r"habitat|fish|jelly|bubble", name):
+        return "habitat"
+    if name == "workbar" or name.startswith("workbar-"):
+        return "workbar"
+    if name.startswith("artifact"):
+        return "display"
     if name == "whale-actions":
         return "whale-actions"
     if name.startswith("whale-"):
@@ -62,13 +81,13 @@ def classify(name):
         return "foundation"
     if re.search(r"dialog|sheet", name):
         return "foundation"
-    if re.search(r"message|composer|tool-card|fleet", name):
+    if re.search(r"message|composer|tool-card|fleet|attention", name):
         return "components"
     if re.search(r"input|form|fuzzy|picker|list|empty", name):
         return "input"
     if re.search(r"heading|tabs|toggle|segmented|keymap|setting", name):
         return "chrome"
-    if re.search(r"receipt|diff|tree|progress|approval|review|count-bar", name):
+    if re.search(r"receipt|diff|tree|progress|approval|review|count-bar|artifact", name):
         return "display"
     if re.search(r"motion|spinner|toast", name):
         return "motion"
@@ -76,11 +95,11 @@ def classify(name):
 
 
 def palette(profile):
-    if profile.startswith("light"):
-        return {"bg": "#f2f5f9", "card": "#ffffff", "edge": "#d6dfe9",
-                "fg": "#142235", "muted": "#52647a", "accent": "#0b48bb"}
-    return {"bg": "#070e1a", "card": "#0c1625", "edge": "#24374d",
-            "fg": "#e9f0f8", "muted": "#8b9eb5", "accent": "#38a5e9"}
+    colors = TOKENS["colors"]["light" if profile.startswith("light") else "dark"]
+    return {name: "#" + colors[role] for name, role in {
+        "bg": "background", "surface": "surface", "sidebar": "sidebar", "edge": "border",
+        "fg": "foreground", "muted": "muted_foreground", "accent": "primary",
+    }.items()}
 
 
 def read_inputs(source, profiles):
@@ -123,112 +142,169 @@ def load_buffer(path):
             raise ValueError(f"unexpected element {node.tag} in {path}")
         if any(key.lower().startswith("on") or "href" in key.lower() for key in node.attrib):
             raise ValueError(f"active or external SVG content in {path}")
-    _, _, width, height = (float(v) for v in root.attrib["viewBox"].split())
-    if width <= 0 or height <= 0:
+        if any(re.search(r"url\s*\(|javascript:|data:|@import", value, re.IGNORECASE)
+               for value in node.attrib.values()):
+            raise ValueError(f"external SVG resource in {path}")
+    left, top, width, height = (float(v) for v in root.attrib["viewBox"].split())
+    if left != 0 or top != 0 or not all(math.isfinite(v) for v in [width, height]) or width <= 0 or height <= 0:
         raise ValueError(f"invalid buffer dimensions in {path}")
     return root, width, height
 
 
-def layout(items):
-    available = WIDTH - 2 * MARGIN
-    column = (available - GAP) / 2
-    pages = []
-    page = []
+def specimen_title(name):
+    titles = {"status-marks": "State, in a mark and a word", "key-hints": "Keys at the point of use",
+              "depth": "One space, several depths", "horizon": "A single horizon",
+              "icons": "Control vocabulary", "workspace-scene": "The everyday workspace",
+              "review-scene": "Review in context", "fleet-scene": "Parallel work in view",
+              "workspace-scene-narrow": "The workspace in a narrow terminal",
+              "habitat-scene": "A living marine workspace"}
+    if name in titles:
+        return titles[name]
+    words = name.replace("-", " ")
+    for abbreviation in ["ascii", "cjk", "mcp", "api", "ui"]:
+        words = re.sub(rf"\b{abbreviation}\b", abbreviation.upper(), words)
+    return words[:1].upper() + words[1:]
+
+
+def label_lines(value, width, size, mono=False):
+    # Labels are catalogue names, not product text. A conservative measure
+    # keeps every name visible without depending on a host's installed fonts.
+    columns = max(1, int(width / (size * (0.625 if mono else 0.65))))
+    return textwrap.wrap(value, width=columns, break_long_words=True, break_on_hyphens=True) or [""]
+
+
+def specimen_labels(name, span, width, height):
+    typography = TOKENS["typography"]
+    title = label_lines(specimen_title(name), span, typography["heading_px"])
+    metadata = label_lines(f"{name}  ·  {int(width / 10)} × {int(height / 20)} cells", span, typography["caption_px"], True)
+    header = len(title) * GAP + len(metadata) * TOKENS["spacing"]["section"] + TOKENS["spacing"]["section"]
+    return title, metadata, header
+
+
+def layout(items, group=None):
+    """Fit the specimens rather than shrink their terminal cells to a grid."""
+    if not items:
+        return []
+    if group == "scenes":
+        pages = []
+        for name, buffer, width, height in items:
+            board_width = max(640 if width <= 640 else SCENE_WIDTH, math.ceil(width) + 2 * MARGIN)
+            span = board_width - 2 * MARGIN
+            title, metadata, header = specimen_labels(name, span, width, height)
+            pages.append({"width": board_width, "specimens": [{"name": name, "buffer": buffer,
+                "width": width, "height": height, "x": MARGIN, "y": TOP, "span": span,
+                "extent": header + height, "title": title, "metadata": metadata, "header": header}]})
+        return pages
+    board_width = max(WIDTH, math.ceil(max(item[2] for item in items)) + 2 * MARGIN)
+    available = board_width - 2 * MARGIN
+    pages, specimens = [], []
     x, y, row_height = MARGIN, TOP, 0
     for name, buffer, width, height in items:
-        card_width = column if width + 2 * CARD_PAD <= column else available
-        scale = min(1.0, (card_width - 2 * CARD_PAD) / width)
-        card_height = CARD_HEADER + height * scale + CARD_PAD
-        if x + card_width > WIDTH - MARGIN + 0.1:
-            x, y, row_height = MARGIN, y + row_height + GAP, 0
-        if page and y + card_height + MARGIN > MAX_HEIGHT:
-            pages.append(page)
-            page = []
+        # Scenes are complete workspaces; each gets a full-width, unframed
+        # stage. Smaller primitives pack at their natural widths in two or
+        # three columns, with enough measure for their descriptive labels.
+        span = min(available, max(256, math.ceil(width / 8) * 8))
+        title, metadata, header = specimen_labels(name, span, width, height)
+        specimen_height = header + height
+        if x + span > board_width - MARGIN:
+            x, y, row_height = MARGIN, y + row_height + 2 * GAP, 0
+        if specimens and y + specimen_height + MARGIN + GAP > MAX_HEIGHT:
+            pages.append({"width": board_width, "specimens": specimens})
+            specimens = []
             x, y, row_height = MARGIN, TOP, 0
-        page.append((name, buffer, width, height, x, y, card_width, card_height, scale))
-        x += card_width + GAP
-        row_height = max(row_height, card_height)
-    if page:
-        pages.append(page)
+        specimens.append({"name": name, "buffer": buffer, "width": width, "height": height,
+                          "x": x, "y": y, "span": span, "extent": specimen_height,
+                          "title": title, "metadata": metadata, "header": header})
+        x += span + GAP
+        row_height = max(row_height, specimen_height)
+    if specimens:
+        pages.append({"width": board_width, "specimens": specimens})
     return pages
+
+
+def atlas_frame(title, subtitle, width, height, colors, detail, description):
+    root = ET.Element(f"{{{SVG}}}svg", {"width": f"{width:g}", "height": f"{height:g}",
+        "viewBox": f"0 0 {width:g} {height:g}", "role": "img", "aria-labelledby": "title desc"})
+    element(root, "title", {"id": "title"}, title + " — " + detail)
+    element(root, "desc", {"id": "desc"}, description)
+    element(root, "rect", {"width": "100%", "height": "100%", "fill": colors["bg"]})
+    element(root, "text", {"x": str(MARGIN), "y": "80", "fill": colors["fg"], "font-family": SANS,
+        "font-size": str(2 * TOKENS["typography"]["title_px"]), "font-weight": "600"}, title)
+    for i, line in enumerate(label_lines(subtitle, width - 2 * MARGIN, TOKENS["typography"]["prose_px"])):
+        element(root, "text", {"x": str(MARGIN), "y": str(116 + i * GAP), "fill": colors["muted"],
+            "font-family": SANS, "font-size": str(TOKENS["typography"]["prose_px"])}, line)
+    element(root, "text", {"x": str(MARGIN), "y": "164", "fill": colors["muted"], "font-family": SANS,
+        "font-size": str(TOKENS["typography"]["caption_px"])}, "Codewhale ratatui · rendered fixtures")
+    element(root, "text", {"x": f"{width - MARGIN:g}", "y": "164", "fill": colors["accent"],
+        "font-family": MONO, "font-size": str(TOKENS["typography"]["caption_px"]), "text-anchor": "end"}, detail)
+    element(root, "path", {"d": f"M{MARGIN} 184H{width - MARGIN:g}", "stroke": colors["edge"], "stroke-width": "1"})
+    element(root, "text", {"x": str(MARGIN), "y": f"{height - TOKENS['spacing']['section']:g}",
+        "fill": colors["muted"], "font-family": MONO, "font-size": str(TOKENS["typography"]["caption_px"])},
+        f"codewhale-ratatui · tokens {TOKENS['version']}")
+    return root
+
+
+def paint_specimen(root, specimen, colors, center=False):
+    name = specimen["name"]
+    x, y, span = specimen["x"], specimen["y"], specimen["span"]
+    section = element(root, "g", {"data-entry": name})
+    for i, line in enumerate(specimen["title"]):
+        element(section, "text", {"x": f"{x:g}", "y": f"{y + TOKENS['typography']['heading_px'] + i * GAP:g}",
+            "fill": colors["fg"], "font-family": SANS, "font-size": str(TOKENS["typography"]["heading_px"]),
+            "font-weight": "600"}, line)
+    metadata_y = y + len(specimen["title"]) * GAP + TOKENS["typography"]["caption_px"]
+    for i, line in enumerate(specimen["metadata"]):
+        element(section, "text", {"x": f"{x:g}", "y": f"{metadata_y + i * TOKENS['spacing']['section']:g}",
+            "fill": colors["muted"], "font-family": MONO, "font-size": str(TOKENS["typography"]["caption_px"])}, line)
+    drawing = copy.deepcopy(specimen["buffer"])
+    drawing_x = x + (span - specimen["width"]) / 2 if center else x
+    # Native viewport dimensions, and the buffer's own 16px text, survive
+    # unchanged. There is no transform, faux terminal frame, or extra card.
+    drawing.attrib.update({"x": f"{drawing_x:g}", "y": f"{y + specimen['header']:g}",
+                           "width": f"{specimen['width']:g}", "height": f"{specimen['height']:g}"})
+    section.append(drawing)
 
 
 def board(group, profile, page, number, total):
     colors = palette(profile)
     title, subtitle = GROUPS[group]
-    height = int(max(item[5] + item[7] for item in page) + MARGIN)
-    root = ET.Element(f"{{{SVG}}}svg", {
-        "width": str(WIDTH), "height": str(height), "viewBox": f"0 0 {WIDTH} {height}",
-        "role": "img", "aria-labelledby": "title desc",
-    })
-    suffix = f" · {number}/{total}" if total > 1 else ""
-    element(root, "title", {"id": "title"}, f"{title} — {profile}{suffix}")
-    element(root, "desc", {"id": "desc"},
-            "Actual ratatui buffer renders: " + ", ".join(item[0] for item in page))
-    element(root, "rect", {"width": "100%", "height": "100%", "fill": colors["bg"]})
-    element(root, "rect", {"x": str(MARGIN), "y": "32", "width": "36", "height": "4",
-                          "rx": "2", "fill": colors["accent"]})
-    element(root, "text", {"x": str(MARGIN), "y": "72", "fill": colors["fg"],
-                          "font-family": SANS, "font-size": "30", "font-weight": "650"}, title + suffix)
-    element(root, "text", {"x": str(MARGIN), "y": "102", "fill": colors["muted"],
-                          "font-family": SANS, "font-size": "17"}, subtitle)
-    element(root, "text", {"x": str(WIDTH - MARGIN), "y": "72", "fill": colors["accent"],
-                          "font-family": MONO, "font-size": "14", "text-anchor": "end"}, profile)
-    element(root, "text", {"x": str(WIDTH - MARGIN), "y": "102", "fill": colors["muted"],
-                          "font-family": SANS, "font-size": "13", "text-anchor": "end"},
-            "Real terminal buffers · 10 × 20 px cells")
-    for name, buffer, width, height, x, y, card_width, card_height, scale in page:
-        card = element(root, "g")
-        element(card, "rect", {
-            "x": f"{x:g}", "y": f"{y:g}", "width": f"{card_width:g}", "height": f"{card_height:g}",
-            "rx": "10", "fill": colors["card"], "stroke": colors["edge"],
-        })
-        element(card, "text", {"x": f"{x + CARD_PAD:g}", "y": f"{y + 28:g}",
-                               "fill": colors["fg"], "font-family": MONO, "font-size": "14"}, name)
-        element(card, "text", {"x": f"{x + card_width - CARD_PAD:g}", "y": f"{y + 28:g}",
-                               "fill": colors["muted"], "font-family": MONO, "font-size": "12",
-                               "text-anchor": "end"}, f"{int(width / 10)} × {int(height / 20)}")
-        drawing = copy.deepcopy(buffer)
-        drawing_x = x + (card_width - width * scale) / 2 if group in {"whales", "whale-actions"} else x + CARD_PAD
-        drawing.attrib.update({"x": f"{drawing_x:g}", "y": f"{y + CARD_HEADER:g}",
-                               "width": f"{width * scale:g}", "height": f"{height * scale:g}"})
-        card.append(drawing)
+    width = page["width"]
+    specimens = page["specimens"]
+    height = math.ceil(max(item["y"] + item["extent"] for item in specimens) + MARGIN + GAP)
+    suffix = f" · page {number}/{total}" if total > 1 else ""
+    detail = PROFILE_LABELS.get(profile, profile) + suffix
+    root = atlas_frame(title, subtitle, width, height, colors, detail,
+        "Actual ratatui buffer renders: " + ", ".join(item["name"] for item in specimens))
+    row_starts = sorted({item["y"] for item in specimens})
+    for y in row_starts[1:]:
+        element(root, "path", {"d": f"M{MARGIN} {y - GAP:g}H{width - MARGIN:g}",
+            "stroke": colors["edge"], "stroke-width": "1"})
+    for item in specimens:
+        paint_specimen(root, item, colors, group in {"whales", "whale-actions"})
     return ET.tostring(root, encoding="unicode", xml_declaration=False) + "\n"
 
 
 def profile_comparison(source):
-    """The same actual state-mark buffer in all nine terminal profiles."""
+    """The same native state-mark specimen in all nine terminal profiles."""
     colors = palette("dark-truecolor")
     buffers = [(profile, *load_buffer(source / f"status-marks.{profile}.svg")) for profile in PROFILES]
-    column = (WIDTH - 2 * MARGIN - 2 * GAP) / 3
-    scale = min(1.0, min((column - 2 * CARD_PAD) / width for _, _, width, _ in buffers))
-    card_height = CARD_HEADER + max(height * scale for _, _, _, height in buffers) + CARD_PAD
-    height = int(TOP + 3 * card_height + 2 * GAP + MARGIN)
-    root = ET.Element(f"{{{SVG}}}svg", {"width": str(WIDTH), "height": str(height),
-        "viewBox": f"0 0 {WIDTH} {height}", "role": "img", "aria-labelledby": "title desc"})
-    element(root, "title", {"id": "title"}, "One state vocabulary across nine terminal profiles")
-    element(root, "desc", {"id": "desc"}, "Actual status-mark buffers: " + ", ".join(PROFILES))
-    element(root, "rect", {"width": "100%", "height": "100%", "fill": colors["bg"]})
-    element(root, "rect", {"x": str(MARGIN), "y": "32", "width": "36", "height": "4",
-                          "rx": "2", "fill": colors["accent"]})
-    element(root, "text", {"x": str(MARGIN), "y": "72", "fill": colors["fg"],
-        "font-family": SANS, "font-size": "30", "font-weight": "650"}, "Every terminal has a language")
-    element(root, "text", {"x": str(MARGIN), "y": "102", "fill": colors["muted"],
-        "font-family": SANS, "font-size": "17"}, "One state vocabulary across nine terminal capability profiles")
-    for i, (profile, buffer, width, body_height) in enumerate(buffers):
-        x = MARGIN + (i % 3) * (column + GAP)
-        y = TOP + (i // 3) * (card_height + GAP)
-        profile_colors = palette(profile)
-        card = element(root, "g")
-        element(card, "rect", {"x": f"{x:g}", "y": f"{y:g}", "width": f"{column:g}",
-            "height": f"{card_height:g}", "rx": "10", "fill": profile_colors["card"],
-            "stroke": profile_colors["edge"]})
-        element(card, "text", {"x": f"{x + CARD_PAD:g}", "y": f"{y + 28:g}",
-            "fill": profile_colors["fg"], "font-family": MONO, "font-size": "14"}, profile)
-        drawing = copy.deepcopy(buffer)
-        drawing.attrib.update({"x": f"{x + CARD_PAD:g}", "y": f"{y + CARD_HEADER:g}",
-            "width": f"{width * scale:g}", "height": f"{body_height * scale:g}"})
-        card.append(drawing)
+    width = max(WIDTH, 2 * MARGIN + 3 * math.ceil(max(item[2] for item in buffers)) + 2 * GAP)
+    column = (width - 2 * MARGIN - 2 * GAP) / 3
+    specimens = []
+    for profile, buffer, body_width, body_height in buffers:
+        title = label_lines(PROFILE_LABELS[profile], column, TOKENS["typography"]["heading_px"])
+        metadata = [profile]
+        header = len(title) * GAP + TOKENS["spacing"]["section"] * 2
+        specimens.append({"name": "status-marks", "buffer": buffer, "width": body_width, "height": body_height,
+                          "span": column, "title": title, "metadata": metadata, "header": header,
+                          "extent": header + body_height})
+    row_height = max(item["extent"] for item in specimens)
+    height = TOP + 3 * row_height + 4 * GAP + MARGIN
+    root = atlas_frame("One language, every terminal", "State stays legible across color depths, measured grounds and plain text",
+        width, height, colors, "9 terminal profiles", "Actual status-mark buffers: " + ", ".join(PROFILES))
+    for i, specimen in enumerate(specimens):
+        specimen.update({"x": MARGIN + (i % 3) * (column + GAP), "y": TOP + (i // 3) * (row_height + GAP)})
+        paint_specimen(root, specimen, colors)
     return ET.tostring(root, encoding="unicode", xml_declaration=False) + "\n"
 
 
@@ -242,12 +318,12 @@ def generate(source, profiles):
             grouped[classify(name)].append((name, buffer, width, height))
         represented = []
         for group, items in grouped.items():
-            pages = layout(items)
+            pages = layout(items, group)
             for number, page in enumerate(pages, 1):
                 suffix = f"-{number}" if len(pages) > 1 else ""
                 filename = f"{group}.{profile}{suffix}.svg"
                 outputs[filename] = board(group, profile, page, number, len(pages))
-                page_names = [item[0] for item in page]
+                page_names = [item["name"] for item in page["specimens"]]
                 represented.extend(page_names)
                 index.append({"file": filename, "profile": profile, "group": group, "entries": page_names})
         if sorted(represented) != sorted(names):

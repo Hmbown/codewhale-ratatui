@@ -31,3 +31,7 @@ jobs:
         run: cargo run --locked --example gallery -- --svg target/readme-buffers
       - name: README previews match the actual buffers
         run: python3 tools/render-gallery.py target/readme-buffers assets/readme --readme README.md --check
+      - name: Render the habitat motion frames
+        run: cargo run --locked --example habitat -- --frames target/habitat-frames
+      - name: Habitat animation matches the actual buffers
+        run: python3 tools/check-habitat.py

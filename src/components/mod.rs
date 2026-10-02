@@ -81,3 +81,12 @@ mod settings;
 mod workspace;
 pub use settings::*;
 pub use workspace::*;
+
+mod artifacts;
+mod attention;
+mod workbench;
+pub use artifacts::*;
+pub use attention::*;
+pub use workbench::*;
+mod habitat;
+pub use habitat::*;

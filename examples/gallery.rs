@@ -180,6 +180,7 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
     let mut content_height = 1u16;
     // `None` is the component's own width; otherwise one of `testing::WIDTHS`.
     let mut width: Option<usize> = None;
+    let mut expanded = false;
     loop {
         let theme = profile.map_or_else(Theme::detect, |i| Profile::ALL[i].theme());
         let profile_name = profile.map_or("this terminal", |i| Profile::ALL[i].name());
@@ -192,6 +193,7 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
                 KeyHint::new("p", "next profile"),
                 KeyHint::new("PgUp/PgDn", "scroll"),
                 KeyHint::new("w", "next width"),
+                KeyHint::new("f", "expand"),
                 KeyHint::new("q", "quit"),
             ]);
             let inner = Panel::new(Depth::Stage)
@@ -200,7 +202,7 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
                 .hints(&hints)
                 .draw(area, buf, &theme);
             let rail = Rect {
-                width: if inner.width < 40 { 0 } else { 20 },
+                width: if expanded || inner.width < 40 { 0 } else { 20 },
                 ..inner
             };
             let rail_inner = Panel::new(Depth::Deep).draw(rail, buf, &theme);
@@ -215,10 +217,14 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
             };
             let entry = &entries[state.selected];
             let render_width = forced_width.unwrap_or(entry.width).min(stage.width);
-            let capacity = entry
-                .height
-                .saturating_mul(entry.width.div_ceil(render_width.max(1)))
-                .max(1);
+            let capacity = if entry.name.contains("scene") {
+                entry.height
+            } else {
+                entry
+                    .height
+                    .saturating_mul(entry.width.div_ceil(render_width.max(1)))
+                    .max(1)
+            };
             let full = testing::render(render_width, capacity, |area, buf| {
                 buf.set_style(area, theme.bg(Role::Background));
                 (entry.draw)(area, buf, &theme);
@@ -276,6 +282,10 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> io::Result<()> 
                 KeyCode::PageUp => scroll = scroll.saturating_sub(viewport_height),
                 KeyCode::Home => scroll = 0,
                 KeyCode::End => scroll = content_height,
+                KeyCode::Char('f') => {
+                    expanded = !expanded;
+                    scroll = 0;
+                }
                 KeyCode::Char('p') if !key.modifiers.contains(KeyModifiers::SHIFT) => {
                     profile = match profile {
                         None => Some(0),

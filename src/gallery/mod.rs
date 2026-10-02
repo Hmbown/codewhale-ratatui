@@ -27,20 +27,25 @@ use crate::{
 };
 
 mod approval;
+mod artifacts;
+mod attention;
 mod chrome;
 mod display;
+mod habitat;
 mod hints;
 mod icons;
 mod input;
 mod lists;
 mod motion;
 mod picker;
+mod scenes;
 mod settings;
 mod spinner;
 mod status;
 mod surface;
 mod toast;
 mod whale;
+mod workbench;
 mod workspace;
 
 /// One gallery entry: a name, the size it is drawn at by default, and a
@@ -63,6 +68,11 @@ fn arrows(theme: &Theme) -> String {
 #[must_use]
 pub fn entries() -> Vec<Entry> {
     [
+        scenes::entries(),
+        workbench::entries(),
+        attention::entries(),
+        artifacts::entries(),
+        habitat::entries(),
         hints::entries(),
         status::entries(),
         surface::entries(),

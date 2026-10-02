@@ -1,0 +1,424 @@
+---
+source: tests/snapshots.rs
+expression: dump(&entry)
+---
+== dark-truecolor
+Workbar
+────────────────────────────────────────
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+╸4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 fg=Foreground bg=Background bold
+r0 c7..40 bg=Background
+r1 c0..40 fg=Border bg=Background
+r2 c0..1 bg=Background
+r2 c1..8 fg=Muted bg=Background
+r2 c8..21 bg=Background
+r2 c21..31 fg=Muted bg=Background
+r2 c31..40 bg=Background
+r3 c0..1 bg=Background
+r3 c1..15 fg=Foreground bg=Background bold
+r3 c15..21 bg=Background
+r3 c21..26 fg=Foreground bg=Background bold
+r3 c26..40 bg=Background
+r4 c0..1 bg=Background
+r4 c1..14 fg=Muted bg=Background
+r4 c14..21 bg=Background
+r4 c21..35 fg=Muted bg=Background
+r4 c35..40 bg=Background
+r5 c0..1 bg=Selected
+r5 c1..7 fg=Muted bg=Selected
+r5 c7..20 bg=Selected
+r5 c20..21 bg=Background
+r5 c21..29 fg=Muted bg=Background
+r5 c29..40 bg=Background
+r6 c0..1 fg=Primary bg=Selected
+r6 c1..16 fg=Foreground bg=Selected bold
+r6 c16..20 bg=Selected
+r6 c20..21 bg=Background
+r6 c21..26 fg=Foreground bg=Background bold
+r6 c26..40 bg=Background
+r7 c0..1 bg=Selected
+r7 c1..17 fg=Muted bg=Selected
+r7 c17..20 bg=Selected
+r7 c20..21 bg=Background
+r7 c21..39 fg=Muted bg=Background
+r7 c39..40 bg=Background
+r8 c0..1 bg=Background
+r8 c1..11 fg=Muted bg=Background
+r8 c11..40 bg=Background
+r9 c0..1 bg=Background
+r9 c1..2 fg=Foreground bg=Background bold
+r9 c2..40 bg=Background
+r10 c0..1 bg=Background
+r10 c1..15 fg=Muted bg=Background
+r10 c15..40 bg=Background
+
+== dark-graphite
+Workbar
+────────────────────────────────────────
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+╸4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 fg=Foreground bg=Background bold
+r0 c7..40 bg=Background
+r1 c0..40 fg=Border bg=Background
+r2 c0..1 bg=Background
+r2 c1..8 fg=Muted bg=Background
+r2 c8..21 bg=Background
+r2 c21..31 fg=Muted bg=Background
+r2 c31..40 bg=Background
+r3 c0..1 bg=Background
+r3 c1..15 fg=Foreground bg=Background bold
+r3 c15..21 bg=Background
+r3 c21..26 fg=Foreground bg=Background bold
+r3 c26..40 bg=Background
+r4 c0..1 bg=Background
+r4 c1..14 fg=Muted bg=Background
+r4 c14..21 bg=Background
+r4 c21..35 fg=Muted bg=Background
+r4 c35..40 bg=Background
+r5 c0..1 bg=Selected
+r5 c1..7 fg=Muted bg=Selected
+r5 c7..20 bg=Selected
+r5 c20..21 bg=Background
+r5 c21..29 fg=Muted bg=Background
+r5 c29..40 bg=Background
+r6 c0..1 fg=Primary bg=Selected
+r6 c1..16 fg=Foreground bg=Selected bold
+r6 c16..20 bg=Selected
+r6 c20..21 bg=Background
+r6 c21..26 fg=Foreground bg=Background bold
+r6 c26..40 bg=Background
+r7 c0..1 bg=Selected
+r7 c1..17 fg=Muted bg=Selected
+r7 c17..20 bg=Selected
+r7 c20..21 bg=Background
+r7 c21..39 fg=Muted bg=Background
+r7 c39..40 bg=Background
+r8 c0..1 bg=Background
+r8 c1..11 fg=Muted bg=Background
+r8 c11..40 bg=Background
+r9 c0..1 bg=Background
+r9 c1..2 fg=Foreground bg=Background bold
+r9 c2..40 bg=Background
+r10 c0..1 bg=Background
+r10 c1..15 fg=Muted bg=Background
+r10 c15..40 bg=Background
+
+== light-truecolor
+Workbar
+────────────────────────────────────────
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+╸4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 fg=Foreground bg=Background bold
+r0 c7..40 bg=Background
+r1 c0..40 fg=Border bg=Background
+r2 c0..1 bg=Background
+r2 c1..8 fg=Muted bg=Background
+r2 c8..21 bg=Background
+r2 c21..31 fg=Muted bg=Background
+r2 c31..40 bg=Background
+r3 c0..1 bg=Background
+r3 c1..15 fg=Foreground bg=Background bold
+r3 c15..21 bg=Background
+r3 c21..26 fg=Foreground bg=Background bold
+r3 c26..40 bg=Background
+r4 c0..1 bg=Background
+r4 c1..14 fg=Muted bg=Background
+r4 c14..21 bg=Background
+r4 c21..35 fg=Muted bg=Background
+r4 c35..40 bg=Background
+r5 c0..1 bg=Selected
+r5 c1..7 fg=Muted bg=Selected
+r5 c7..20 bg=Selected
+r5 c20..21 bg=Background
+r5 c21..29 fg=Muted bg=Background
+r5 c29..40 bg=Background
+r6 c0..1 fg=Primary bg=Selected
+r6 c1..16 fg=Foreground bg=Selected bold
+r6 c16..20 bg=Selected
+r6 c20..21 bg=Background
+r6 c21..26 fg=Foreground bg=Background bold
+r6 c26..40 bg=Background
+r7 c0..1 bg=Selected
+r7 c1..17 fg=Muted bg=Selected
+r7 c17..20 bg=Selected
+r7 c20..21 bg=Background
+r7 c21..39 fg=Muted bg=Background
+r7 c39..40 bg=Background
+r8 c0..1 bg=Background
+r8 c1..11 fg=Muted bg=Background
+r8 c11..40 bg=Background
+r9 c0..1 bg=Background
+r9 c1..2 fg=Foreground bg=Background bold
+r9 c2..40 bg=Background
+r10 c0..1 bg=Background
+r10 c1..15 fg=Muted bg=Background
+r10 c15..40 bg=Background
+
+== dark-256
+Workbar
+────────────────────────────────────────
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+╸4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 fg=Foreground bg=Background bold
+r0 c7..40 bg=Background
+r1 c0..40 fg=Border bg=Background
+r2 c0..1 bg=Background
+r2 c1..8 fg=Muted bg=Background
+r2 c8..21 bg=Background
+r2 c21..31 fg=Muted bg=Background
+r2 c31..40 bg=Background
+r3 c0..1 bg=Background
+r3 c1..15 fg=Foreground bg=Background bold
+r3 c15..21 bg=Background
+r3 c21..26 fg=Foreground bg=Background bold
+r3 c26..40 bg=Background
+r4 c0..1 bg=Background
+r4 c1..14 fg=Muted bg=Background
+r4 c14..21 bg=Background
+r4 c21..35 fg=Muted bg=Background
+r4 c35..40 bg=Background
+r5 c0..1 bg=Selected
+r5 c1..7 fg=Muted bg=Selected
+r5 c7..20 bg=Selected
+r5 c20..21 bg=Background
+r5 c21..29 fg=Muted bg=Background
+r5 c29..40 bg=Background
+r6 c0..1 fg=Primary bg=Selected
+r6 c1..16 fg=Foreground bg=Selected bold
+r6 c16..20 bg=Selected
+r6 c20..21 bg=Background
+r6 c21..26 fg=Foreground bg=Background bold
+r6 c26..40 bg=Background
+r7 c0..1 bg=Selected
+r7 c1..17 fg=Muted bg=Selected
+r7 c17..20 bg=Selected
+r7 c20..21 bg=Background
+r7 c21..39 fg=Muted bg=Background
+r7 c39..40 bg=Background
+r8 c0..1 bg=Background
+r8 c1..11 fg=Muted bg=Background
+r8 c11..40 bg=Background
+r9 c0..1 bg=Background
+r9 c1..2 fg=Foreground bg=Background bold
+r9 c2..40 bg=Background
+r10 c0..1 bg=Background
+r10 c1..15 fg=Muted bg=Background
+r10 c15..40 bg=Background
+
+== light-256
+Workbar
+────────────────────────────────────────
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+╸4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 fg=Foreground bg=Background|Surface bold
+r0 c7..40 bg=Background|Surface
+r1 c0..40 fg=Border bg=Background|Surface
+r2 c0..1 bg=Background|Surface
+r2 c1..8 fg=Muted bg=Background|Surface
+r2 c8..21 bg=Background|Surface
+r2 c21..31 fg=Muted bg=Background|Surface
+r2 c31..40 bg=Background|Surface
+r3 c0..1 bg=Background|Surface
+r3 c1..15 fg=Foreground bg=Background|Surface bold
+r3 c15..21 bg=Background|Surface
+r3 c21..26 fg=Foreground bg=Background|Surface bold
+r3 c26..40 bg=Background|Surface
+r4 c0..1 bg=Background|Surface
+r4 c1..14 fg=Muted bg=Background|Surface
+r4 c14..21 bg=Background|Surface
+r4 c21..35 fg=Muted bg=Background|Surface
+r4 c35..40 bg=Background|Surface
+r5 c0..1 bg=Selected
+r5 c1..7 fg=Muted bg=Selected
+r5 c7..20 bg=Selected
+r5 c20..21 bg=Background|Surface
+r5 c21..29 fg=Muted bg=Background|Surface
+r5 c29..40 bg=Background|Surface
+r6 c0..1 fg=Primary bg=Selected
+r6 c1..16 fg=Foreground bg=Selected bold
+r6 c16..20 bg=Selected
+r6 c20..21 bg=Background|Surface
+r6 c21..26 fg=Foreground bg=Background|Surface bold
+r6 c26..40 bg=Background|Surface
+r7 c0..1 bg=Selected
+r7 c1..17 fg=Muted bg=Selected
+r7 c17..20 bg=Selected
+r7 c20..21 bg=Background|Surface
+r7 c21..39 fg=Muted bg=Background|Surface
+r7 c39..40 bg=Background|Surface
+r8 c0..1 bg=Background|Surface
+r8 c1..11 fg=Muted bg=Background|Surface
+r8 c11..40 bg=Background|Surface
+r9 c0..1 bg=Background|Surface
+r9 c1..2 fg=Foreground bg=Background|Surface bold
+r9 c2..40 bg=Background|Surface
+r10 c0..1 bg=Background|Surface
+r10 c1..15 fg=Muted bg=Background|Surface
+r10 c15..40 bg=Background|Surface
+
+== ansi-16
+Workbar
+────────────────────────────────────────
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+╸4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 bold
+r1 c0..40 dim
+r2 c1..8 dim
+r2 c21..31 dim
+r3 c1..15 bold
+r3 c21..26 bold
+r4 c1..14 dim
+r4 c21..35 dim
+r5 c1..7 dim
+r5 c21..29 dim
+r6 c0..1 fg=Primary
+r6 c1..16 bold
+r6 c21..26 bold
+r7 c1..17 dim
+r7 c21..39 dim
+r8 c1..11 dim
+r9 c1..2 bold
+r10 c1..15 dim
+
+== unknown-ground
+Workbar
+────────────────────────────────────────
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+╸4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 bold
+r1 c0..40 dim
+r2 c1..8 dim
+r2 c21..31 dim
+r3 c1..15 bold
+r3 c21..26 bold
+r4 c1..14 dim
+r4 c21..35 dim
+r5 c1..7 dim
+r5 c21..29 dim
+r6 c0..1 fg=Primary
+r6 c1..16 bold
+r6 c21..26 bold
+r7 c1..17 dim
+r7 c21..39 dim
+r8 c1..11 dim
+r9 c1..2 bold
+r10 c1..15 dim
+
+== no-color
+Workbar
+────────────────────────────────────────
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+╸4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 bold
+r1 c0..40 dim
+r2 c1..8 dim
+r2 c21..31 dim
+r3 c1..15 bold
+r3 c21..26 bold
+r4 c1..14 dim
+r4 c21..35 dim
+r5 c1..7 dim
+r5 c21..29 dim
+r6 c1..16 bold
+r6 c21..26 bold
+r7 c1..17 dim
+r7 c21..39 dim
+r8 c1..11 dim
+r9 c1..2 bold
+r10 c1..15 dim
+
+== ascii
+Workbar
+----------------------------------------
+ TODO  1             CONTEXT  2
+ 3 / 5 complete      28.4k
+ 2 in progress       of 128k tokens
+ GIT  3              PRICE  4
+>4 files changed     $0.38
+ workspace-polish    reported this turn
+ PLUGINS  5
+ 4
+ enabled by you
+---
+r0 c0..7 bold
+r1 c0..40 dim
+r2 c1..8 dim
+r2 c21..31 dim
+r3 c1..15 bold
+r3 c21..26 bold
+r4 c1..14 dim
+r4 c21..35 dim
+r5 c1..7 dim
+r5 c21..29 dim
+r6 c1..16 bold
+r6 c21..26 bold
+r7 c1..17 dim
+r7 c21..39 dim
+r8 c1..11 dim
+r9 c1..2 bold
+r10 c1..15 dim
