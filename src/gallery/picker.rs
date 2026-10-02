@@ -1,6 +1,8 @@
 //! Gallery: the mode and status-line pickers, rebuilt from kit parts. They
 //! double as usage examples for [`Picker`] inside a [`Panel`].
 
+use std::borrow::Cow;
+
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -10,7 +12,8 @@ use ratatui::{
 
 use super::{Entry, arrows};
 use crate::{
-    Depth, KeyHint, KeyHints, Paint, Panel, Picker, PickerItem, PickerState, Role, Theme, centered,
+    Depth, KeyHint, KeyHints, Paint, Panel, Picker, PickerItem, PickerMatches, PickerState,
+    PickerTabs, Role, State, StatusMark, Theme, centered, text,
 };
 
 /// The engine's `/mode` rows (`AppMode::Agent`, `Plan`, `Operate`; English
@@ -120,6 +123,105 @@ fn status_picker(area: Rect, buf: &mut Buffer, theme: &Theme) {
     Picker::new(&items, state).paint(list, buf, theme);
 }
 
+/// Themes, each in a tab, for the fuzzy picker.
+fn theme_items() -> Vec<PickerItem> {
+    vec![
+        PickerItem::new("Shoreline").detail("Graphite ground, follows the terminal"),
+        PickerItem::new("Shoreline light").detail("Paper ground"),
+        PickerItem::new("Deep sea").detail("Navy ground, blue ombre"),
+        PickerItem::new("Graphite").detail("The exact token grounds"),
+        PickerItem::new("Reef").detail("Warm dark ground"),
+        PickerItem::new("Tidepool").detail("Teal accents on dark"),
+        PickerItem::new("Sandbar").detail("Warm light ground"),
+        PickerItem::new("Lighthouse")
+            .detail("High contrast light")
+            .disabled("Needs a light terminal"),
+    ]
+}
+
+fn theme_tabs() -> (Vec<Cow<'static, str>>, Vec<Option<usize>>) {
+    let labels = vec!["All".into(), "Dark".into(), "Light".into()];
+    let of = vec![
+        Some(1),
+        Some(2),
+        Some(1),
+        Some(1),
+        Some(1),
+        Some(1),
+        Some(2),
+        Some(2),
+    ];
+    (labels, of)
+}
+
+/// The query "shore" over the themes: matched characters underlined, the
+/// best match first, the count at the right.
+fn picker_query(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let items = theme_items();
+    let query = "shore";
+    let matches = PickerMatches::rank(&items, query, None);
+    Picker::new(&items, PickerState::new(0))
+        .query(query, query.len())
+        .matches(&matches)
+        .paint(area, buf, theme);
+}
+
+/// Tabs across the top, and a preview beside the list where there is room
+/// (it drops below 56 columns).
+fn picker_tabs_preview(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let items = theme_items();
+    let (labels, of) = theme_tabs();
+    let tabs = PickerTabs::new(&labels, 1).assign(&of).all(0);
+    let matches = PickerMatches::rank(&items, "", Some(&tabs));
+    let preview = |area: Rect, buf: &mut Buffer, theme: &Theme, item: &PickerItem, _: usize| {
+        let (width, ascii) = (usize::from(area.width), theme.ascii());
+        let label = text::display_safe(&item.label);
+        let detail = text::display_safe(item.detail.as_deref().unwrap_or_default());
+        let mut lines = vec![
+            Line::from(Span::styled(
+                text::truncate(&label, width, ascii).into_owned(),
+                theme
+                    .fg(Role::Foreground)
+                    .add_modifier(ratatui::style::Modifier::BOLD),
+            )),
+            Line::from(Span::styled(
+                text::truncate_words(&detail, width, ascii).into_owned(),
+                theme.fg(Role::Muted),
+            )),
+        ];
+        for state in [State::Working, State::NeedsYou, State::Done] {
+            lines.push(Line::from(StatusMark::new(state).spans(theme)));
+        }
+        for (i, line) in lines.into_iter().enumerate() {
+            let rect = Rect {
+                y: area.y + i as u16,
+                height: 1,
+                ..area
+            };
+            if rect.y < area.bottom() {
+                line.render(rect, buf);
+            }
+        }
+    };
+    Picker::new(&items, PickerState::new(0))
+        .query("", 0)
+        .tabs(tabs)
+        .matches(&matches)
+        .preview(&preview)
+        .paint(area, buf, theme);
+}
+
+/// Nothing matches: the empty state names the query and the next step.
+fn picker_no_match(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let items = theme_items();
+    let query = "zebra";
+    let matches = PickerMatches::rank(&items, query, None);
+    Picker::new(&items, PickerState::new(0))
+        .query(query, query.len())
+        .matches(&matches)
+        .paint(area, buf, theme);
+}
+
 pub(crate) fn entries() -> Vec<Entry> {
     vec![
         Entry {
@@ -133,6 +235,24 @@ pub(crate) fn entries() -> Vec<Entry> {
             width: 80,
             height: 20,
             draw: status_picker,
+        },
+        Entry {
+            name: "picker-query",
+            width: 64,
+            height: 6,
+            draw: picker_query,
+        },
+        Entry {
+            name: "picker-tabs-preview",
+            width: 80,
+            height: 8,
+            draw: picker_tabs_preview,
+        },
+        Entry {
+            name: "picker-no-match",
+            width: 64,
+            height: 8,
+            draw: picker_no_match,
         },
     ]
 }
