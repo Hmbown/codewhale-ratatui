@@ -750,19 +750,19 @@ on their next paint; components hold roles rather than cached colors.
 |---|---|---|
 | Optional workspace composition | `WorkspaceFrame`, `WorkspaceAreas`, `PaneHeader`, `ContextRibbon`, `ContextItem` | Responsive conversation and dock regions, one quiet module header, composer-adjacent facts folded by priority with explicit counts |
 | Native shell | `TerminalShell`, `ShellAreas` | Current conversation → pending input → composer → posture → workflows → metrics → workbar ordering |
-| Native workbar | `Workbar`, `WorkbarPanel`, `WorkbarRow`, `WorkbarState` | All eight panels, goals, row selection, keyboard outcomes, scrolling, hitboxes and bottom/top/side placement |
+| Native workbar | `Workbar`, `WorkbarPanel`, `WorkbarRow`, `WorkbarState`, `DockTabRow`, `DockTabPlan`, `DockTabStyles`, `DockTabTarget` | All eight panels, goals, row selection, keyboard outcomes, scrolling, hitboxes and bottom/top/side placement |
 | Native composer and workflow rows | `NativeComposer`, `WorkflowProgress`, `WorkflowRun` | Rounded input enclosure, prompt, submit control, target chip and borderless workflow progress |
 | Native footer | `PostureBar`, `MetricsLine`, `MetricSegment` | Permission and mode, clocks, live counts, context warnings and width-aware model/usage facts |
 | Native views | `InstrumentSurface`, `SessionList`, `SessionRow` | TUI title/action rails, quiet gutters, session selection, ranges, search and rename presentation |
 | TUI themes | `TuiPalette`, `TuiInk` | All 16 fixed source palettes, exact grounds and distinct native permission/mode/status inks |
 | Attention and results | `AttentionQueue`, `AttentionItem`, `ArtifactShelf`, `Artifact` | Project-aware decisions, selected action hints, review/file/run/link results and reported receipts |
 | Marine life | `Habitat`, `FishSchool`, `Jellyfish`, `BubbleField`, `HabitatDensity` | Native braille poses and ASCII silhouettes, caller-clock motion, bounded populations, complete visitors and text-safe open-water collision |
-| Water and palette | `OceanColumn`, `OceanRamp`, `OceanPhase`, `Ombre`, `WaterPalette` | Native TUI depth column, context rise, steady attention tint, completion breath and five spatial materials; contrast and fallback guards |
+| Water and palette | `OceanColumn`, `OceanRamp`, `OceanPhase`, `OceanPaintFacts`, `OceanCausticFacts`, `OceanContrastInks`, `ocean_semantic_surfaces`, `Ombre`, `WaterPalette` | Native TUI depth column, context rise, steady attention tint, completion breath and five spatial materials; contrast and fallback guards |
 | Living whale | `whale_motion::Stage`, `Director`, `ColoredGrid` | One session performance, authored clips and springs, native colored props, shared terminal cadence and hide/resume boundaries |
 | Session surfaces | `Message`, `ToolCard`, `Composer`, `AgentCard`, `Fleet` | Speaker anchors, output rails, honest omission counts, caller-owned prompts and each agent's own state, route and task |
 | Pending input | `PendingInputPreview`, `PendingInputItem`, `ContextPreviewItem`, `PendingCard` | Queued, steering, editing, paused and in-flight input; native composer preview over localized caller facts; context and host-dispatched actions |
 | Rich transcript | `Transcript`, `TranscriptBlock`, `TranscriptSpan`, `CodeBlock` | Authored headings, prose, quotes, lists, tables and numbered code; exact copy source and out-of-band links |
-| Identity and state | `Whale`, `WhaleState`, `Icon`, `StatusMark`, `StateWords` | The v2 whale's 17 actions and pods; marks always paired with words; localized state labels |
+| Identity and state | `BrailleFrame`, `Whale`, `WhaleState`, `Icon`, `StatusMark`, `StateWords` | The v2 whale's 17 actions and pods; marks always paired with words; localized state labels |
 | Surfaces | `Panel`, `Depth`, `Dialog`, `Sheet`, `HorizonRule` | Deep, stage, raised and overlay grounds; centered decisions, edge-anchored sheets and the composer ledge |
 | Navigation | `Heading`, `Tabs`, `KeyHints`, `Keymap`, `Picker`, `List` | Shared heading hierarchy, selection, scrolling, keyboard labels and caller-owned outcomes |
 | Input and controls | `TextInput`, `Form`, `Toggle`, `Segmented` | Unicode-aware editing, masked fields, validation and controls that explain disabled state |
@@ -1016,3 +1016,36 @@ semantic padding. Both methods retain the existing measured dark truecolor
 Ocean gate; facts and an explicit ramp do not grant terminal capability. The
 `ocean-native-guarded` gallery entry exercises cached water, caustics, selected
 source, blank semantic padding and reverse protection across all profiles.
+
+### Host-owned Dock tabs and character frames
+
+`DockTabRow` is the tab row used by `Workbar` and the native Engine Dock
+adapter. Give it the caller's available `WorkbarTab` facts, active panel,
+pressed/hovered targets, five live `DockTabStyles` and the close text that matches
+your actual action. `row.plan(area).hitboxes()` and `(&row).render(area, buf)` use
+the same fitting rules. The host owns focus, Esc handling and action dispatch.
+The Engine's full Dock body remains separate from this tab presentation slice.
+
+For a small companion or an externally simulated frame with a raw caption:
+
+```rust
+use codewhale_ratatui::BrailleFrame;
+use ratatui::{style::Style, widgets::Widget};
+
+// Row-major packed cells from your existing simulation; zero is transparent.
+BrailleFrame { cells: &cells, caption: "resting", style: Style::default() }
+    .render(area, buf);
+```
+
+The last viewport row holds the centered caption. Tiny viewports keep the
+complete wrapped text cue. Ink and modifiers are supplied by the caller; the
+component has no clock or activity model. The Engine cameo and live embedded
+world both use this path. `Whale::paint_frame` shares its cell painter and keeps
+its own semantic caption, admission rules and theme gradient. This API does not
+replace the Engine's character controller or accessibility policy.
+
+The guarded Ocean gallery uses `OceanPaintFacts`, `OceanCausticFacts` and
+`ocean_semantic_surfaces`; `OceanContrastInks` supplies host role mapping for
+native finishing through the existing guarded
+`OceanColumn` methods. Their facts preserve host protection and ink roles;
+terminal capability, motion and semantic contrast guards still apply.

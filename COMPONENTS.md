@@ -45,7 +45,7 @@ Gallery names are the exact names accepted by the gallery example; the
 | Engine `history/message.rs::render_message`, `composer_chrome.rs::ComposerChrome`, `widgets/tool_card.rs::ToolFamily`, `CardRail`; GPUI `workspace/render/conversation.rs::render_prepared_row`, `workspace/render/composer.rs` | `Message::native`, optional `Composer`, `ToolCard` | Native inline message / optional composites | `message`, `composer`, `tool-card` |
 | Engine `widgets/agent_card.rs::DelegateCard`, `FanoutCard`, `AgentLifecycle`, `views/fleet_roster.rs::FleetRosterView`; GPUI `workspace/dock/agents.rs::AgentsModule` | `AgentCard`, `Fleet` | Composite | `agent-card`, `fleet`, `fleet-scene` |
 | Engine `phase_strip.rs::TidelineFooter`, `workspace_context.rs`; GPUI `workspace/dock/skin.rs::QuietDockSkin`, `workspace/render/composer.rs` context controls | `WorkspaceFrame`, `WorkspaceAreas`, `PaneHeader`, `ContextRibbon`, `ContextItem` | Composite | `workbench-frame`, `pane-header`, `context-ribbon`, `context-ribbon-narrow`, `workspace-scene`, `workspace-scene-narrow` |
-| Engine `work_surface/{model,input,views}.rs`, `work_surface/render/{mod,layout,rows}.rs` | `Workbar`, `WorkbarRow`, `WorkbarPanel`, `WorkbarState` | Native extraction | `workbar-tasks`, `workbar-fleet`, `workbar-jobs`, `workbar-files`, `workbar-notes`, `workbar-context`, `workbar-git`, `workbar-cost`, placement and narrow variants |
+| Engine `work_surface/{model,input,views}.rs`, `work_surface/render/{mod,layout,rows}.rs` | `Workbar`, `WorkbarRow`, `WorkbarPanel`, `WorkbarState`, `DockTabRow`, `DockTabPlan`, `DockTabEntry`, `DockTabStyles`, `DockTabTarget` | Native extraction | `workbar-tasks`, `workbar-fleet`, `workbar-jobs`, `workbar-files`, `workbar-notes`, `workbar-context`, `workbar-git`, `workbar-cost`, placement and narrow variants |
 | Engine `widgets/workbar.rs` | `WorkflowProgress`, `WorkflowRun` | Native extraction | `workflow-*` |
 | Engine `widgets/mod.rs`, `composer_chrome.rs`, `composer_ui.rs`, `mouse_ui.rs` | `NativeComposer`, `NativeComposerFrame`, `NativeComposerPlan`, `NativeComposerSourcePlan` | Native extraction | `native-composer-*` |
 | Engine `phase_strip.rs`, `infoline.rs`, `ui/frame.rs` | `PostureBar`, `MetricsLine`, `TerminalShell` | Native extraction | `posture-*`, `metrics-*`, `showcase-work`, `showcase-narrow` |
@@ -62,8 +62,8 @@ Gallery names are the exact names accepted by the gallery example; the
 | Engine `views/mod.rs::ConfigView`, `ConfigRow`, `ConfigView::render_setting_detail`; GPUI `settings.rs::Spec`, `Applies`, `workspace/settings/mod.rs::Settings` | `SettingRow`, `SettingDetail`, `SettingWords` | Composite | `setting-row`, `setting-detail` |
 | Engine `app/status.rs::StatusToast`, `StatusToastLevel`, `spinner.rs`, `spinner.rs::verification_tick_frame`; GPUI `workspace/notify.rs::ThreadNotice`, `workspace/motion.rs` | `Toast`, `Toasts`, `Ttl`, `Spinner`, `VerificationSpinner`, `MotionMode`, `MotionStep`, `MotionSet`, `FrameBudget` | Primitive/composite | `toasts`, `toasts-stacked`, `toasts-fading`, `spinner`, `verification-pending`, `verification-earned`, `verification-modes`, `motion-modes`, `motion-working`, `motion-started`, `motion-mid-flight`, `motion-settled`, `motion-reduced` |
 | Engine `ambient_life.rs`; GPUI `whale/habitat.rs`, `whale/stage.rs::CoveScene` | `Habitat`, `FishSchool`, `Jellyfish`, `BubbleField`, `HabitatDensity` | Primitive/composite | `fish-school`, `jellyfish`, `bubble-field`, `habitat-scene`, `habitat-ascii`, `habitat-reduced` |
-| GPUI `whale/acting.rs::Director`, `whale/rig.rs`, `whale/scene.rs`, `whale/stage.rs::Stage`, canonical `vendor/whale-character-v2` authoring data | `Whale`, `WhaleState`, `Whale::paint_frame`, `whale_motion::{Director, Stage, Inputs}`, colored Braille frame helpers | Character renderer/shared performance core | `whale-rest`, `whale-busy`, `whale-needs`, `whale-done`, `whale-pod-1`, `whale-pod-3`, `whale-actions`, `whale-compact`, `whale-words-only`, `showcase-life` |
-| Engine `ocean.rs::OceanRamp`, `OceanColumn`, `underwater.rs::ShellPhase`; canonical logo and semantic tokens | `OceanRamp`, `OceanColumn`, `OceanPhase`; optional `Ombre`, `OmbreDirection`, `WaterPalette` | Background finishing passes | `ocean-column`, `ocean-phases`, `ocean-context`, `ocean-reduced`; `atmosphere-ocean`, `atmosphere-lagoon`, `atmosphere-dusk`, `atmosphere-coral`, `atmosphere-graphite`, `showcase-color` |
+| GPUI `whale/acting.rs::Director`, `whale/rig.rs`, `whale/scene.rs`, `whale/stage.rs::Stage`, canonical `vendor/whale-character-v2` authoring data; Engine `ambient_life/pet_widget.rs::render_grid`, `pet_watch/mod.rs` | `BrailleFrame`, `Whale`, `WhaleState`, `Whale::paint_frame`, `whale_motion::{Director, Stage, Inputs}`, colored Braille frame helpers | Character renderer/shared performance core | `whale-rest`, `whale-busy`, `whale-needs`, `whale-done`, `whale-pod-1`, `whale-pod-3`, `whale-actions`, `whale-compact`, `whale-words-only`, `showcase-life` |
+| Engine `ocean.rs::OceanRamp`, `OceanColumn`, `underwater.rs::ShellPhase`; canonical logo and semantic tokens | `OceanRamp`, `OceanColumn`, `OceanPhase`, `OceanPaintFacts`, `OceanCausticFacts`, `OceanContrastInks`, `ocean_semantic_surfaces`; optional `Ombre`, `OmbreDirection`, `WaterPalette` | Background finishing passes | `ocean-column`, `ocean-phases`, `ocean-context`, `ocean-reduced`, `ocean-native-guarded`; `atmosphere-ocean`, `atmosphere-lagoon`, `atmosphere-dusk`, `atmosphere-coral`, `atmosphere-graphite`, `showcase-color` |
 
 The integrated `showcase-work`, `showcase-decision`, `showcase-color`,
 `showcase-life` and `showcase-narrow` scenes arrange existing components with
@@ -125,3 +125,26 @@ bytes used for copy or link actions.
   to ordinary grounds under known dark truecolor Underwater; other native
   presets, lower depths and terminal-owned shells retain their own grounds. `Ombre` offers opt-in spatial washes, not new state
   hues. Character and syntax colors are content.
+
+## Shared native Dock tabs and packed character raster
+
+`Workbar` uses `DockTabRow` for its fitted tab paint and hitboxes. The Engine
+adapter supplies available panels, counts, active/pressed/hovered targets, live
+styles and the actual close label. `DockTabPlan` sheds counts before inactive
+right-hand tabs and exposes only painted action boxes. Engine continues to own
+keyboard focus, detail precedence, Esc meaning and every action. This shares the
+tab row; it does not claim that Engine's full Dock body uses `Workbar`.
+
+`BrailleFrame` paints the existing host's row-major packed cells and raw caption
+with the supplied ink and modifiers, including the Engine's 18×5 cameo raster
+and embedded world's current raster through their shared `render_grid` facade.
+Zero cells remain transparent; a tiny viewport retains the wrapped caption.
+`Whale::paint_frame` uses the same packed-cell painter while retaining its
+semantic state words, whole-frame admission and theme gradient. Neither path
+adds a clock, simulation, color classification or a new character authority.
+
+The existing `ocean-native-guarded` gallery directly uses `OceanPaintFacts`,
+`OceanCausticFacts` and `ocean_semantic_surfaces`. `OceanContrastInks` supplies
+the host role mapping for guarded native finishing. These are
+presentation facts and protection helpers; they do not grant terminal capability
+or weaken motion, selection, REVERSED or contrast guards.

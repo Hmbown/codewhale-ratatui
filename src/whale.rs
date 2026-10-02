@@ -548,19 +548,12 @@ impl Whale {
         let (cols, rows) = (grid.cols, grid.rows);
         let x0 = area.x + (area.width - cols) / 2;
         let y0 = area.y + (area.height - rows - 1) / 2;
-        for r in 0..rows {
-            let style = Self::ink(theme, r, rows);
-            for c in 0..cols {
-                let ch = grid.char_at(c, r);
-                if ch == ' ' {
-                    continue;
-                }
-                let mut tmp = [0u8; 4];
-                buf[(x0 + c, y0 + r)]
-                    .set_symbol(ch.encode_utf8(&mut tmp))
-                    .set_style(style);
-            }
-        }
+        crate::components::paint_braille_cells(
+            Rect::new(x0, y0, cols, rows),
+            buf,
+            &grid.cells,
+            |row| Self::ink(theme, row, rows),
+        );
         Self::paint_label(
             label,
             Rect {
