@@ -12,15 +12,14 @@ use ratatui::{
 use super::Entry;
 use crate::{
     ApprovalCard, ApprovalChoice, ApprovalEffect, ApprovalKey, ApprovalKind, ApprovalScope,
-    ApprovalState, ApprovalSubject, ChoiceId, ContextPreviewItem, ContextPreviewState, Depth, Diff,
-    DiffGutter, DiffWrap, Form, FormField, FormState, Habitat, HabitatDensity, HorizonRule,
-    Message, MetricKind, MetricSegment, MetricsLine, MotionMode, NativeComposer, OceanColumn,
-    OceanPhase, Ombre, OmbreDirection, Paint, PaneHeader, PendingInputItem, PendingInputPreview,
-    PendingInputStatus, Picker, PickerItem, PickerMatches, PickerState, PostureBar, Receipt,
-    ReceiptValue, Role, Segmented, SegmentedState, SettingDetail, SettingRow, Spinner, State,
-    StatusMark, TerminalShell, TextInputState, Theme, Toggle, ToggleState, TuiPalette,
-    VerificationSpinner, WaterPalette, Whale, WhaleState, WorkbarPanel, WorkbarState,
-    WorkflowProgress, WorkflowRun, WorkflowRunState, parse_unified,
+    ApprovalState, ApprovalSubject, ChoiceId, Depth, Diff, DiffGutter, DiffWrap, Form, FormField,
+    FormState, Habitat, HabitatDensity, HorizonRule, Message, MetricKind, MetricSegment,
+    MetricsLine, MotionMode, NativeComposer, OceanColumn, OceanPhase, Ombre, OmbreDirection, Paint,
+    PaneHeader, Picker, PickerItem, PickerMatches, PickerState, PostureBar, Receipt, ReceiptValue,
+    Role, Segmented, SegmentedState, SettingDetail, SettingRow, Spinner, State, StatusMark,
+    TerminalShell, TextInputState, Theme, Toggle, ToggleState, TuiPalette, VerificationSpinner,
+    WaterPalette, Whale, WhaleState, WorkbarPanel, WorkbarState, WorkflowProgress, WorkflowRun,
+    WorkflowRunState, parse_unified,
     testing::Profile,
     text,
     whale_motion::{Activity, ColoredGrid, Context, Inputs, Presence, Stage, colored_braille},
@@ -161,9 +160,9 @@ impl ShowcaseState {
             motion: MotionMode::Full,
             focus: 0,
             editing: false,
-            details: ToggleState::from(true),
+            details: ToggleState::from(false),
             readouts: ToggleState::from(true),
-            draft: TextInputState::with_text("Review the changes, then continue."),
+            draft: TextInputState::with_text("Review the changes."),
             form: FormState::new(vec![
                 FormField::text("Project")
                     .value("codewhale-ratatui")
@@ -398,12 +397,12 @@ impl ShowcaseFrame<'_> {
         let dock = self
             .state
             .dock
-            .apply(super::workbar::sample(self.state.dock.panel));
+            .apply(super::workbar::sample(self.state.dock.panel))
+            .max_height(7);
         let composer_height = NativeComposer::new(self.state.draft.text())
             .desired_height(area.width, area.height)
             .min(5);
         TerminalShell::new(composer_height)
-            .pending_rows(4)
             .workflow_rows(u16::from(self.state.details.on))
             .workbar_rows(if self.state.readouts.on {
                 dock.height(area.width, theme)
@@ -485,7 +484,7 @@ impl ShowcaseFrame<'_> {
         let elapsed = self.state.phase_elapsed(self.elapsed);
         match self.state.phase {
             ShowcasePhase::Working => {
-                Spinner::new("Updating the component library", elapsed, self.state.motion)
+                Spinner::new("Checking the narrow view", elapsed, self.state.motion)
                     .paint(area, buf, theme)
             }
             ShowcasePhase::Verifying => {
@@ -542,22 +541,21 @@ impl ShowcaseFrame<'_> {
         let dock = self
             .state
             .dock
-            .apply(super::workbar::sample(self.state.dock.panel));
+            .apply(super::workbar::sample(self.state.dock.panel))
+            .max_height(7);
         let regions = self.work_areas(area, theme);
         TerminalShell::new(0).paint(area, buf, theme);
-        Message::native("Update the terminal components and show them in the README.")
+        Message::native("Polish the workbar and update the gallery.")
             .role(Role::Primary)
             .marker(crate::glyphs::USER)
             .paint(band(regions.conversation, 1, 3), buf, theme);
         let reply = match self.state.phase {
             ShowcasePhase::Working => {
-                "The composer, workbar, workflow progress and footer use Codewhale's existing TUI layout. You can use each part in your own Ratatui application."
+                "The native layout is in place. I'm checking the narrow view."
             }
             ShowcasePhase::NeedsYou => "Review the command below before continuing.",
             ShowcasePhase::Verifying => "Checking the changes and rendering the component gallery.",
-            ShowcasePhase::Done => {
-                "The components are ready. Open the workbar to browse tasks, agents, files and context."
-            }
+            ShowcasePhase::Done => "The changes are ready for review.",
         };
         Message::native(reply).paint(band(regions.conversation, 5, 5), buf, theme);
         if regions.conversation.height >= 13 {
@@ -571,22 +569,8 @@ impl ShowcaseFrame<'_> {
                 MotionMode::Still
             },
         )
+        .density(HabitatDensity::Sparse)
         .paint(regions.conversation, buf, theme);
-        PendingInputPreview::new(
-            vec![PendingInputItem::new(
-                "next",
-                "Keep the narrow view readable",
-                PendingInputStatus::Queued,
-            )],
-            vec![ContextPreviewItem::new(
-                "brief",
-                "README.md",
-                ContextPreviewState::Included,
-            )],
-        )
-        .selected("next")
-        .max_rows(4)
-        .paint(regions.pending, buf, theme);
         self.composer(regions.composer, buf, theme);
         PostureBar::new("ask")
             .permission_key("Shift+Tab")
@@ -628,10 +612,10 @@ impl ShowcaseFrame<'_> {
         ])
         .paint(regions.workflows, buf, theme);
         MetricsLine::new(vec![
-            MetricSegment::new(MetricKind::Model, "", "codewhale").role(Role::Primary),
-            MetricSegment::new(MetricKind::Context, "ctx", "24%").role(Role::Primary),
+            MetricSegment::new(MetricKind::Model, "", "codewhale"),
+            MetricSegment::new(MetricKind::Context, "ctx", "24%"),
         ])
-        .help_hint("F1-F6 views · F7 profile · F8 motion · F9 theme")
+        .help_hint("F6 components · F9 theme")
         .paint(regions.metrics, buf, theme);
         dock.paint(regions.workbar, buf, theme);
     }
@@ -724,9 +708,7 @@ impl ShowcaseFrame<'_> {
         }
     }
     fn settings(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
-        PaneHeader::new("Appearance")
-            .meta("Appearance")
-            .paint(band(area, 0, 2), buf, theme);
+        PaneHeader::new("Appearance").paint(band(area, 0, 2), buf, theme);
         let rows = [
             SettingRow::new("Palette", self.state.palette.name()).source("your choice"),
             SettingRow::new("Profile", self.state.profile.name()).source("terminal"),
@@ -741,12 +723,7 @@ impl ShowcaseFrame<'_> {
         SettingDetail::new("Appearance", "Palette changes the atmosphere. State marks, action ink and decision scope keep their meaning.").default_value("Ocean / Full").source("workspace").paint(band(area, top + 2, area.height.saturating_sub(top + 2)), buf, theme);
     }
     fn colors(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
-        title(
-            band(area, 0, 1),
-            buf,
-            theme,
-            "Color follows meaning. Atmosphere follows you.",
-        );
+        title(band(area, 0, 1), buf, theme, "Appearance");
         let palette = WaterPalette::ALL
             .iter()
             .position(|p| *p == self.state.palette)
@@ -833,10 +810,11 @@ impl ShowcaseFrame<'_> {
                 buf.set_style(cell, theme.bg(depth.ground()));
                 caption(cell, buf, theme, &format!("{depth:?}"), Role::Foreground);
             }
-            HorizonRule::new()
-                .label("One spatial wash")
-                .aside("Audited ink retained")
-                .paint(band(area, start + 3, 1), buf, theme);
+            HorizonRule::new().label("One spatial wash").paint(
+                band(area, start + 3, 1),
+                buf,
+                theme,
+            );
         }
     }
     fn life_art(area: Rect) -> Rect {

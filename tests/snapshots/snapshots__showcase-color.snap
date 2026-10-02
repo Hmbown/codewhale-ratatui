@@ -3,7 +3,7 @@ source: tests/snapshots.rs
 expression: dump(&entry)
 ---
 == dark-truecolor
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -25,7 +25,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
-────── One spatial wash ──────────────────────────────────────────────────────────── Audited ink retained ──────
+────── One spatial wash ────────────────────────────────────────────────────────────────────────────────────────
 
 
 
@@ -42,8 +42,8 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 fg=Foreground bg=Hover bold
-r0 c46..112 fg=Foreground bg=Hover
+r0 c0..10 fg=Foreground bg=Hover bold
+r0 c10..112 fg=Foreground bg=Hover
 r1 c0..112 fg=Foreground bg=#102a44
 r2 c0..1 fg=Primary bg=#102843
 r2 c1..6 fg=Foreground bg=#102843 bold underline
@@ -132,8 +132,7 @@ r22 c3..4 fg=#1c3157 bg=Background
 r22 c4..5 fg=#213660 bg=Background
 r22 c5..6 fg=#253a69 bg=Background
 r22 c6..24 fg=Muted bg=#0a1c2f
-r22 c24..84 fg=Border bg=#0a1c2f
-r22 c84..106 fg=Muted bg=#0a1c2f
+r22 c24..106 fg=Border bg=#0a1c2f
 r22 c106..107 fg=#253a69 bg=Background
 r22 c107..108 fg=#213660 bg=Background
 r22 c108..109 fg=#1c3157 bg=Background
@@ -157,7 +156,7 @@ r36 c0..112 fg=Foreground bg=#061321
 r37 c0..112 fg=Foreground bg=Sidebar
 
 == dark-graphite
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -179,7 +178,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
-────── One spatial wash ──────────────────────────────────────────────────────────── Audited ink retained ──────
+────── One spatial wash ────────────────────────────────────────────────────────────────────────────────────────
 
 
 
@@ -196,8 +195,8 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 fg=Foreground bg=Hover bold
-r0 c46..112 fg=Foreground bg=Hover
+r0 c0..10 fg=Foreground bg=Hover bold
+r0 c10..112 fg=Foreground bg=Hover
 r1 c0..112 fg=Foreground bg=#102a44
 r2 c0..1 fg=Primary bg=#102843
 r2 c1..6 fg=Foreground bg=#102843 bold underline
@@ -286,8 +285,7 @@ r22 c3..4 fg=#1c3157 bg=Background
 r22 c4..5 fg=#213660 bg=Background
 r22 c5..6 fg=#253a69 bg=Background
 r22 c6..24 fg=Muted bg=#0a1c2f
-r22 c24..84 fg=Border bg=#0a1c2f
-r22 c84..106 fg=Muted bg=#0a1c2f
+r22 c24..106 fg=Border bg=#0a1c2f
 r22 c106..107 fg=#253a69 bg=Background
 r22 c107..108 fg=#213660 bg=Background
 r22 c108..109 fg=#1c3157 bg=Background
@@ -311,7 +309,7 @@ r36 c0..112 fg=Foreground bg=#061321
 r37 c0..112 fg=Foreground bg=Sidebar
 
 == light-truecolor
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -333,7 +331,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
-────── One spatial wash ──────────────────────────────────────────────────────────── Audited ink retained ──────
+────── One spatial wash ────────────────────────────────────────────────────────────────────────────────────────
 
 
 
@@ -350,8 +348,8 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 fg=Foreground bold
-r0 c46..112 fg=Foreground
+r0 c0..10 fg=Foreground bold
+r0 c10..112 fg=Foreground
 r1 c0..112 fg=Foreground
 r2 c0..1 fg=Primary
 r2 c1..6 fg=Foreground bold underline
@@ -425,9 +423,7 @@ r20 c0..112 fg=Foreground
 r21 c0..112 fg=Foreground
 r22 c0..6 fg=Border
 r22 c6..24 fg=Muted
-r22 c24..84 fg=Border
-r22 c84..106 fg=Muted
-r22 c106..112 fg=Border
+r22 c24..112 fg=Border
 r23 c0..112 fg=Foreground
 r24 c0..112 fg=Foreground
 r25 c0..112 fg=Foreground
@@ -445,7 +441,7 @@ r36 c0..112 fg=Foreground
 r37 c0..112 fg=Foreground
 
 == dark-256
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -467,7 +463,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
-────── One spatial wash ──────────────────────────────────────────────────────────── Audited ink retained ──────
+────── One spatial wash ────────────────────────────────────────────────────────────────────────────────────────
 
 
 
@@ -484,8 +480,8 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 fg=Foreground bg=Background|DiffAddedTint bold
-r0 c46..112 fg=Foreground bg=Background|DiffAddedTint
+r0 c0..10 fg=Foreground bg=Background|DiffAddedTint bold
+r0 c10..112 fg=Foreground bg=Background|DiffAddedTint
 r1 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r2 c0..1 fg=Primary bg=Background|DiffAddedTint
 r2 c1..6 fg=Foreground bg=Background|DiffAddedTint bold underline
@@ -571,9 +567,7 @@ r20 c111..112 fg=Foreground bg=Background|DiffAddedTint
 r21 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r22 c0..6 fg=Border bg=Background|DiffAddedTint
 r22 c6..24 fg=Muted bg=Background|DiffAddedTint
-r22 c24..84 fg=Border bg=Background|DiffAddedTint
-r22 c84..106 fg=Muted bg=Background|DiffAddedTint
-r22 c106..112 fg=Border bg=Background|DiffAddedTint
+r22 c24..112 fg=Border bg=Background|DiffAddedTint
 r23 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r24 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r25 c0..112 fg=Foreground bg=Background|DiffAddedTint
@@ -591,7 +585,7 @@ r36 c0..112 fg=Foreground bg=Background|DiffAddedTint
 r37 c0..112 fg=Foreground bg=Background|DiffAddedTint
 
 == light-256
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -613,7 +607,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
-────── One spatial wash ──────────────────────────────────────────────────────────── Audited ink retained ──────
+────── One spatial wash ────────────────────────────────────────────────────────────────────────────────────────
 
 
 
@@ -630,8 +624,8 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 fg=Foreground bold
-r0 c46..112 fg=Foreground
+r0 c0..10 fg=Foreground bold
+r0 c10..112 fg=Foreground
 r1 c0..112 fg=Foreground
 r2 c0..1 fg=Primary
 r2 c1..6 fg=Foreground bold underline
@@ -705,9 +699,7 @@ r20 c0..112 fg=Foreground
 r21 c0..112 fg=Foreground
 r22 c0..6 fg=Border
 r22 c6..24 fg=Muted|Hint|Dim
-r22 c24..84 fg=Border
-r22 c84..106 fg=Muted|Hint|Dim
-r22 c106..112 fg=Border
+r22 c24..112 fg=Border
 r23 c0..112 fg=Foreground
 r24 c0..112 fg=Foreground
 r25 c0..112 fg=Foreground
@@ -725,7 +717,7 @@ r36 c0..112 fg=Foreground
 r37 c0..112 fg=Foreground
 
 == ansi-16
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -747,7 +739,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
-────── One spatial wash ──────────────────────────────────────────────────────────── Audited ink retained ──────
+────── One spatial wash ────────────────────────────────────────────────────────────────────────────────────────
 
 
 
@@ -764,7 +756,7 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 bold
+r0 c0..10 bold
 r2 c0..1 fg=Primary
 r2 c1..6 bold underline
 r2 c6..7 fg=Primary
@@ -789,7 +781,7 @@ r16 c33..36 dim
 r22 c0..112 dim
 
 == unknown-ground
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -811,7 +803,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
-────── One spatial wash ──────────────────────────────────────────────────────────── Audited ink retained ──────
+────── One spatial wash ────────────────────────────────────────────────────────────────────────────────────────
 
 
 
@@ -828,7 +820,7 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 bold
+r0 c0..10 bold
 r2 c0..1 fg=Primary
 r2 c1..6 bold underline
 r2 c6..7 fg=Primary
@@ -853,7 +845,7 @@ r16 c33..36 dim
 r22 c0..112 dim
 
 == no-color
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -875,7 +867,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
-────── One spatial wash ──────────────────────────────────────────────────────────── Audited ink retained ──────
+────── One spatial wash ────────────────────────────────────────────────────────────────────────────────────────
 
 
 
@@ -892,7 +884,7 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 bold
+r0 c0..10 bold
 r2 c1..6 bold underline
 r2 c9..15 dim
 r2 c18..22 dim
@@ -911,7 +903,7 @@ r16 c33..36 dim
 r22 c0..112 dim
 
 == ascii
-Color follows meaning. Atmosphere follows you.
+Appearance
 
 [Ocean]  Lagoon   Dusk   Coral   Graphite
 
@@ -933,7 +925,7 @@ Dim                               Aa DiffAddedTint                     Aa DiffRe
 Deep                        Stage                       Raised                      Overlay
 
 
------- One spatial wash ------------------------------------------------------------ Audited ink retained ------
+------ One spatial wash ----------------------------------------------------------------------------------------
 
 
 
@@ -950,7 +942,7 @@ Deep                        Stage                       Raised                  
 
 
 ---
-r0 c0..46 bold
+r0 c0..10 bold
 r2 c1..6 bold underline
 r2 c9..15 dim
 r2 c18..22 dim

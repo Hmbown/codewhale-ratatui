@@ -1,488 +1,27 @@
-# Codewhale, in your terminal
+# Codewhale Ratatui
 
-Reusable [Ratatui](https://ratatui.rs) components from the current
-[Codewhale TUI](https://github.com/Hmbown/CodeWhale): its workbar, composer,
-conversation, session picker, instrument surfaces, status lines, ocean ombré,
-spinners and marine life. Use one component or compose a complete terminal app.
+The terminal components behind [Codewhale](https://github.com/Hmbown/CodeWhale),
+ready for your [Ratatui](https://ratatui.rs) app. Native layouts, ocean depth,
+quiet motion, and a little life in the water.
 
-The native **workbar** has Tasks, Fleet, Jobs, Files, Notes, Context, Git and
-Cost panels. The **Underwater ocean** uses Codewhale's existing depth colors,
-context rise and phase transitions. All **16 fixed TUI themes** are included,
-with their own backgrounds and permission, mode and status inks.
-
-Run `cargo run --example starter` for a small editable native app.
-Run `cargo run --example showcase` to explore the components together.
-Run `cargo run --example gallery` to browse every component and variation.
-
-![Codewhale's native conversation layout, workbar, composer and ocean](assets/readme/showcase.gif)
-
-Start with the native TUI components. Optional desktop-inspired layouts,
-additional ombrés and the animated whale give you more ways to compose your
-own app. The [view guide](VIEWS.md) connects Codewhale's terminal screens to
-these reusable parts; the [component guide](COMPONENTS.md) maps their APIs to
-source. Your app supplies its data, clock and actions.
-
-For library users: [quality and ecosystem notes](QUALITY.md) ·
-[rendering benchmarks](BENCHMARKS.md) · [changes](CHANGELOG.md).
-
-## See the components
-
-These previews are generated from the **actual Ratatui cell buffers** used by
-the gallery and snapshot tests. Every gallery entry appears in the dark and
-light collections below; the profile comparison shows how the same state
-marks adapt to all nine terminal profiles. SVGs contain no remote assets or
-scripts. Open an image to inspect it at full size.
-
-The [component crosswalk](COMPONENTS.md) maps the native Codewhale surfaces to
-their reusable kit parts. [Design notes](DESIGN.md) explain the water, ink,
-motion and host boundaries.
-
-Profiles that leave colors to the terminal use a representative palette in
-these images; your terminal supplies its own defaults.
+![Codewhale's native conversation, composer and Tasks workbar in Underwater](assets/readme/studio.dark-truecolor-1.svg)
 
 <details>
-<summary>Watch the habitat move — full motion demonstration</summary>
+<summary>See WhaleLight</summary>
 
-![The fish school, jellyfish and bubbles moving around Codewhale's words](assets/readme/habitat-motion.gif)
-
-Eighty actual terminal-buffer frames. This demonstration holds the jellyfish
-visit open; the component normally makes it a rare visitor. Ambient life is
-absent under `MotionMode::Reduced` and `Still`. Run `cargo run --example habitat`
-to switch the motion policy and all nine terminal profiles yourself.
+![The same native conversation, composer and workbar in WhaleLight](assets/readme/studio.light-truecolor-1.svg)
 
 </details>
 
-<!-- gallery:start -->
-
-Generated from the real ratatui buffers. Every catalogue entry is shown below.
-
-Jump to: [The live component gallery](#the-live-component-gallery) · [Codewhale terminal views](#codewhale-terminal-views) · [The native composer and footer](#the-native-composer-and-footer) · [The native workbar](#the-native-workbar) · [Every Codewhale TUI theme](#every-codewhale-tui-theme) · [Codewhale water and ombres](#codewhale-water-and-ombres) · [Conversation and queued input](#conversation-and-queued-input) · [Conversation and agents](#conversation-and-agents) · [The Codewhale language](#the-codewhale-language) · [Input and selection](#input-and-selection) · [Navigation and controls](#navigation-and-controls) · [Work and results](#work-and-results) · [Motion and feedback](#motion-and-feedback) · [Life in the water](#life-in-the-water) · [A whale with a job](#a-whale-with-a-job) · [Every whale action](#every-whale-action) · [Optional workspace compositions](#optional-workspace-compositions) · [Terminal profiles](#terminal-profiles)
-
-### The live component gallery
-
-![The live component gallery — dark truecolor](<assets/readme/studio.dark-truecolor-1.svg>)
-
-![The live component gallery — dark truecolor](<assets/readme/studio.dark-truecolor-2.svg>)
-
-![The live component gallery — dark truecolor](<assets/readme/studio.dark-truecolor-3.svg>)
-
-![The live component gallery — dark truecolor](<assets/readme/studio.dark-truecolor-4.svg>)
-
-![The live component gallery — dark truecolor](<assets/readme/studio.dark-truecolor-5.svg>)
-
-<details>
-<summary>Watch the WhaleLight gallery and all seventeen native whale actions</summary>
-
-![The same native layout in WhaleLight](<assets/readme/showcase-light.gif>)
-
-![All seventeen native whale performances, with colored props and marine life](<assets/readme/whale-performance.gif>)
-
-Actual terminal buffers from the live showcase renderer, sampled at its terminal cadence.
-The demonstration supplies its work phases; no displayed command runs.
-The whale uses the native Director's springs and authored clips, with one host clock.
-Run `cargo run --example showcase` to edit, answer, change the palette and explore every component.
-
-</details>
-
-### Codewhale terminal views
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-1.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-2.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-3.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-4.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-5.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-6.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-7.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-8.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-9.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-10.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-11.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-12.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-13.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-14.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-15.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-16.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-17.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-18.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-19.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-20.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-21.svg>)
-
-![Codewhale terminal views — dark truecolor](<assets/readme/native-views.dark-truecolor-22.svg>)
-
-### The native composer and footer
-
-![The native composer and footer — dark truecolor](<assets/readme/native-chrome.dark-truecolor-1.svg>)
-
-![The native composer and footer — dark truecolor](<assets/readme/native-chrome.dark-truecolor-2.svg>)
-
-### The native workbar
-
-![The native workbar — dark truecolor](<assets/readme/workbar.dark-truecolor-1.svg>)
-
-![The native workbar — dark truecolor](<assets/readme/workbar.dark-truecolor-2.svg>)
-
-### Every Codewhale TUI theme
-
-![Every Codewhale TUI theme — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-1.svg>)
-
-![Every Codewhale TUI theme — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-2.svg>)
-
-![Every Codewhale TUI theme — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-3.svg>)
-
-![Every Codewhale TUI theme — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-4.svg>)
-
-![Every Codewhale TUI theme — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-5.svg>)
-
-![Every Codewhale TUI theme — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-6.svg>)
-
-### Codewhale water and ombres
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-1.svg>)
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-2.svg>)
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-3.svg>)
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-4.svg>)
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-5.svg>)
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-6.svg>)
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-7.svg>)
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-8.svg>)
-
-![Codewhale water and ombres — dark truecolor](<assets/readme/water.dark-truecolor-9.svg>)
-
-### Conversation and queued input
-
-![Conversation and queued input — dark truecolor](<assets/readme/transcript.dark-truecolor.svg>)
-
-### Conversation and agents
-
-![Conversation and agents — dark truecolor](<assets/readme/components.dark-truecolor-1.svg>)
-
-![Conversation and agents — dark truecolor](<assets/readme/components.dark-truecolor-2.svg>)
-
-### The Codewhale language
-
-![The Codewhale language — dark truecolor](<assets/readme/foundation.dark-truecolor.svg>)
-
-### Input and selection
-
-![Input and selection — dark truecolor](<assets/readme/input.dark-truecolor-1.svg>)
-
-![Input and selection — dark truecolor](<assets/readme/input.dark-truecolor-2.svg>)
-
-![Input and selection — dark truecolor](<assets/readme/input.dark-truecolor-3.svg>)
-
-### Navigation and controls
-
-![Navigation and controls — dark truecolor](<assets/readme/chrome.dark-truecolor.svg>)
-
-### Work and results
-
-![Work and results — dark truecolor](<assets/readme/display.dark-truecolor-1.svg>)
-
-![Work and results — dark truecolor](<assets/readme/display.dark-truecolor-2.svg>)
-
-![Work and results — dark truecolor](<assets/readme/display.dark-truecolor-3.svg>)
-
-![Work and results — dark truecolor](<assets/readme/display.dark-truecolor-4.svg>)
-
-![Work and results — dark truecolor](<assets/readme/display.dark-truecolor-5.svg>)
-
-### Motion and feedback
-
-![Motion and feedback — dark truecolor](<assets/readme/motion.dark-truecolor.svg>)
-
-<details>
-<summary>Watch the working and verification spinners, then the receipt arrive</summary>
-
-![Working, verifying and settling into a receipt — Ocean](<assets/readme/motion-demo.gif>)
-
-![Working, verifying and settling into a receipt — Paper](<assets/readme/motion-demo-light.gif>)
-
-A demonstration of the actual components at their normal cadence: the working swell,
-verification tick, state ink, selection movement and detail reveal.
-The demonstration supplies each state change; the component supplies its motion.
-Reduced and still modes use readable static marks and settle transitions immediately.
-Run `cargo run --example motion` to finish, restart, switch phases and change motion policy yourself.
-
-</details>
-
-### Life in the water
-
-![Life in the water — dark truecolor](<assets/readme/habitat.dark-truecolor-1.svg>)
-
-![Life in the water — dark truecolor](<assets/readme/habitat.dark-truecolor-2.svg>)
-
-### A whale with a job
-
-![A whale with a job — dark truecolor](<assets/readme/whales.dark-truecolor.svg>)
-
-### Every whale action
-
-![Every whale action — dark truecolor](<assets/readme/whale-actions.dark-truecolor.svg>)
-
-### Optional workspace compositions
-
-![Optional workspace compositions — dark truecolor](<assets/readme/scenes.dark-truecolor-1.svg>)
-
-![Optional workspace compositions — dark truecolor](<assets/readme/scenes.dark-truecolor-2.svg>)
-
-![Optional workspace compositions — dark truecolor](<assets/readme/scenes.dark-truecolor-3.svg>)
-
-![Optional workspace compositions — dark truecolor](<assets/readme/scenes.dark-truecolor-4.svg>)
-
-![Optional workspace compositions — dark truecolor](<assets/readme/scenes.dark-truecolor-5.svg>)
-
-<details>
-<summary>Light theme</summary>
-
-![The live component gallery — light truecolor](<assets/readme/studio.light-truecolor-1.svg>)
-
-![The live component gallery — light truecolor](<assets/readme/studio.light-truecolor-2.svg>)
-
-![The live component gallery — light truecolor](<assets/readme/studio.light-truecolor-3.svg>)
-
-![The live component gallery — light truecolor](<assets/readme/studio.light-truecolor-4.svg>)
-
-![The live component gallery — light truecolor](<assets/readme/studio.light-truecolor-5.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-1.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-2.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-3.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-4.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-5.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-6.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-7.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-8.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-9.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-10.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-11.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-12.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-13.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-14.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-15.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-16.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-17.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-18.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-19.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-20.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-21.svg>)
-
-![Codewhale terminal views — light truecolor](<assets/readme/native-views.light-truecolor-22.svg>)
-
-![The native composer and footer — light truecolor](<assets/readme/native-chrome.light-truecolor-1.svg>)
-
-![The native composer and footer — light truecolor](<assets/readme/native-chrome.light-truecolor-2.svg>)
-
-![The native workbar — light truecolor](<assets/readme/workbar.light-truecolor-1.svg>)
-
-![The native workbar — light truecolor](<assets/readme/workbar.light-truecolor-2.svg>)
-
-![Every Codewhale TUI theme — light truecolor](<assets/readme/tui-palettes.light-truecolor-1.svg>)
-
-![Every Codewhale TUI theme — light truecolor](<assets/readme/tui-palettes.light-truecolor-2.svg>)
-
-![Every Codewhale TUI theme — light truecolor](<assets/readme/tui-palettes.light-truecolor-3.svg>)
-
-![Every Codewhale TUI theme — light truecolor](<assets/readme/tui-palettes.light-truecolor-4.svg>)
-
-![Every Codewhale TUI theme — light truecolor](<assets/readme/tui-palettes.light-truecolor-5.svg>)
-
-![Every Codewhale TUI theme — light truecolor](<assets/readme/tui-palettes.light-truecolor-6.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-1.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-2.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-3.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-4.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-5.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-6.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-7.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-8.svg>)
-
-![Codewhale water and ombres — light truecolor](<assets/readme/water.light-truecolor-9.svg>)
-
-![Conversation and queued input — light truecolor](<assets/readme/transcript.light-truecolor.svg>)
-
-![Conversation and agents — light truecolor](<assets/readme/components.light-truecolor-1.svg>)
-
-![Conversation and agents — light truecolor](<assets/readme/components.light-truecolor-2.svg>)
-
-![The Codewhale language — light truecolor](<assets/readme/foundation.light-truecolor.svg>)
-
-![Input and selection — light truecolor](<assets/readme/input.light-truecolor-1.svg>)
-
-![Input and selection — light truecolor](<assets/readme/input.light-truecolor-2.svg>)
-
-![Input and selection — light truecolor](<assets/readme/input.light-truecolor-3.svg>)
-
-![Navigation and controls — light truecolor](<assets/readme/chrome.light-truecolor.svg>)
-
-![Work and results — light truecolor](<assets/readme/display.light-truecolor-1.svg>)
-
-![Work and results — light truecolor](<assets/readme/display.light-truecolor-2.svg>)
-
-![Work and results — light truecolor](<assets/readme/display.light-truecolor-3.svg>)
-
-![Work and results — light truecolor](<assets/readme/display.light-truecolor-4.svg>)
-
-![Work and results — light truecolor](<assets/readme/display.light-truecolor-5.svg>)
-
-![Motion and feedback — light truecolor](<assets/readme/motion.light-truecolor.svg>)
-
-![Life in the water — light truecolor](<assets/readme/habitat.light-truecolor-1.svg>)
-
-![Life in the water — light truecolor](<assets/readme/habitat.light-truecolor-2.svg>)
-
-![A whale with a job — light truecolor](<assets/readme/whales.light-truecolor.svg>)
-
-![Every whale action — light truecolor](<assets/readme/whale-actions.light-truecolor.svg>)
-
-![Optional workspace compositions — light truecolor](<assets/readme/scenes.light-truecolor-1.svg>)
-
-![Optional workspace compositions — light truecolor](<assets/readme/scenes.light-truecolor-2.svg>)
-
-![Optional workspace compositions — light truecolor](<assets/readme/scenes.light-truecolor-3.svg>)
-
-![Optional workspace compositions — light truecolor](<assets/readme/scenes.light-truecolor-4.svg>)
-
-![Optional workspace compositions — light truecolor](<assets/readme/scenes.light-truecolor-5.svg>)
-
-</details>
-
-### Terminal profiles
-
-![Terminal profile comparison](<assets/readme/profile-comparison.svg>)
-
-<!-- gallery:end -->
-
-## Component catalogue
-
-| Family | Components | What they do |
-|---|---|---|
-| Optional workspace composition | `WorkspaceFrame`, `WorkspaceAreas`, `PaneHeader`, `ContextRibbon`, `ContextItem` | Responsive conversation and dock regions, one quiet module header, composer-adjacent facts folded by priority with explicit counts |
-| Native shell | `TerminalShell`, `ShellAreas` | Current conversation → pending input → composer → posture → workflows → metrics → workbar ordering |
-| Native workbar | `Workbar`, `WorkbarPanel`, `WorkbarRow`, `WorkbarState` | All eight panels, goals, row selection, keyboard outcomes, scrolling, hitboxes and bottom/top/side placement |
-| Native composer and workflow rows | `NativeComposer`, `WorkflowProgress`, `WorkflowRun` | Rounded input enclosure, prompt, submit control, target chip and borderless workflow progress |
-| Native footer | `PostureBar`, `MetricsLine`, `MetricSegment` | Permission and mode, clocks, live counts, context warnings and width-aware model/usage facts |
-| Native views | `InstrumentSurface`, `SessionList`, `SessionRow` | TUI title/action rails, quiet gutters, session selection, ranges, search and rename presentation |
-| TUI themes | `TuiPalette`, `TuiInk` | All 16 fixed source palettes, exact grounds and distinct native permission/mode/status inks |
-| Attention and results | `AttentionQueue`, `AttentionItem`, `ArtifactShelf`, `Artifact` | Project-aware decisions, selected action hints, review/file/run/link results and reported receipts |
-| Marine life | `Habitat`, `FishSchool`, `Jellyfish`, `BubbleField`, `HabitatDensity` | Native braille poses and ASCII silhouettes, caller-clock motion, bounded populations, complete visitors and text-safe open-water collision |
-| Water and palette | `OceanColumn`, `OceanRamp`, `OceanPhase`, `Ombre`, `WaterPalette` | Native TUI depth column, context rise, steady attention tint, completion breath and five spatial materials; contrast and fallback guards |
-| Living whale | `whale_motion::Stage`, `Director`, `ColoredGrid` | One session performance, authored clips and springs, native colored props, shared terminal cadence and hide/resume boundaries |
-| Session surfaces | `Message`, `ToolCard`, `Composer`, `AgentCard`, `Fleet` | Speaker anchors, output rails, honest omission counts, caller-owned prompts and each agent's own state, route and task |
-| Pending input | `PendingInputPreview`, `PendingInputItem`, `ContextPreviewItem` | Queued, steering, editing, paused and in-flight input; included context and host-dispatched action metadata |
-| Rich transcript | `Transcript`, `TranscriptBlock`, `TranscriptSpan`, `CodeBlock` | Authored headings, prose, quotes, lists, tables and numbered code; exact copy source and out-of-band links |
-| Identity and state | `Whale`, `WhaleState`, `Icon`, `StatusMark`, `StateWords` | The v2 whale's 17 actions and pods; marks always paired with words; localized state labels |
-| Surfaces | `Panel`, `Depth`, `Dialog`, `Sheet`, `HorizonRule` | Deep, stage, raised and overlay grounds; centered decisions, edge-anchored sheets and the composer ledge |
-| Navigation | `Heading`, `Tabs`, `KeyHints`, `Keymap`, `Picker`, `List` | Shared heading hierarchy, selection, scrolling, keyboard labels and caller-owned outcomes |
-| Input and controls | `TextInput`, `Form`, `Toggle`, `Segmented` | Unicode-aware editing, masked fields, validation and controls that explain disabled state |
-| Search and empty states | `PickerQuery`, `PickerTabs`, `PickerMatches`, fuzzy matching helpers, `EmptyState` | Ranked choices, search highlights, tabs, previews and a clear next action when there are no results |
-| Work and results | `Receipt`, `ReceiptTable`, `Diff`, `WorkflowTree`, `CountBar` | Measured values, explicit unknowns, numbered additions/removals, workflow hierarchy and progress from known totals |
-| Decisions | `ApprovalCard`, `ReviewVerdict`, `ReviewAggregate` | What will happen, where, why, and the caller's available next actions |
-| Settings | `SettingRow`, `SettingDetail` | Value, source, lock reason, changed state, apply timing and reset details |
-| Feedback and motion | `Toasts`, `Spinner`, `VerificationSpinner`, `MotionStep`, `MotionSet`, `FrameBudget` | Working swell, verification tick, notices, measured elapsed time, bounded transitions and reduced/still motion |
-
-Words and data arrive from the caller, with English defaults where useful.
-The kit does not calculate a diff, parse Markdown, validate credentials,
-authorize a command, estimate cost or run an agent.
-
-`OceanColumn` is adapted from the current TUI's three native stops:
-`#102A45` → `#0A1E33` → `#061320`. Apply it after painting a scene to share
-one continuous column behind ordinary grounds. Selections, elevated panels,
-diffs and code retain their backgrounds. The host supplies phase, elapsed time
-and measured context; quiet policies stop breathing. The dark field is
-opt-in on measured truecolor Ocean; light and limited-color terminals retain
-their selected grounds.
-
-`Ombre` finishes a painted scene with a spatial palette wash. It preserves
-state ink and readable contrast, and leaves unsupported profiles unchanged.
-The native TUI column is the studio default; the logo Ocean wash is also
-available alongside Lagoon, Dusk, Coral and Graphite.
-
-## Spinners and animation
-
-`Spinner` uses Codewhale's eight-frame swell; `VerificationSpinner` uses the
-Engine's distinct round verification tick. Both wait 400 ms before moving,
-advance at five steps per second, and keep the caller's work verb visible.
-Reduced and still motion show a static mark plus words. ASCII terminals have
-their own frames.
-
-`MotionStep` and `MotionSet` handle token-timed state ink, selection movement
-and detail reveal. The caller changes the state and supplies the instant;
-the state words change immediately. `FrameBudget` combines redraw deadlines
-and lets the host claim one primary spinner per frame. Once transitions
-settle, the host can wait for input instead of painting identical frames.
-
-The animated demonstrations are under [Motion and feedback](#motion-and-feedback).
-The normal gallery samples fixed instants; `cargo run --example motion` is
-the live example.
-
-The native whale performance lives in `whale_motion`. A host keeps one `Stage`
-per foreground session, reports explicit owner inputs, and advances it on its
-own clock. `Tier::Terminal` caps active paints at six per second and rest at
-two. Reduced motion uses authored posters; hiding and resuming discard missed
-motion. `colored_braille` adds native body and prop inks to the exact packed
-geometry. It uses majority visible ink per Braille cell because terminals
-provide one foreground per cell. The [source and fixtures](assets/whale-motion/PROVENANCE.md)
-pin the native implementation and its conformance oracle.
-
-## Use it
-
-Use this repository as a Git dependency while the crate is developed:
+**One component or a whole workspace.** The original eight-panel workbar,
+composer, sessions, settings, approvals and results share the same native
+colors and backgrounds. All 16 TUI themes, fish, jellyfish, spinners and whale
+actions are included. Your app owns the state and clock.
+
+[Components](#explore-the-components) · [Terminal view guide](VIEWS.md) ·
+[Design](DESIGN.md) · [Quality](QUALITY.md) · [Benchmarks](BENCHMARKS.md)
+
+## Get started
 
 ```toml
 [dependencies]
@@ -490,8 +29,569 @@ codewhale-ratatui = { git = "https://github.com/Hmbown/codewhale-ratatui" }
 ratatui = "0.30.2"
 ```
 
-Rust 1.89 or later. The kit and host must share the same Ratatui and Crossterm
-versions so their buffers, styles and key events are the same types.
+```rust
+use codewhale_ratatui::{NativeComposer, Paint, Theme};
+
+let theme = Theme::detect().tui();
+let composer = NativeComposer::new("Review the changes")
+    .target("my-project / main");
+frame.render_widget(composer.themed(&theme), frame.area());
+```
+
+Rust 1.89+. Your app chooses the terminal backend.
+Try `cargo run --example starter` for a small editable app, or
+`cargo run --example showcase` to explore the native layout.
+
+## Explore the components
+
+Open a collection to see its full dark and light previews. Every one of the
+195 gallery entries is here, rendered from actual Ratatui buffers. The
+[component guide](COMPONENTS.md) maps them to Codewhale's terminal views.
+Run `cargo run --example gallery` to try every variation yourself.
+
+<!-- gallery:start -->
+
+### Native Codewhale
+
+<a id="the-live-component-gallery"></a>
+<details>
+<summary>The live component gallery · 5 examples</summary>
+
+The native conversation layout, composer and workbar, plus interactive component studies.
+
+![Showcase work — dark truecolor](<assets/readme/studio.dark-truecolor-1.svg>)
+
+![Showcase decision — dark truecolor](<assets/readme/studio.dark-truecolor-2.svg>)
+
+![Showcase color — dark truecolor](<assets/readme/studio.dark-truecolor-3.svg>)
+
+![Showcase life — dark truecolor](<assets/readme/studio.dark-truecolor-4.svg>)
+
+![Showcase narrow — dark truecolor](<assets/readme/studio.dark-truecolor-5.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Showcase work — light truecolor](<assets/readme/studio.light-truecolor-1.svg>)
+
+![Showcase decision — light truecolor](<assets/readme/studio.light-truecolor-2.svg>)
+
+![Showcase color — light truecolor](<assets/readme/studio.light-truecolor-3.svg>)
+
+![Showcase life — light truecolor](<assets/readme/studio.light-truecolor-4.svg>)
+
+![Showcase narrow — light truecolor](<assets/readme/studio.light-truecolor-5.svg>)
+
+</details>
+
+<details>
+<summary>Watch the animation</summary>
+
+![Native work, approval and completion](<assets/readme/showcase.gif>)
+
+![The same native layout in WhaleLight](<assets/readme/showcase-light.gif>)
+
+</details>
+
+</details>
+
+<a id="codewhale-terminal-views"></a>
+<details>
+<summary>Codewhale terminal views · 22 examples</summary>
+
+Sessions, settings, pickers and work panels built from reusable native parts.
+
+![Instrument surface — dark truecolor](<assets/readme/native-views.dark-truecolor-1.svg>)
+
+![Session list — dark truecolor](<assets/readme/native-views.dark-truecolor-2.svg>)
+
+![View sessions — dark truecolor](<assets/readme/native-views.dark-truecolor-3.svg>)
+
+![View sessions narrow — dark truecolor](<assets/readme/native-views.dark-truecolor-4.svg>)
+
+![View sessions compact — dark truecolor](<assets/readme/native-views.dark-truecolor-5.svg>)
+
+![View sessions empty — dark truecolor](<assets/readme/native-views.dark-truecolor-6.svg>)
+
+![View settings — dark truecolor](<assets/readme/native-views.dark-truecolor-7.svg>)
+
+![View settings narrow — dark truecolor](<assets/readme/native-views.dark-truecolor-8.svg>)
+
+![View commands — dark truecolor](<assets/readme/native-views.dark-truecolor-9.svg>)
+
+![View models — dark truecolor](<assets/readme/native-views.dark-truecolor-10.svg>)
+
+![View models narrow — dark truecolor](<assets/readme/native-views.dark-truecolor-11.svg>)
+
+![View providers — dark truecolor](<assets/readme/native-views.dark-truecolor-12.svg>)
+
+![View theme — dark truecolor](<assets/readme/native-views.dark-truecolor-13.svg>)
+
+![View mode — dark truecolor](<assets/readme/native-views.dark-truecolor-14.svg>)
+
+![View status — dark truecolor](<assets/readme/native-views.dark-truecolor-15.svg>)
+
+![View file picker — dark truecolor](<assets/readme/native-views.dark-truecolor-16.svg>)
+
+![View fleet dock — dark truecolor](<assets/readme/native-views.dark-truecolor-17.svg>)
+
+![View jobs dock — dark truecolor](<assets/readme/native-views.dark-truecolor-18.svg>)
+
+![View files dock — dark truecolor](<assets/readme/native-views.dark-truecolor-19.svg>)
+
+![View context dock — dark truecolor](<assets/readme/native-views.dark-truecolor-20.svg>)
+
+![View git dock — dark truecolor](<assets/readme/native-views.dark-truecolor-21.svg>)
+
+![View cost dock — dark truecolor](<assets/readme/native-views.dark-truecolor-22.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Instrument surface — light truecolor](<assets/readme/native-views.light-truecolor-1.svg>)
+
+![Session list — light truecolor](<assets/readme/native-views.light-truecolor-2.svg>)
+
+![View sessions — light truecolor](<assets/readme/native-views.light-truecolor-3.svg>)
+
+![View sessions narrow — light truecolor](<assets/readme/native-views.light-truecolor-4.svg>)
+
+![View sessions compact — light truecolor](<assets/readme/native-views.light-truecolor-5.svg>)
+
+![View sessions empty — light truecolor](<assets/readme/native-views.light-truecolor-6.svg>)
+
+![View settings — light truecolor](<assets/readme/native-views.light-truecolor-7.svg>)
+
+![View settings narrow — light truecolor](<assets/readme/native-views.light-truecolor-8.svg>)
+
+![View commands — light truecolor](<assets/readme/native-views.light-truecolor-9.svg>)
+
+![View models — light truecolor](<assets/readme/native-views.light-truecolor-10.svg>)
+
+![View models narrow — light truecolor](<assets/readme/native-views.light-truecolor-11.svg>)
+
+![View providers — light truecolor](<assets/readme/native-views.light-truecolor-12.svg>)
+
+![View theme — light truecolor](<assets/readme/native-views.light-truecolor-13.svg>)
+
+![View mode — light truecolor](<assets/readme/native-views.light-truecolor-14.svg>)
+
+![View status — light truecolor](<assets/readme/native-views.light-truecolor-15.svg>)
+
+![View file picker — light truecolor](<assets/readme/native-views.light-truecolor-16.svg>)
+
+![View fleet dock — light truecolor](<assets/readme/native-views.light-truecolor-17.svg>)
+
+![View jobs dock — light truecolor](<assets/readme/native-views.light-truecolor-18.svg>)
+
+![View files dock — light truecolor](<assets/readme/native-views.light-truecolor-19.svg>)
+
+![View context dock — light truecolor](<assets/readme/native-views.light-truecolor-20.svg>)
+
+![View git dock — light truecolor](<assets/readme/native-views.light-truecolor-21.svg>)
+
+![View cost dock — light truecolor](<assets/readme/native-views.light-truecolor-22.svg>)
+
+</details>
+
+</details>
+
+<a id="the-native-composer-and-footer"></a>
+<details>
+<summary>The native composer and footer · 20 examples</summary>
+
+Composer geometry, permission and mode, workflow rows and model/context metrics.
+
+![Native composer, Native composer narrow, Native composer quiet, Native composer target, Workflow progress live, Workflow progress settled, Workflow progress queued, Workflow progress narrow, Posture bar, Posture narrow, Posture context cap, Posture compact, Metrics line, Metrics narrow, Metrics compact, Metrics startup, Workflow tree, Workflow tree selected — dark truecolor](<assets/readme/native-chrome.dark-truecolor-1.svg>)
+
+![Workflow tree clipped, Workflow tree long — dark truecolor](<assets/readme/native-chrome.dark-truecolor-2.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Native composer, Native composer narrow, Native composer quiet, Native composer target, Workflow progress live, Workflow progress settled, Workflow progress queued, Workflow progress narrow, Posture bar, Posture narrow, Posture context cap, Posture compact, Metrics line, Metrics narrow, Metrics compact, Metrics startup, Workflow tree, Workflow tree selected — light truecolor](<assets/readme/native-chrome.light-truecolor-1.svg>)
+
+![Workflow tree clipped, Workflow tree long — light truecolor](<assets/readme/native-chrome.light-truecolor-2.svg>)
+
+</details>
+
+</details>
+
+<a id="the-native-workbar"></a>
+<details>
+<summary>The native workbar · 12 examples</summary>
+
+Tasks, Fleet, Jobs, Files, Notes, Context, Git and Cost; bottom, top and side placement.
+
+![Workbar tasks, Workbar fleet, Workbar jobs, Workbar files, Workbar notes, Workbar context, Workbar git, Workbar cost, Workbar top — dark truecolor](<assets/readme/workbar.dark-truecolor-1.svg>)
+
+![Workbar narrow, Workbar left, Workbar right — dark truecolor](<assets/readme/workbar.dark-truecolor-2.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Workbar tasks, Workbar fleet, Workbar jobs, Workbar files, Workbar notes, Workbar context, Workbar git, Workbar cost, Workbar top — light truecolor](<assets/readme/workbar.light-truecolor-1.svg>)
+
+![Workbar narrow, Workbar left, Workbar right — light truecolor](<assets/readme/workbar.light-truecolor-2.svg>)
+
+</details>
+
+</details>
+
+### Color and atmosphere
+
+<a id="every-codewhale-tui-theme"></a>
+<details>
+<summary>Every Codewhale TUI theme · 16 examples</summary>
+
+Sixteen source presets with their actual backgrounds, status, permission and mode inks.
+
+![Tui theme underwater, Tui theme underwater retro, Tui theme shoreline — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-1.svg>)
+
+![Tui theme shoreline light, Tui theme whale, Tui theme whale light — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-2.svg>)
+
+![Tui theme terminal, Tui theme grayscale, Tui theme catppuccin mocha — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-3.svg>)
+
+![Tui theme tokyo night, Tui theme dracula, Tui theme gruvbox dark — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-4.svg>)
+
+![Tui theme claude, Tui theme matrix, Tui theme solarized light — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-5.svg>)
+
+![Tui theme uwu — dark truecolor](<assets/readme/tui-palettes.dark-truecolor-6.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Tui theme underwater, Tui theme underwater retro, Tui theme shoreline — light truecolor](<assets/readme/tui-palettes.light-truecolor-1.svg>)
+
+![Tui theme shoreline light, Tui theme whale, Tui theme whale light — light truecolor](<assets/readme/tui-palettes.light-truecolor-2.svg>)
+
+![Tui theme terminal, Tui theme grayscale, Tui theme catppuccin mocha — light truecolor](<assets/readme/tui-palettes.light-truecolor-3.svg>)
+
+![Tui theme tokyo night, Tui theme dracula, Tui theme gruvbox dark — light truecolor](<assets/readme/tui-palettes.light-truecolor-4.svg>)
+
+![Tui theme claude, Tui theme matrix, Tui theme solarized light — light truecolor](<assets/readme/tui-palettes.light-truecolor-5.svg>)
+
+![Tui theme uwu — light truecolor](<assets/readme/tui-palettes.light-truecolor-6.svg>)
+
+</details>
+
+</details>
+
+<a id="codewhale-water-and-ombres"></a>
+<details>
+<summary>Codewhale water and ombres · 9 examples</summary>
+
+The current TUI ocean, plus optional Lagoon, Dusk, Coral and Graphite treatments.
+
+![Atmosphere ocean — dark truecolor](<assets/readme/water.dark-truecolor-1.svg>)
+
+![Atmosphere lagoon — dark truecolor](<assets/readme/water.dark-truecolor-2.svg>)
+
+![Atmosphere dusk — dark truecolor](<assets/readme/water.dark-truecolor-3.svg>)
+
+![Atmosphere coral — dark truecolor](<assets/readme/water.dark-truecolor-4.svg>)
+
+![Atmosphere graphite — dark truecolor](<assets/readme/water.dark-truecolor-5.svg>)
+
+![Ocean column — dark truecolor](<assets/readme/water.dark-truecolor-6.svg>)
+
+![Ocean phases — dark truecolor](<assets/readme/water.dark-truecolor-7.svg>)
+
+![Ocean context — dark truecolor](<assets/readme/water.dark-truecolor-8.svg>)
+
+![Ocean reduced — dark truecolor](<assets/readme/water.dark-truecolor-9.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Atmosphere ocean — light truecolor](<assets/readme/water.light-truecolor-1.svg>)
+
+![Atmosphere lagoon — light truecolor](<assets/readme/water.light-truecolor-2.svg>)
+
+![Atmosphere dusk — light truecolor](<assets/readme/water.light-truecolor-3.svg>)
+
+![Atmosphere coral — light truecolor](<assets/readme/water.light-truecolor-4.svg>)
+
+![Atmosphere graphite — light truecolor](<assets/readme/water.light-truecolor-5.svg>)
+
+![Ocean column — light truecolor](<assets/readme/water.light-truecolor-6.svg>)
+
+![Ocean phases — light truecolor](<assets/readme/water.light-truecolor-7.svg>)
+
+![Ocean context — light truecolor](<assets/readme/water.light-truecolor-8.svg>)
+
+![Ocean reduced — light truecolor](<assets/readme/water.light-truecolor-9.svg>)
+
+</details>
+
+</details>
+
+### Inputs and controls
+
+<a id="the-codewhale-language"></a>
+<details>
+<summary>The Codewhale language · 7 examples</summary>
+
+Depth, rules, marks, hints and terminal chrome.
+
+![Keys at the point of use, State, in a mark and a word, Dialog, Sheet, One space, several depths, A single horizon, Control vocabulary — dark truecolor](<assets/readme/foundation.dark-truecolor.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Keys at the point of use, State, in a mark and a word, Dialog, Sheet, One space, several depths, A single horizon, Control vocabulary — light truecolor](<assets/readme/foundation.light-truecolor.svg>)
+
+</details>
+
+</details>
+
+<a id="input-and-selection"></a>
+<details>
+<summary>Input and selection · 21 examples</summary>
+
+Editable fields, forms, lists and focused choices.
+
+![Mode picker, Status picker, Picker query, Picker tabs preview, Picker no match, Text input empty, Text input typed, Text input unfocused, Text input invalid, Text input disabled, Text input secret, Text input long, Text input wide text — dark truecolor](<assets/readme/input.dark-truecolor-1.svg>)
+
+![Form, List, List scrolling, List tall rows, List long, List empty, Empty state, Empty state small — dark truecolor](<assets/readme/input.dark-truecolor-2.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Mode picker, Status picker, Picker query, Picker tabs preview, Picker no match, Text input empty, Text input typed, Text input unfocused, Text input invalid, Text input disabled, Text input secret, Text input long, Text input wide text — light truecolor](<assets/readme/input.light-truecolor-1.svg>)
+
+![Form, List, List scrolling, List tall rows, List long, List empty, Empty state, Empty state small — light truecolor](<assets/readme/input.light-truecolor-2.svg>)
+
+</details>
+
+</details>
+
+<a id="navigation-and-controls"></a>
+<details>
+<summary>Navigation and controls · 7 examples</summary>
+
+Headings, tabs, toggles and keyboard maps.
+
+![Keymap hints, Heading, Tabs, Toggle, Segmented, Setting row, Setting detail — dark truecolor](<assets/readme/chrome.dark-truecolor.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Keymap hints, Heading, Tabs, Toggle, Segmented, Setting row, Setting detail — light truecolor](<assets/readme/chrome.light-truecolor.svg>)
+
+</details>
+
+</details>
+
+### Conversation and work
+
+<a id="conversation-and-queued-input"></a>
+<details>
+<summary>Conversation and queued input · 8 examples</summary>
+
+Rich prose, code, attached context and the next instruction.
+
+![Pending queued, Pending steering, Pending paused, Pending context, Transcript prose, Transcript list table, Transcript code, Transcript links — dark truecolor](<assets/readme/transcript.dark-truecolor.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Pending queued, Pending steering, Pending paused, Pending context, Transcript prose, Transcript list table, Transcript code, Transcript links — light truecolor](<assets/readme/transcript.light-truecolor.svg>)
+
+</details>
+
+</details>
+
+<a id="conversation-and-agents"></a>
+<details>
+<summary>Conversation and agents · 13 examples</summary>
+
+Inline messages and optional tool, agent and fleet cards.
+
+![Workbench frame, Pane header, Context ribbon, Context ribbon narrow, Attention queue, Attention focused, Attention narrow, Attention empty, Message — dark truecolor](<assets/readme/components.dark-truecolor-1.svg>)
+
+![Composer, Tool card, Agent card, Fleet — dark truecolor](<assets/readme/components.dark-truecolor-2.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Workbench frame, Pane header, Context ribbon, Context ribbon narrow, Attention queue, Attention focused, Attention narrow, Attention empty, Message — light truecolor](<assets/readme/components.light-truecolor-1.svg>)
+
+![Composer, Tool card, Agent card, Fleet — light truecolor](<assets/readme/components.light-truecolor-2.svg>)
+
+</details>
+
+</details>
+
+<a id="work-and-results"></a>
+<details>
+<summary>Work and results · 23 examples</summary>
+
+Diffs, trees, progress, approvals and run results.
+
+![Artifact, Artifact shelf, Artifact narrow, Artifact unknown, Artifact empty, Receipt row, Receipt table, Receipt table compact, Receipt table minimal, Receipt table clipped — dark truecolor](<assets/readme/display.dark-truecolor-1.svg>)
+
+![Diff, Diff wrapped, Diff no numbers, Diff highlighted, Count bars — dark truecolor](<assets/readme/display.dark-truecolor-2.svg>)
+
+![Approval command, Approval outside, Approval patch, Approval elevation — dark truecolor](<assets/readme/display.dark-truecolor-3.svg>)
+
+![Approval clipped, Approval spoofed, Review verdicts, Review aggregate — dark truecolor](<assets/readme/display.dark-truecolor-4.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Artifact, Artifact shelf, Artifact narrow, Artifact unknown, Artifact empty, Receipt row, Receipt table, Receipt table compact, Receipt table minimal, Receipt table clipped — light truecolor](<assets/readme/display.light-truecolor-1.svg>)
+
+![Diff, Diff wrapped, Diff no numbers, Diff highlighted, Count bars — light truecolor](<assets/readme/display.light-truecolor-2.svg>)
+
+![Approval command, Approval outside, Approval patch, Approval elevation — light truecolor](<assets/readme/display.light-truecolor-3.svg>)
+
+![Approval clipped, Approval spoofed, Review verdicts, Review aggregate — light truecolor](<assets/readme/display.light-truecolor-4.svg>)
+
+</details>
+
+</details>
+
+<a id="optional-workspace-compositions"></a>
+<details>
+<summary>Optional workspace compositions · 5 examples</summary>
+
+Desktop-inspired conversation, review and fleet layouts you can compose from the library.
+
+![The everyday workspace — dark truecolor](<assets/readme/scenes.dark-truecolor-1.svg>)
+
+![Review in context — dark truecolor](<assets/readme/scenes.dark-truecolor-2.svg>)
+
+![Parallel work in view — dark truecolor](<assets/readme/scenes.dark-truecolor-3.svg>)
+
+![The workspace in a narrow terminal — dark truecolor](<assets/readme/scenes.dark-truecolor-4.svg>)
+
+![A living marine workspace — dark truecolor](<assets/readme/scenes.dark-truecolor-5.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![The everyday workspace — light truecolor](<assets/readme/scenes.light-truecolor-1.svg>)
+
+![Review in context — light truecolor](<assets/readme/scenes.light-truecolor-2.svg>)
+
+![Parallel work in view — light truecolor](<assets/readme/scenes.light-truecolor-3.svg>)
+
+![The workspace in a narrow terminal — light truecolor](<assets/readme/scenes.light-truecolor-4.svg>)
+
+![A living marine workspace — light truecolor](<assets/readme/scenes.light-truecolor-5.svg>)
+
+</details>
+
+</details>
+
+### Motion and marine life
+
+<a id="motion-and-feedback"></a>
+<details>
+<summary>Motion and feedback · 13 examples</summary>
+
+Spinners, notifications and calm transitions.
+
+![Toasts, Toasts stacked, Toasts fading, Spinner, Verification pending, Verification earned, Verification modes, Motion modes, Motion working, Motion started, Motion mid flight, Motion settled, Motion reduced — dark truecolor](<assets/readme/motion.dark-truecolor.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Toasts, Toasts stacked, Toasts fading, Spinner, Verification pending, Verification earned, Verification modes, Motion modes, Motion working, Motion started, Motion mid flight, Motion settled, Motion reduced — light truecolor](<assets/readme/motion.light-truecolor.svg>)
+
+</details>
+
+<details>
+<summary>Watch the animation</summary>
+
+![Working and verification spinners — Ocean](<assets/readme/motion-demo.gif>)
+
+![Working and verification spinners — Paper](<assets/readme/motion-demo-light.gif>)
+
+</details>
+
+</details>
+
+<a id="life-in-the-water"></a>
+<details>
+<summary>Life in the water · 5 examples</summary>
+
+Fish, jellyfish and bubbles, drawn in terminal cells.
+
+![Fish school, Jellyfish, Bubble field, Habitat ASCII, Habitat reduced — dark truecolor](<assets/readme/habitat.dark-truecolor.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Fish school, Jellyfish, Bubble field, Habitat ASCII, Habitat reduced — light truecolor](<assets/readme/habitat.light-truecolor.svg>)
+
+</details>
+
+<details>
+<summary>Watch the animation</summary>
+
+![Native fish, jellyfish and bubbles](<assets/readme/habitat-motion.gif>)
+
+</details>
+
+</details>
+
+<a id="a-whale-with-a-job"></a>
+<details>
+<summary>A whale with a job · 8 examples</summary>
+
+Session state, attention, completion and the pod.
+
+![Whale rest, Whale busy, Whale needs, Whale done, Whale pod 1, Whale pod 3, Whale compact, Whale words only — dark truecolor](<assets/readme/whales.dark-truecolor.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Whale rest, Whale busy, Whale needs, Whale done, Whale pod 1, Whale pod 3, Whale compact, Whale words only — light truecolor](<assets/readme/whales.light-truecolor.svg>)
+
+</details>
+
+</details>
+
+<a id="every-whale-action"></a>
+<details>
+<summary>Every whale action · 1 example</summary>
+
+The complete v2 state vocabulary, in terminal cells.
+
+![Whale actions — dark truecolor](<assets/readme/whale-actions.dark-truecolor.svg>)
+
+<details>
+<summary>Light appearance</summary>
+
+![Whale actions — light truecolor](<assets/readme/whale-actions.light-truecolor.svg>)
+
+</details>
+
+<details>
+<summary>Watch the animation</summary>
+
+![All seventeen native whale actions](<assets/readme/whale-performance.gif>)
+
+</details>
+
+</details>
+
+<a id="terminal-profiles"></a>
+<details>
+<summary>All nine terminal profiles</summary>
+
+![The same status marks in all nine terminal profiles](<assets/readme/profile-comparison.svg>)
+
+</details>
+
+<!-- gallery:end -->
+
+## Build with the kit
+
+<details>
+<summary>Composition, editing and stateful widgets</summary>
 
 ```rust
 use codewhale_ratatui::{
@@ -630,6 +730,98 @@ A host with its own detection can pass `Theme::new(Caps { depth, ascii,
 appearance })` and avoid a second probe. Changes to a theme reach components
 on their next paint; components hold roles rather than cached colors.
 
+
+</details>
+
+<details>
+<summary>Full component reference</summary>
+
+## Component catalogue
+
+| Family | Components | What they do |
+|---|---|---|
+| Optional workspace composition | `WorkspaceFrame`, `WorkspaceAreas`, `PaneHeader`, `ContextRibbon`, `ContextItem` | Responsive conversation and dock regions, one quiet module header, composer-adjacent facts folded by priority with explicit counts |
+| Native shell | `TerminalShell`, `ShellAreas` | Current conversation → pending input → composer → posture → workflows → metrics → workbar ordering |
+| Native workbar | `Workbar`, `WorkbarPanel`, `WorkbarRow`, `WorkbarState` | All eight panels, goals, row selection, keyboard outcomes, scrolling, hitboxes and bottom/top/side placement |
+| Native composer and workflow rows | `NativeComposer`, `WorkflowProgress`, `WorkflowRun` | Rounded input enclosure, prompt, submit control, target chip and borderless workflow progress |
+| Native footer | `PostureBar`, `MetricsLine`, `MetricSegment` | Permission and mode, clocks, live counts, context warnings and width-aware model/usage facts |
+| Native views | `InstrumentSurface`, `SessionList`, `SessionRow` | TUI title/action rails, quiet gutters, session selection, ranges, search and rename presentation |
+| TUI themes | `TuiPalette`, `TuiInk` | All 16 fixed source palettes, exact grounds and distinct native permission/mode/status inks |
+| Attention and results | `AttentionQueue`, `AttentionItem`, `ArtifactShelf`, `Artifact` | Project-aware decisions, selected action hints, review/file/run/link results and reported receipts |
+| Marine life | `Habitat`, `FishSchool`, `Jellyfish`, `BubbleField`, `HabitatDensity` | Native braille poses and ASCII silhouettes, caller-clock motion, bounded populations, complete visitors and text-safe open-water collision |
+| Water and palette | `OceanColumn`, `OceanRamp`, `OceanPhase`, `Ombre`, `WaterPalette` | Native TUI depth column, context rise, steady attention tint, completion breath and five spatial materials; contrast and fallback guards |
+| Living whale | `whale_motion::Stage`, `Director`, `ColoredGrid` | One session performance, authored clips and springs, native colored props, shared terminal cadence and hide/resume boundaries |
+| Session surfaces | `Message`, `ToolCard`, `Composer`, `AgentCard`, `Fleet` | Speaker anchors, output rails, honest omission counts, caller-owned prompts and each agent's own state, route and task |
+| Pending input | `PendingInputPreview`, `PendingInputItem`, `ContextPreviewItem` | Queued, steering, editing, paused and in-flight input; included context and host-dispatched action metadata |
+| Rich transcript | `Transcript`, `TranscriptBlock`, `TranscriptSpan`, `CodeBlock` | Authored headings, prose, quotes, lists, tables and numbered code; exact copy source and out-of-band links |
+| Identity and state | `Whale`, `WhaleState`, `Icon`, `StatusMark`, `StateWords` | The v2 whale's 17 actions and pods; marks always paired with words; localized state labels |
+| Surfaces | `Panel`, `Depth`, `Dialog`, `Sheet`, `HorizonRule` | Deep, stage, raised and overlay grounds; centered decisions, edge-anchored sheets and the composer ledge |
+| Navigation | `Heading`, `Tabs`, `KeyHints`, `Keymap`, `Picker`, `List` | Shared heading hierarchy, selection, scrolling, keyboard labels and caller-owned outcomes |
+| Input and controls | `TextInput`, `Form`, `Toggle`, `Segmented` | Unicode-aware editing, masked fields, validation and controls that explain disabled state |
+| Search and empty states | `PickerQuery`, `PickerTabs`, `PickerMatches`, fuzzy matching helpers, `EmptyState` | Ranked choices, search highlights, tabs, previews and a clear next action when there are no results |
+| Work and results | `Receipt`, `ReceiptTable`, `Diff`, `WorkflowTree`, `CountBar` | Measured values, explicit unknowns, numbered additions/removals, workflow hierarchy and progress from known totals |
+| Decisions | `ApprovalCard`, `ReviewVerdict`, `ReviewAggregate` | What will happen, where, why, and the caller's available next actions |
+| Settings | `SettingRow`, `SettingDetail` | Value, source, lock reason, changed state, apply timing and reset details |
+| Feedback and motion | `Toasts`, `Spinner`, `VerificationSpinner`, `MotionStep`, `MotionSet`, `FrameBudget` | Working swell, verification tick, notices, measured elapsed time, bounded transitions and reduced/still motion |
+
+Words and data arrive from the caller, with English defaults where useful.
+The kit does not calculate a diff, parse Markdown, validate credentials,
+authorize a command, estimate cost or run an agent.
+
+`OceanColumn` is adapted from the current TUI's three native stops:
+`#102A45` → `#0A1E33` → `#061320`. Apply it after painting a scene to share
+one continuous column behind ordinary grounds. Selections, elevated panels,
+diffs and code retain their backgrounds. The host supplies phase, elapsed time
+and measured context; quiet policies stop breathing. The dark field is
+opt-in on measured truecolor Ocean; light and limited-color terminals retain
+their selected grounds.
+
+`Ombre` finishes a painted scene with a spatial palette wash. It preserves
+state ink and readable contrast, and leaves unsupported profiles unchanged.
+The native TUI column is the studio default; the logo Ocean wash is also
+available alongside Lagoon, Dusk, Coral and Graphite.
+
+
+</details>
+
+<details>
+<summary>Animation, reduced motion and the host clock</summary>
+
+## Spinners and animation
+
+`Spinner` uses Codewhale's eight-frame swell; `VerificationSpinner` uses the
+Engine's distinct round verification tick. Both wait 400 ms before moving,
+advance at five steps per second, and keep the caller's work verb visible.
+Reduced and still motion show a static mark plus words. ASCII terminals have
+their own frames.
+
+`MotionStep` and `MotionSet` handle token-timed state ink, selection movement
+and detail reveal. The caller changes the state and supplies the instant;
+the state words change immediately. `FrameBudget` combines redraw deadlines
+and lets the host claim one primary spinner per frame. Once transitions
+settle, the host can wait for input instead of painting identical frames.
+
+The animated demonstrations are under [Motion and feedback](#motion-and-feedback).
+The normal gallery samples fixed instants; `cargo run --example motion` is
+the live example.
+
+The native whale performance lives in `whale_motion`. A host keeps one `Stage`
+per foreground session, reports explicit owner inputs, and advances it on its
+own clock. `Tier::Terminal` caps active paints at six per second and rest at
+two. Reduced motion uses authored posters; hiding and resuming discard missed
+motion. `colored_braille` adds native body and prop inks to the exact packed
+geometry. It uses majority visible ink per Braille cell because terminals
+provide one foreground per cell. The [source and fixtures](assets/whale-motion/PROVENANCE.md)
+pin the native implementation and its conformance oracle.
+
+
+</details>
+
+[Contribution guide](CONTRIBUTING-COMPONENTS.md) · [Changelog](CHANGELOG.md)
+
+<details>
+<summary>Maintainer notes: render previews, verify and update source assets</summary>
+
 ## Browse and regenerate
 
 ```sh
@@ -751,11 +943,8 @@ dot for dot. Artwork shows up to three calves; the state label gives the true
 agent count, including larger fleets. Compact or ASCII terminals keep the
 state in words when the art cannot fit.
 
-## Integration status and license
 
-The foundation was extracted from the Codewhale Engine
-([Hmbown/CodeWhale](https://github.com/Hmbown/CodeWhale) at `58b1dd3dd`) and
-extended here. The Engine has not migrated onto this crate yet. Completing
-this library and its gallery does not establish Engine adoption or a release.
+</details>
 
-MIT. See [LICENSE](LICENSE).
+MIT · [License](LICENSE). Use as a Git dependency during development;
+the crate has not been published to a package registry.

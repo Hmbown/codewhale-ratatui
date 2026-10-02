@@ -298,3 +298,47 @@ fn native_chrome_is_bounded_in_tiny_offset_and_maximum_origin_buffers() {
         }
     }
 }
+
+#[test]
+fn translated_templates_keep_count_order_and_fit_before_clipping() {
+    use codewhale_ratatui::WorkflowProgressWords;
+    let progress = WorkflowProgress::new(vec![
+        WorkflowRun::new("Review", WorkflowRunState::Running)
+            .outcomes(2, 1, 1, 4)
+            .queued(3),
+    ])
+    .words(WorkflowProgressWords {
+        done: "完了 {done}/{total}".into(),
+        failed: "失敗 {count}".into(),
+        cancelled: "中止 {count}".into(),
+        queued: "待機 {count}".into(),
+        more: "ほか {count} 件".into(),
+        ..WorkflowProgressWords::default()
+    });
+    let theme = Profile::DarkTrue.theme();
+    let wide = render(120, 1, |area, buf| progress.paint(area, buf, &theme));
+    let shown = text(&wide);
+    for fact in ["完了 2/4", "失敗 1", "中止 1", "待機 3"] {
+        assert!(shown.contains(fact), "{shown}");
+    }
+    let mut failed = progress.clone();
+    failed.runs[0].state = WorkflowRunState::Failed;
+    let failure = render(120, 1, |area, buf| failed.paint(area, buf, &theme));
+    assert!(!text(&failure).contains("{count}"));
+    let narrow = render(50, 1, |area, buf| progress.paint(area, buf, &theme));
+    let shown = text(&narrow);
+    assert!(
+        shown.contains("完了 2/4") && shown.contains("失敗 1"),
+        "{shown}"
+    );
+    let folded = render(120, 0, |area, buf| progress.paint(area, buf, &theme));
+    assert!(text(&folded).is_empty());
+    let mut many = progress.clone();
+    many.runs = (0..8)
+        .map(|_| WorkflowRun::new("Review", WorkflowRunState::Running))
+        .collect();
+    let folded = render(50, 1, |area, buf| many.paint(area, buf, &theme));
+    assert!(text(&folded).starts_with(" ほか 8 件"));
+    assert_eq!(WorkflowProgress::desired_rows_for(0), 0);
+    assert_eq!(WorkflowProgress::desired_rows_for(8), 7);
+}
