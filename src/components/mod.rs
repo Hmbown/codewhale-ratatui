@@ -109,3 +109,6 @@ pub use posture::*;
 
 mod instrument;
 pub use instrument::*;
+
+mod native_composer;
+pub use native_composer::*;

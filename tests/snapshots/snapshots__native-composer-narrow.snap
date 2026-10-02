@@ -6,17 +6,15 @@ expression: dump(&entry)
 ╭──────────────────────────────────────╮
 │  Review the changes, then            │
 │❯ continue.                       [↵] │
-╰ Enter send ──────────────────────────╯
+╰Enter send ───────────────────────────╯
 ---
 r0 c0..40 fg=Primary bg=Surface
 r1 c0..1 fg=Primary bg=Surface
-r1 c1..3 bg=Surface
-r1 c3..28 fg=Foreground bg=Surface
+r1 c1..28 fg=Foreground bg=Surface
 r1 c28..39 bg=Surface
 r1 c39..40 fg=Primary bg=Surface
 r2 c0..2 fg=Primary bg=Surface
-r2 c2..3 bg=Surface
-r2 c3..12 fg=Foreground bg=Surface
+r2 c2..12 fg=Foreground bg=Surface
 r2 c12..35 bg=Surface
 r2 c35..38 fg=Primary bg=Surface bold
 r2 c38..39 bg=Surface
@@ -27,17 +25,15 @@ r3 c0..40 fg=Primary bg=Surface
 ╭──────────────────────────────────────╮
 │  Review the changes, then            │
 │❯ continue.                       [↵] │
-╰ Enter send ──────────────────────────╯
+╰Enter send ───────────────────────────╯
 ---
 r0 c0..40 fg=Primary bg=Surface
 r1 c0..1 fg=Primary bg=Surface
-r1 c1..3 bg=Surface
-r1 c3..28 fg=Foreground bg=Surface
+r1 c1..28 fg=Foreground bg=Surface
 r1 c28..39 bg=Surface
 r1 c39..40 fg=Primary bg=Surface
 r2 c0..2 fg=Primary bg=Surface
-r2 c2..3 bg=Surface
-r2 c3..12 fg=Foreground bg=Surface
+r2 c2..12 fg=Foreground bg=Surface
 r2 c12..35 bg=Surface
 r2 c35..38 fg=Primary bg=Surface bold
 r2 c38..39 bg=Surface
@@ -48,14 +44,14 @@ r3 c0..40 fg=Primary bg=Surface
 ╭──────────────────────────────────────╮
 │  Review the changes, then            │
 │❯ continue.                       [↵] │
-╰ Enter send ──────────────────────────╯
+╰Enter send ───────────────────────────╯
 ---
 r0 c0..40 fg=Primary
 r1 c0..1 fg=Primary
-r1 c3..28 fg=Foreground
+r1 c1..28 fg=Foreground
 r1 c39..40 fg=Primary
 r2 c0..2 fg=Primary
-r2 c3..12 fg=Foreground
+r2 c2..12 fg=Foreground
 r2 c35..38 fg=Primary bold
 r2 c39..40 fg=Primary
 r3 c0..40 fg=Primary
@@ -64,17 +60,15 @@ r3 c0..40 fg=Primary
 ╭──────────────────────────────────────╮
 │  Review the changes, then            │
 │❯ continue.                       [↵] │
-╰ Enter send ──────────────────────────╯
+╰Enter send ───────────────────────────╯
 ---
 r0 c0..40 fg=Primary bg=Surface|Hover|DiffRemovedTint
 r1 c0..1 fg=Primary bg=Surface|Hover|DiffRemovedTint
-r1 c1..3 bg=Surface|Hover|DiffRemovedTint
-r1 c3..28 fg=Foreground bg=Surface|Hover|DiffRemovedTint
+r1 c1..28 fg=Foreground bg=Surface|Hover|DiffRemovedTint
 r1 c28..39 bg=Surface|Hover|DiffRemovedTint
 r1 c39..40 fg=Primary bg=Surface|Hover|DiffRemovedTint
 r2 c0..2 fg=Primary bg=Surface|Hover|DiffRemovedTint
-r2 c2..3 bg=Surface|Hover|DiffRemovedTint
-r2 c3..12 fg=Foreground bg=Surface|Hover|DiffRemovedTint
+r2 c2..12 fg=Foreground bg=Surface|Hover|DiffRemovedTint
 r2 c12..35 bg=Surface|Hover|DiffRemovedTint
 r2 c35..38 fg=Primary bg=Surface|Hover|DiffRemovedTint bold
 r2 c38..39 bg=Surface|Hover|DiffRemovedTint
@@ -85,14 +79,14 @@ r3 c0..40 fg=Primary bg=Surface|Hover|DiffRemovedTint
 ╭──────────────────────────────────────╮
 │  Review the changes, then            │
 │❯ continue.                       [↵] │
-╰ Enter send ──────────────────────────╯
+╰Enter send ───────────────────────────╯
 ---
 r0 c0..40 fg=Primary
 r1 c0..1 fg=Primary
-r1 c3..28 fg=Foreground
+r1 c1..28 fg=Foreground
 r1 c39..40 fg=Primary
 r2 c0..2 fg=Primary
-r2 c3..12 fg=Foreground
+r2 c2..12 fg=Foreground
 r2 c35..38 fg=Primary bold
 r2 c39..40 fg=Primary
 r3 c0..40 fg=Primary
@@ -101,7 +95,7 @@ r3 c0..40 fg=Primary
 ╭──────────────────────────────────────╮
 │  Review the changes, then            │
 │❯ continue.                       [↵] │
-╰ Enter send ──────────────────────────╯
+╰Enter send ───────────────────────────╯
 ---
 r0 c0..40 fg=Primary
 r1 c0..1 fg=Primary
@@ -115,7 +109,7 @@ r3 c0..40 fg=Primary
 ╭──────────────────────────────────────╮
 │  Review the changes, then            │
 │❯ continue.                       [↵] │
-╰ Enter send ──────────────────────────╯
+╰Enter send ───────────────────────────╯
 ---
 r0 c0..40 fg=Primary
 r1 c0..1 fg=Primary
@@ -129,7 +123,7 @@ r3 c0..40 fg=Primary
 ╭──────────────────────────────────────╮
 │  Review the changes, then            │
 │❯ continue.                       [↵] │
-╰ Enter send ──────────────────────────╯
+╰Enter send ───────────────────────────╯
 ---
 r2 c35..38 bold
 
@@ -137,6 +131,6 @@ r2 c35..38 bold
 +--------------------------------------+
 |  Review the changes, then            |
 |> continue.                       [>] |
-+ Enter send --------------------------+
++Enter send ---------------------------+
 ---
 r2 c35..38 bold

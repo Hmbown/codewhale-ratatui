@@ -6,12 +6,11 @@ expression: dump(&entry)
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │❯ Keep the composer compact and the workflow progress visible.                                    │
 │                                                                                              [↵] │
-╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────╯
+╰Enter send  Shift+Enter newline ──────────────────────────────────────────────────────────────────╯
 ---
 r0 c0..100 fg=Primary bg=Surface
 r1 c0..2 fg=Primary bg=Surface
-r1 c2..3 bg=Surface
-r1 c3..63 fg=Foreground bg=Surface
+r1 c2..63 fg=Foreground bg=Surface
 r1 c63..99 bg=Surface
 r1 c99..100 fg=Primary bg=Surface
 r2 c0..1 fg=Primary bg=Surface
@@ -25,12 +24,11 @@ r3 c0..100 fg=Primary bg=Surface
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │❯ Keep the composer compact and the workflow progress visible.                                    │
 │                                                                                              [↵] │
-╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────╯
+╰Enter send  Shift+Enter newline ──────────────────────────────────────────────────────────────────╯
 ---
 r0 c0..100 fg=Primary bg=Surface
 r1 c0..2 fg=Primary bg=Surface
-r1 c2..3 bg=Surface
-r1 c3..63 fg=Foreground bg=Surface
+r1 c2..63 fg=Foreground bg=Surface
 r1 c63..99 bg=Surface
 r1 c99..100 fg=Primary bg=Surface
 r2 c0..1 fg=Primary bg=Surface
@@ -44,11 +42,11 @@ r3 c0..100 fg=Primary bg=Surface
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │❯ Keep the composer compact and the workflow progress visible.                                    │
 │                                                                                              [↵] │
-╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────╯
+╰Enter send  Shift+Enter newline ──────────────────────────────────────────────────────────────────╯
 ---
 r0 c0..100 fg=Primary
 r1 c0..2 fg=Primary
-r1 c3..63 fg=Foreground
+r1 c2..63 fg=Foreground
 r1 c99..100 fg=Primary
 r2 c0..1 fg=Primary
 r2 c95..98 fg=Primary bold
@@ -59,12 +57,11 @@ r3 c0..100 fg=Primary
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │❯ Keep the composer compact and the workflow progress visible.                                    │
 │                                                                                              [↵] │
-╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────╯
+╰Enter send  Shift+Enter newline ──────────────────────────────────────────────────────────────────╯
 ---
 r0 c0..100 fg=Primary bg=Surface|Hover|DiffRemovedTint
 r1 c0..2 fg=Primary bg=Surface|Hover|DiffRemovedTint
-r1 c2..3 bg=Surface|Hover|DiffRemovedTint
-r1 c3..63 fg=Foreground bg=Surface|Hover|DiffRemovedTint
+r1 c2..63 fg=Foreground bg=Surface|Hover|DiffRemovedTint
 r1 c63..99 bg=Surface|Hover|DiffRemovedTint
 r1 c99..100 fg=Primary bg=Surface|Hover|DiffRemovedTint
 r2 c0..1 fg=Primary bg=Surface|Hover|DiffRemovedTint
@@ -78,11 +75,11 @@ r3 c0..100 fg=Primary bg=Surface|Hover|DiffRemovedTint
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │❯ Keep the composer compact and the workflow progress visible.                                    │
 │                                                                                              [↵] │
-╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────╯
+╰Enter send  Shift+Enter newline ──────────────────────────────────────────────────────────────────╯
 ---
 r0 c0..100 fg=Primary
 r1 c0..2 fg=Primary
-r1 c3..63 fg=Foreground
+r1 c2..63 fg=Foreground
 r1 c99..100 fg=Primary
 r2 c0..1 fg=Primary
 r2 c95..98 fg=Primary bold
@@ -93,7 +90,7 @@ r3 c0..100 fg=Primary
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │❯ Keep the composer compact and the workflow progress visible.                                    │
 │                                                                                              [↵] │
-╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────╯
+╰Enter send  Shift+Enter newline ──────────────────────────────────────────────────────────────────╯
 ---
 r0 c0..100 fg=Primary
 r1 c0..2 fg=Primary
@@ -107,7 +104,7 @@ r3 c0..100 fg=Primary
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │❯ Keep the composer compact and the workflow progress visible.                                    │
 │                                                                                              [↵] │
-╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────╯
+╰Enter send  Shift+Enter newline ──────────────────────────────────────────────────────────────────╯
 ---
 r0 c0..100 fg=Primary
 r1 c0..2 fg=Primary
@@ -121,7 +118,7 @@ r3 c0..100 fg=Primary
 ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
 │❯ Keep the composer compact and the workflow progress visible.                                    │
 │                                                                                              [↵] │
-╰ Enter send  Shift+Enter newline ─────────────────────────────────────────────────────────────────╯
+╰Enter send  Shift+Enter newline ──────────────────────────────────────────────────────────────────╯
 ---
 r2 c95..98 bold
 
@@ -129,6 +126,6 @@ r2 c95..98 bold
 +--------------------------------------------------------------------------------------------------+
 |> Keep the composer compact and the workflow progress visible.                                    |
 |                                                                                              [>] |
-+ Enter send  Shift+Enter newline -----------------------------------------------------------------+
++Enter send  Shift+Enter newline ------------------------------------------------------------------+
 ---
 r2 c95..98 bold

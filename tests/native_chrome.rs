@@ -342,3 +342,218 @@ fn translated_templates_keep_count_order_and_fit_before_clipping() {
     assert_eq!(WorkflowProgress::desired_rows_for(0), 0);
     assert_eq!(WorkflowProgress::desired_rows_for(8), 7);
 }
+
+fn rich_composer_fixture(
+    theme: &codewhale_ratatui::Theme,
+) -> codewhale_ratatui::NativeComposerFrame<'static> {
+    use codewhale_ratatui::{NativeComposerFrame, NativeComposerMenu, NativeComposerStyles};
+    use ratatui::{style::Modifier, text::Line};
+    let background = theme.tui_ground(codewhale_ratatui::TuiGround::Composer);
+    let plain = theme.fg(codewhale_ratatui::Role::Foreground);
+    let primary = theme.fg(codewhale_ratatui::Role::Primary);
+    NativeComposerFrame {
+        text: "a\t\u{202e}中b".into(),
+        cursor: 4,
+        selection: Some((3, 4)),
+        placeholder: Line::styled("Write a task or use /.", plain),
+        enclosed: true,
+        density: NativeComposerDensity::Comfortable,
+        history_search: false,
+        focused: true,
+        can_submit: true,
+        ascii: theme.ascii(),
+        top_title: None,
+        top_right: None,
+        hint: None,
+        quiet_hint: None,
+        menu: NativeComposerMenu::default(),
+        styles: NativeComposerStyles {
+            background,
+            border: primary,
+            quiet_border: theme.fg(codewhale_ratatui::Role::Border),
+            text: plain,
+            selection: plain.patch(theme.bg(codewhale_ratatui::Role::Selected)),
+            prompt: primary,
+            submit: theme
+                .tui_ink(codewhale_ratatui::TuiInk::Info)
+                .add_modifier(Modifier::BOLD),
+        },
+    }
+}
+#[test]
+fn mounted_source_scalars_survive_hidden_controls_and_exact_wrap_boundaries() {
+    use codewhale_ratatui::{
+        native_composer_source_at, native_composer_source_cursor, native_composer_source_plan,
+        native_composer_source_rows,
+    };
+    let input = "a\t\u{202e}中b";
+    let rows = native_composer_source_rows(input, 4);
+    assert_eq!(rows, vec![(0, input.to_owned()), (5, String::new())]);
+    for (cursor, expected) in [
+        (1, (0, 1)),
+        (2, (0, 1)),
+        (3, (0, 1)),
+        (4, (0, 3)),
+        (5, (1, 0)),
+    ] {
+        assert_eq!(native_composer_source_cursor(&rows, cursor), expected);
+    }
+    assert_eq!(native_composer_source_at(input, 4, 1, 0, 0, 0), 3);
+    assert_eq!(
+        native_composer_source_at(input, 4, 2, 0, 0, 0),
+        3,
+        "second cell of wide glyph keeps its source start"
+    );
+    assert_eq!(native_composer_source_at(input, 4, 3, 0, 0, 0), 4);
+    let plan = native_composer_source_plan(input, 5, 4, 1);
+    assert_eq!(plan.scroll_offset, 1);
+    assert_eq!(plan.visible, vec![(5, String::new())]);
+    assert_eq!((plan.cursor_row, plan.cursor_col), (0, 0));
+    assert_eq!(
+        native_composer_source_rows("a\n\nb", 8),
+        vec![(0, "a".into()), (2, "".into()), (3, "b".into())]
+    );
+    // Key motion keeps a display column; the existing wheel keeps its scalar column.
+    // Both use the painter's exact source row boundaries.
+    for (column, expected) in [
+        (codewhale_ratatui::NativeComposerRowColumn::DisplayCells, 7),
+        (codewhale_ratatui::NativeComposerRowColumn::SourceScalars, 6),
+    ] {
+        assert_eq!(
+            codewhale_ratatui::native_composer_step_row("中ab\ncdef", 2, 8, 1, column),
+            Some(expected)
+        );
+    }
+    assert!(
+        codewhale_ratatui::native_composer_step_row(
+            input,
+            0,
+            4,
+            -1,
+            codewhale_ratatui::NativeComposerRowColumn::DisplayCells
+        )
+        .is_none()
+    );
+    for input in [
+        "cafe\u{0301} 中 a long URL https://example.com/path",
+        "1\u{fe0f}\u{20e3} 👩\u{200d}💻 more words",
+    ] {
+        for width in [1, 2, 5, 11, 40] {
+            assert_eq!(
+                codewhale_ratatui::native_composer_wrap_text(input, width).join(""),
+                input
+            );
+        }
+    }
+}
+#[test]
+fn mounted_selection_caret_and_ime_empty_row_share_the_plan() {
+    let theme = Profile::DarkTrue.theme();
+    let mut composer = rich_composer_fixture(&theme);
+    let original = composer.text.clone();
+    let area = Rect::new(7, 5, 40, 5);
+    let mut buf = Buffer::empty(area);
+    let plan = composer.render(area, &mut buf);
+    assert_eq!(
+        composer.text, original,
+        "render cannot edit the source draft"
+    );
+    assert!(!text(&buf).contains(['\t', '\u{202e}']));
+    assert_eq!(
+        buf[(plan.geometry.text.x + 1, plan.cursor.unwrap().y)].symbol(),
+        "中"
+    );
+    assert_eq!(
+        buf[(plan.geometry.text.x + 1, plan.cursor.unwrap().y)].bg,
+        theme.bg(codewhale_ratatui::Role::Selected).bg.unwrap()
+    );
+    composer.text = "".into();
+    composer.cursor = 0;
+    composer.selection = None;
+    for width in [12, 14, 40, 80] {
+        let area = Rect::new(7, 5, width, 5);
+        let plan = composer.plan(area);
+        assert_eq!(
+            plan.cursor.unwrap().y,
+            plan.geometry.text.y + 1,
+            "wrapped hint cannot consume the IME caret row"
+        );
+        assert_eq!(plan.top_padding, 1);
+    }
+}
+#[test]
+fn mounted_menu_pointer_rows_follow_real_wrapping_and_clipping() {
+    use codewhale_ratatui::{NativeComposerMenuItem, testing};
+    use ratatui::text::Line;
+    let theme = Profile::DarkTrue.theme();
+    let mut composer = rich_composer_fixture(&theme);
+    composer.text = "x".into();
+    composer.cursor = 1;
+    composer.selection = None;
+    composer.menu.reserved_rows = 2;
+    composer.menu.pointer_rows = true;
+    composer.menu.items = vec![
+        NativeComposerMenuItem::Line(Line::from("first long menu label wraps over several rows")),
+        NativeComposerMenuItem::Line(Line::from("second row")),
+    ];
+    let area = Rect::new(7, 5, 20, 12);
+    let mut buf = Buffer::empty(area);
+    let plan = composer.render(area, &mut buf);
+    assert!(
+        plan.menu_rects[0].1.height > 1,
+        "the last wrapped row belongs to the same option"
+    );
+    for (_, rect) in &plan.menu_rects {
+        assert!(rect.y >= plan.geometry.inner.y);
+        assert!(rect.bottom() <= plan.geometry.inner.bottom());
+    }
+    let canvas = Rect::new(9, 6, 15, 6);
+    let mut clipped = Buffer::empty(canvas);
+    let partial = composer.render(area, &mut clipped);
+    assert_eq!(partial.area, area.intersection(canvas));
+    for (_, rect) in partial.menu_rects {
+        assert_eq!(rect.intersection(canvas), rect);
+    }
+    for name in [
+        "native-composer-rich-selection",
+        "native-composer-rich-search",
+    ] {
+        let entry = codewhale_ratatui::gallery::entries()
+            .into_iter()
+            .find(|entry| entry.name == name)
+            .unwrap();
+        testing::assert_rules(entry.height, |area, buf, theme| {
+            (entry.draw)(area, buf, theme)
+        });
+    }
+}
+#[test]
+fn mounted_bounds_and_empty_frames_never_publish_stale_targets() {
+    use ratatui::buffer::Cell;
+    let theme = Profile::DarkTrue.theme();
+    let composer = rich_composer_fixture(&theme);
+    let canvas = Rect::new(7, 5, 40, 10);
+    for requested in [
+        Rect::new(9, 6, 80, 12),
+        Rect::new(0, 0, 100, 100),
+        Rect::new(7, 5, 0, 10),
+        Rect::new(7, 5, 40, 0),
+    ] {
+        let mut buf = Buffer::filled(canvas, Cell::new("~"));
+        let before = buf.clone();
+        let plan = composer.render(requested, &mut buf);
+        let visible = requested.intersection(canvas);
+        for y in canvas.y..canvas.bottom() {
+            for x in canvas.x..canvas.right() {
+                if !visible.contains((x, y).into()) {
+                    assert_eq!(buf[(x, y)], before[(x, y)]);
+                }
+            }
+        }
+        if visible.is_empty() {
+            assert!(plan.cursor.is_none());
+            assert!(plan.menu_rects.is_empty());
+            assert!(plan.geometry.submit.is_none());
+        }
+    }
+}

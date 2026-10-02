@@ -1,5 +1,7 @@
 {
   "entries": [
+    "native-composer-rich-selection",
+    "native-composer-rich-search",
     "instrument-surface",
     "session-list",
     "view-sessions",
@@ -422,6 +424,8 @@
       "profile": "dark-truecolor",
       "group": "native-chrome",
       "entries": [
+        "native-composer-rich-selection",
+        "native-composer-rich-search",
         "native-composer",
         "native-composer-narrow",
         "native-composer-quiet",
@@ -434,12 +438,7 @@
         "posture-narrow",
         "posture-context-cap",
         "posture-compact",
-        "metrics-line",
-        "metrics-narrow",
-        "metrics-compact",
-        "metrics-startup",
-        "workflow-tree",
-        "workflow-tree-selected"
+        "metrics-line"
       ]
     },
     {
@@ -447,6 +446,11 @@
       "profile": "dark-truecolor",
       "group": "native-chrome",
       "entries": [
+        "metrics-narrow",
+        "metrics-compact",
+        "metrics-startup",
+        "workflow-tree",
+        "workflow-tree-selected",
         "workflow-tree-clipped",
         "workflow-tree-long"
       ]
@@ -1083,6 +1087,8 @@
       "profile": "light-truecolor",
       "group": "native-chrome",
       "entries": [
+        "native-composer-rich-selection",
+        "native-composer-rich-search",
         "native-composer",
         "native-composer-narrow",
         "native-composer-quiet",
@@ -1095,12 +1101,7 @@
         "posture-narrow",
         "posture-context-cap",
         "posture-compact",
-        "metrics-line",
-        "metrics-narrow",
-        "metrics-compact",
-        "metrics-startup",
-        "workflow-tree",
-        "workflow-tree-selected"
+        "metrics-line"
       ]
     },
     {
@@ -1108,6 +1109,11 @@
       "profile": "light-truecolor",
       "group": "native-chrome",
       "entries": [
+        "metrics-narrow",
+        "metrics-compact",
+        "metrics-startup",
+        "workflow-tree",
+        "workflow-tree-selected",
         "workflow-tree-clipped",
         "workflow-tree-long"
       ]

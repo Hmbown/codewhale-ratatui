@@ -1383,8 +1383,119 @@ fn cost(area: Rect, buf: &mut Buffer, theme: &Theme) {
     dock(WorkbarPanel::Cost, area, buf, theme);
 }
 
+fn rich_composer_facts(theme: &Theme) -> crate::NativeComposerFrame<'static> {
+    use crate::{
+        NativeComposerDensity, NativeComposerFrame, NativeComposerMenu, NativeComposerMenuItem,
+        NativeComposerStyles,
+    };
+    let background = theme.tui_ground(crate::TuiGround::Composer);
+    let plain = theme.fg(crate::Role::Foreground);
+    let muted = theme.fg(crate::Role::Muted);
+    let primary = theme.fg(crate::Role::Primary);
+    let mark = if theme.ascii() { ">" } else { "▸" };
+    NativeComposerFrame {
+        text: if theme.ascii() {
+            "Review the source and keep the change focused"
+        } else {
+            "Review 鲸鱼 cafe\u{0301} and keep the change focused"
+        }
+        .into(),
+        cursor: 12,
+        selection: Some((7, 12)),
+        placeholder: Line::styled("Write a task or use /.", muted),
+        enclosed: true,
+        density: NativeComposerDensity::Comfortable,
+        history_search: false,
+        focused: true,
+        can_submit: true,
+        ascii: theme.ascii(),
+        top_title: None,
+        top_right: Some(Line::styled(
+            " Builder ",
+            theme
+                .fg(crate::Role::Attention)
+                .add_modifier(Modifier::BOLD),
+        )),
+        hint: Some(Line::styled(" Enter chooses; Esc closes menu ", muted)),
+        quiet_hint: None,
+        styles: NativeComposerStyles {
+            background,
+            border: primary,
+            quiet_border: theme.fg(crate::Role::Border),
+            text: plain,
+            selection: plain.patch(theme.bg(crate::Role::Selected)).add_modifier(
+                if theme.color(crate::Role::Foreground).is_none() {
+                    Modifier::REVERSED
+                } else {
+                    Modifier::empty()
+                },
+            ),
+            prompt: primary,
+            submit: theme
+                .tui_ink(crate::TuiInk::Info)
+                .add_modifier(Modifier::BOLD),
+        },
+        menu: NativeComposerMenu {
+            selected: 1,
+            reserved_rows: 3,
+            pointer_rows: true,
+            items: vec![
+                NativeComposerMenuItem::Columns {
+                    name: "/review".into(),
+                    description: "Review the current changes and show findings".into(),
+                    prefix: Span::styled(" ", plain),
+                    marker: Span::styled(" ", plain),
+                    name_style: plain,
+                    description_style: muted,
+                },
+                NativeComposerMenuItem::Columns {
+                    name: "/test or /check".into(),
+                    description: "Run focused checks and preserve their receipt".into(),
+                    prefix: Span::styled(" ", primary),
+                    marker: Span::styled(mark, primary),
+                    name_style: primary,
+                    description_style: plain,
+                },
+            ],
+        },
+    }
+}
+fn rich_composer(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    rich_composer_facts(theme).paint(area, buf, theme);
+}
+fn rich_composer_search(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let mut composer = rich_composer_facts(theme);
+    composer.text = "".into();
+    composer.cursor = 0;
+    composer.selection = None;
+    composer.history_search = true;
+    composer.top_title = Some(Line::styled(
+        " Search history ",
+        theme.fg(crate::Role::Muted),
+    ));
+    composer.menu.items = vec![crate::NativeComposerMenuItem::Line(Line::styled(
+        if theme.ascii() {
+            "> Review this project"
+        } else {
+            "▸ Review this project"
+        },
+        theme.fg(crate::Role::Foreground),
+    ))];
+    composer.menu.selected = 0;
+    composer.menu.reserved_rows = 1;
+    composer.menu.pointer_rows = false;
+    composer.paint(area, buf, theme);
+}
+
 pub(crate) fn entries() -> Vec<Entry> {
     [
+        (
+            "native-composer-rich-selection",
+            72,
+            9,
+            rich_composer as fn(Rect, &mut Buffer, &Theme),
+        ),
+        ("native-composer-rich-search", 72, 7, rich_composer_search),
         (
             "instrument-surface",
             100,
