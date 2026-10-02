@@ -49,7 +49,7 @@ Try `cargo run --example starter` for a small editable app, or
 ## Explore the components
 
 Open a collection to see its full dark and light previews. Every one of the
-195 gallery entries is here, rendered from actual Ratatui buffers. The
+197 gallery entries is here, rendered from actual Ratatui buffers. The
 [component guide](COMPONENTS.md) maps them to Codewhale's terminal views.
 Run `cargo run --example gallery` to try every variation yourself.
 
@@ -391,16 +391,16 @@ Headings, tabs, toggles and keyboard maps.
 
 <a id="conversation-and-queued-input"></a>
 <details>
-<summary>Conversation and queued input · 8 examples</summary>
+<summary>Conversation and queued input · 10 examples</summary>
 
 Rich prose, code, attached context and the next instruction.
 
-![Pending queued, Pending steering, Pending paused, Pending context, Transcript prose, Transcript list table, Transcript code, Transcript links — dark truecolor](<assets/readme/transcript.dark-truecolor.svg>)
+![Pending queued, Pending steering, Pending paused, Pending context, Pending native mixed, Pending native queued, Transcript prose, Transcript list table, Transcript code, Transcript links — dark truecolor](<assets/readme/transcript.dark-truecolor.svg>)
 
 <details>
 <summary>Light appearance</summary>
 
-![Pending queued, Pending steering, Pending paused, Pending context, Transcript prose, Transcript list table, Transcript code, Transcript links — light truecolor](<assets/readme/transcript.light-truecolor.svg>)
+![Pending queued, Pending steering, Pending paused, Pending context, Pending native mixed, Pending native queued, Transcript prose, Transcript list table, Transcript code, Transcript links — light truecolor](<assets/readme/transcript.light-truecolor.svg>)
 
 </details>
 
@@ -756,7 +756,7 @@ on their next paint; components hold roles rather than cached colors.
 | Water and palette | `OceanColumn`, `OceanRamp`, `OceanPhase`, `Ombre`, `WaterPalette` | Native TUI depth column, context rise, steady attention tint, completion breath and five spatial materials; contrast and fallback guards |
 | Living whale | `whale_motion::Stage`, `Director`, `ColoredGrid` | One session performance, authored clips and springs, native colored props, shared terminal cadence and hide/resume boundaries |
 | Session surfaces | `Message`, `ToolCard`, `Composer`, `AgentCard`, `Fleet` | Speaker anchors, output rails, honest omission counts, caller-owned prompts and each agent's own state, route and task |
-| Pending input | `PendingInputPreview`, `PendingInputItem`, `ContextPreviewItem` | Queued, steering, editing, paused and in-flight input; included context and host-dispatched action metadata |
+| Pending input | `PendingInputPreview`, `PendingInputItem`, `ContextPreviewItem`, `PendingCard` | Queued, steering, editing, paused and in-flight input; native composer preview over localized caller facts; context and host-dispatched actions |
 | Rich transcript | `Transcript`, `TranscriptBlock`, `TranscriptSpan`, `CodeBlock` | Authored headings, prose, quotes, lists, tables and numbered code; exact copy source and out-of-band links |
 | Identity and state | `Whale`, `WhaleState`, `Icon`, `StatusMark`, `StateWords` | The v2 whale's 17 actions and pods; marks always paired with words; localized state labels |
 | Surfaces | `Panel`, `Depth`, `Dialog`, `Sheet`, `HorizonRule` | Deep, stage, raised and overlay grounds; centered decisions, edge-anchored sheets and the composer ledge |
