@@ -683,6 +683,48 @@ fn tall_rows_scroll_whole_and_click_to_their_row() {
     );
 }
 
+/// A custom row may report any height. One of `u16::MAX` lines after a
+/// one-line row used to overflow the running `y` (a debug panic, a wrapped
+/// position in release); the row is clipped to what the viewport has left.
+#[test]
+fn a_row_reporting_u16_max_lines_is_clipped_not_overflowed() {
+    let mut rs = rows(3);
+    rs[1].lines = u16::MAX;
+    let theme = Profile::DarkTrue.theme();
+    for height in [1u16, 2, 5, 12] {
+        let area = Rect::new(0, 0, 30, height);
+        for selected in 0..3 {
+            let state = ListState::new(selected);
+            let list = List::new(&rs, state);
+            let shown = text_of(30, height, Profile::NoColor, |a, b, t| list.paint(a, b, t));
+            assert!(
+                shown.contains("row"),
+                "selected {selected}, height {height}: {shown}"
+            );
+            // The selected row is on screen, wherever the huge row sits.
+            assert!(
+                (0..height).any(|line| list.row_at(area, 3, line) == Some(selected)),
+                "selected {selected}, height {height}: {shown}"
+            );
+            assert_eq!(list.row_at(area, 3, height), None);
+        }
+    }
+    // Starting at the top, the one-line row is followed by the huge one, which
+    // fills the rest of the viewport.
+    let list = List::new(&rs, ListState::new(0));
+    let area = Rect::new(0, 0, 30, 5);
+    assert_eq!(list.row_at(area, 3, 0), Some(0));
+    assert_eq!(list.row_at(area, 3, 1), Some(1));
+    assert_eq!(list.row_at(area, 3, 4), Some(1));
+    let buf = testing::render(30, 5, |a, b| list.paint(a, b, &theme));
+    let shown = testing::text(&buf);
+    assert!(
+        shown.contains("row 0") && shown.contains("row 1") && !shown.contains("row 2"),
+        "{shown}"
+    );
+    assert_eq!(list.height(30, &theme), u16::MAX, "the total saturates");
+}
+
 #[test]
 fn an_empty_list_paints_its_empty_state() {
     let none: Vec<Row> = Vec::new();

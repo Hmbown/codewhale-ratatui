@@ -457,7 +457,9 @@ impl<'a, R: ListRow> List<'a, R> {
                 }
                 let height = h(index).min(area.height - y);
                 slots.push(Slot { index, y, height });
-                y += h(index);
+                // By the clipped height: a row may report up to `u16::MAX`
+                // lines, and `y` plus that would overflow.
+                y += height;
             }
             let overflow = offset > 0
                 || slots
