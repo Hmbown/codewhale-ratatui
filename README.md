@@ -556,7 +556,7 @@ Session state, attention, completion and the pod.
 
 <a id="every-whale-action"></a>
 <details>
-<summary>Every whale action · 1 examples</summary>
+<summary>Every whale action · 1 example</summary>
 
 The complete v2 state vocabulary, in terminal cells.
 

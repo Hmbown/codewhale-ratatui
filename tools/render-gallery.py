@@ -402,8 +402,9 @@ def readme_gallery(readme, destination, index):
             anchor = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
             boards = [item for item in primary if item["group"] == family]
             count = len({entry for item in boards for entry in item["entries"]})
+            quantity = f"{count} example" + ("s" if count != 1 else "")
             lines.extend([f'<a id="{anchor}"></a>', "<details>",
-                          f"<summary>{title} · {count} examples</summary>", "", description + ".", ""])
+                          f"<summary>{title} · {quantity}</summary>", "", description + ".", ""])
             lines.extend(embed(item) + "\n" for item in boards)
             light = [item for item in index if item["group"] == family and item["profile"].startswith("light")]
             if light:
