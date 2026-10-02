@@ -703,7 +703,7 @@ fn explicit_ramp_reaches_every_sampling_and_finishing_path() {
 #[test]
 fn explicit_ramp_cannot_grant_capabilities_or_overwrite_semantic_cells() {
     let ramp = explicit_ramp();
-    let area = Rect::new(3, 5, 6, 1);
+    let area = Rect::new(3, 5, 7, 1);
     let column = OceanColumn::new(Duration::ZERO, MotionMode::Still).ramp(ramp);
     for profile in Profile::ALL {
         let theme = profile.theme();
@@ -734,7 +734,10 @@ fn explicit_ramp_cannot_grant_capabilities_or_overwrite_semantic_cells() {
     buf[(4, 5)].set_symbol("?").set_fg(Color::Rgb(12, 34, 56));
     buf[(5, 5)].modifier.insert(Modifier::REVERSED);
     buf[(6, 5)].set_bg(Color::Rgb(99, 98, 97));
-    buf[(7, 5)].set_symbol("x").set_fg(Color::White);
+    buf[(7, 5)]
+        .set_symbol("x")
+        .set_fg(Color::Rgb(255, 255, 255));
+    buf[(9, 5)].set_symbol("x").set_fg(Color::White);
     let before = buf.clone();
     column.apply(area, &mut buf, &theme);
     for x in 3..7 {
@@ -743,6 +746,11 @@ fn explicit_ramp_cannot_grant_capabilities_or_overwrite_semantic_cells() {
     for x in 7..9 {
         assert_eq!(buf[(x, 5)].bg, Color::Rgb(12, 34, 56));
     }
+    assert_eq!(
+        buf[(9, 5)],
+        before[(9, 5)],
+        "a named terminal ink has no verified RGB contrast"
+    );
     let before = buf.clone();
     column.apply_matching(Rect::new(0, 0, 1, 1), &mut buf, &theme, Color::Reset);
     assert_eq!(buf, before, "off-buffer matching is inert");
