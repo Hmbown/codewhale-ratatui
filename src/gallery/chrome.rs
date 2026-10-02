@@ -5,10 +5,7 @@
 use ratatui::{buffer::Buffer, layout::Rect};
 
 use super::Entry;
-use crate::{
-    Heading, Paint, Segmented, SegmentedState, SettingDetail, SettingRow, Tab, Tabs, TabsState,
-    Theme, Toggle,
-};
+use crate::{Heading, Paint, Segmented, SegmentedState, Tab, Tabs, TabsState, Theme, Toggle};
 
 fn row(area: Rect, y: u16, height: u16) -> Rect {
     Rect {
@@ -91,35 +88,6 @@ fn segmented(area: Rect, buf: &mut Buffer, theme: &Theme) {
     Segmented::new(motion, SegmentedState::new(1)).paint(row(narrow, 4, 1), buf, theme);
 }
 
-fn settings(area: Rect, buf: &mut Buffer, theme: &Theme) {
-    let rows = [
-        SettingRow::new("Theme", "Shoreline")
-            .source("this project")
-            .changed(true)
-            .modified(true)
-            .selected(true),
-        SettingRow::new("Motion", "Reduced").source("your settings"),
-        SettingRow::new("Context window", "200k tokens")
-            .apply("Read only")
-            .locked("Set by your admin"),
-    ];
-    let mut y = area.y;
-    for row in rows {
-        let height = row
-            .height(area.width, theme)
-            .min(area.bottom().saturating_sub(y));
-        if height == 0 {
-            return;
-        }
-        row.paint(Rect { y, height, ..area }, buf, theme);
-        y += height;
-    }
-    y = y.saturating_add(1);
-    if y < area.bottom() {
-        SettingDetail::new("Theme", "Sets the colors Codewhale paints. Shoreline follows your terminal's light or dark ground.").default_value("System").source("saved to this project").modified(true).paint(Rect { y, height: area.bottom() - y, ..area }, buf, theme);
-    }
-}
-
 pub(crate) fn entries() -> Vec<Entry> {
     vec![
         Entry {
@@ -145,15 +113,6 @@ pub(crate) fn entries() -> Vec<Entry> {
             width: 40,
             height: 5,
             draw: segmented,
-        },
-        // Not a chrome component: the settings rows that the other session
-        // drafted into this file (`src/components/settings.rs`). Kept
-        // as it was found.
-        Entry {
-            name: "settings",
-            width: 80,
-            height: 13,
-            draw: settings,
         },
     ]
 }
