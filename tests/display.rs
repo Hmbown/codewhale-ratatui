@@ -858,6 +858,166 @@ fn a_clipped_diff_counts_the_lines_it_left_out() {
     assert_eq!(text_of(&diff, Profile::NoColor, 40, 1), " 1 + line");
 }
 
+/// A changed line says what it is at any width: number columns are shed before
+/// the sign. The number gutter used to take a fixed five cells ahead of it, so
+/// in 1 to 4 columns a NO_COLOR diff showed blanks or digits and no `+`/`-`.
+#[test]
+fn a_very_narrow_diff_keeps_the_sign_and_sheds_the_numbers() {
+    let lines = vec![
+        DiffLine::context(12345, 12345, "keep"),
+        DiffLine::removed(12346, "gone"),
+        DiffLine::added(12346, "new"),
+    ];
+    for (profile, minus) in [(Profile::NoColor, "\u{2212}"), (Profile::Ascii, "-")] {
+        for gutter in [None, Some(DiffGutter::Both), Some(DiffGutter::Single)] {
+            let mut diff = Diff::new(lines.clone()).wrap(DiffWrap::Truncate);
+            diff.gutter = gutter;
+            for width in 1..=4u16 {
+                let text = text_of(&diff, profile, width, 3);
+                let rows: Vec<&str> = text.lines().collect();
+                let case = format!("{profile:?} {gutter:?} width {width}: {rows:?}");
+                assert!(rows[1].starts_with(minus), "{case}");
+                assert!(rows[2].starts_with('+'), "{case}");
+                assert!(
+                    !rows[0].contains('+') && !rows[0].contains(minus),
+                    "context carries no sign: {case}"
+                );
+                assert!(
+                    rows.iter().all(|r| !r.chars().any(|c| c.is_ascii_digit())),
+                    "no number fits: {case}"
+                );
+                if width >= 3 {
+                    assert!(rows[2].starts_with("+ n"), "{case}");
+                }
+            }
+        }
+    }
+    // The widths the finding names, exactly.
+    let diff = Diff::new(lines);
+    assert_eq!(text_of(&diff, Profile::NoColor, 1, 3), "\n\u{2212}\n+");
+    assert_eq!(
+        text_of(&diff, Profile::NoColor, 3, 3).lines().nth(2),
+        Some("+ n")
+    );
+    assert_eq!(
+        text_of(&diff, Profile::NoColor, 4, 3).lines().nth(2),
+        Some("+ n\u{2026}")
+    );
+    // A width that holds the numbers keeps them.
+    assert_eq!(
+        text_of(&diff, Profile::NoColor, 12, 3).lines().nth(2),
+        Some("12346 + new")
+    );
+    // A note under a changed line shares the prefix and never outgrows it.
+    let note = Diff::new(vec![DiffLine::new(DiffKind::Note, "\\ No newline")]);
+    for width in 1..=4 {
+        let buf = render(&note, Profile::NoColor, width, 1);
+        assert_eq!(buf.area.width, width);
+    }
+}
+
+/// `+N more` counts logical lines that are not fully on screen, so a wrapped
+/// line cut off part-way is counted: it used to count every line with any row
+/// shown and report `+0 more` for three hidden rows.
+#[test]
+fn a_partly_shown_wrapped_line_is_counted_as_left_out() {
+    let long = "x".repeat(40);
+    let diff = Diff::new(vec![DiffLine::added(1, &long)])
+        .wrap(DiffWrap::Wrap)
+        .gutter(DiffGutter::Off);
+    // Eleven cells of text: 4 rows. Height 2: one row, then the count.
+    let theme = Profile::NoColor.theme();
+    assert_eq!(diff.height(13, &theme), 4);
+    let text = text_of(&diff, Profile::NoColor, 13, 2);
+    assert_eq!(text.lines().count(), 2, "{text}");
+    assert_eq!(text.lines().last(), Some("+1 more"), "{text}");
+
+    // The partly shown line and the lines after it, each counted once.
+    let diff = Diff::new(vec![
+        DiffLine::added(1, "first"),
+        DiffLine::added(2, &long),
+        DiffLine::added(3, "third"),
+    ])
+    .wrap(DiffWrap::Wrap)
+    .gutter(DiffGutter::Off);
+    let text = text_of(&diff, Profile::NoColor, 13, 3);
+    assert!(text.contains("first"), "{text}");
+    assert_eq!(text.lines().last(), Some("+2 more"), "{text}");
+    // Exactly enough height: nothing is left out and no count is drawn.
+    let rows = diff.height(13, &theme);
+    let text = text_of(&diff, Profile::NoColor, 13, rows);
+    assert!(!text.contains("more"), "{text}");
+    // One row short: the count replaces the last row, so the long line loses
+    // its final row and "third" goes too: two lines are not fully shown
+    // (before, the long line counted as shown and this read "+1 more").
+    let text = text_of(&diff, Profile::NoColor, 13, rows - 1);
+    assert_eq!(text.lines().last(), Some("+2 more"), "{text}");
+}
+
+/// A rectangle that runs past the buffer is clipped to it before anything is
+/// laid out, so the `+N more` row lands on the buffer's last row instead of
+/// below it, and nothing is written outside the visible part.
+#[test]
+fn a_diff_is_clipped_to_the_buffer_before_it_is_laid_out() {
+    let lines: Vec<DiffLine> = (1..=10).map(|n| DiffLine::added(n, "line")).collect();
+    let diff = Diff::new(lines);
+    let theme = Profile::NoColor.theme();
+    // A buffer that does not start at the origin, four rows tall.
+    let area = Rect::new(5, 3, 30, 4);
+    let cases = [
+        ("taller than the buffer", Rect::new(5, 3, 30, 10)),
+        ("starting above and left of it", Rect::new(0, 0, 40, 12)),
+        ("wider and taller", Rect::new(5, 3, 100, 100)),
+    ];
+    for (label, request) in cases {
+        let before = Buffer::filled(area, ratatui::buffer::Cell::new("\u{b7}"));
+        let mut buf = before.clone();
+        diff.paint(request, &mut buf, &theme);
+        let visible = request.intersection(area);
+        let last = buf.area.bottom() - 1;
+        let row = |y: u16| -> String {
+            (area.left()..area.right())
+                .map(|x| buf[(x, y)].symbol())
+                .collect::<String>()
+        };
+        assert!(
+            row(last).trim_end().starts_with("+7 more"),
+            "{label}: {}",
+            row(last)
+        );
+        assert!(row(area.y).contains("line"), "{label}: {}", row(area.y));
+        for y in area.top()..area.bottom() {
+            for x in area.left()..area.right() {
+                let inside = x >= visible.left()
+                    && x < visible.right()
+                    && y >= visible.top()
+                    && y < visible.bottom();
+                if !inside {
+                    assert_eq!(
+                        buf[(x, y)],
+                        before[(x, y)],
+                        "{label}: ({x}, {y}) was written"
+                    );
+                }
+            }
+        }
+    }
+    // Entirely outside, empty, and far away: nothing changes, nothing panics.
+    for request in [
+        Rect::new(40, 3, 10, 4),
+        Rect::new(5, 7, 30, 4),
+        Rect::new(0, 0, 4, 2),
+        Rect::new(5, 3, 0, 4),
+        Rect::new(5, 3, 30, 0),
+        Rect::new(u16::MAX - 5, u16::MAX - 5, 5, 5),
+    ] {
+        let before = Buffer::filled(area, ratatui::buffer::Cell::new("\u{b7}"));
+        let mut buf = before.clone();
+        diff.paint(request, &mut buf, &theme);
+        assert_eq!(buf, before, "{request:?}");
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Tree
 // ---------------------------------------------------------------------------

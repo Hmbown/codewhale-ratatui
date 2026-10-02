@@ -272,7 +272,9 @@ pub struct Diff<'a> {
     pub wrap: DiffWrap,
     /// Spaces per tab stop.
     pub tab_width: u8,
-    /// `None` picks by width: both numbers from 56 columns, one below.
+    /// `None` picks by width: both numbers from 56 columns, one below. A
+    /// gutter that does not fit gives way (both numbers, one, none) so the
+    /// `+`/`-` sign always shows, down to a single column.
     pub gutter: Option<DiffGutter>,
     pub highlight: Option<DiffHighlight>,
     /// The first line to show: the host's scroll position.
@@ -426,6 +428,31 @@ fn digits(n: u32) -> usize {
     n.max(1).ilog10() as usize + 1
 }
 
+/// Cells the number columns take, with the space after each.
+fn numbers_width(gutter: DiffGutter, nw: usize) -> usize {
+    match gutter {
+        DiffGutter::Both => 2 * nw + 2,
+        DiffGutter::Single => nw + 1,
+        DiffGutter::Off => 0,
+    }
+}
+
+/// The richest gutter that leaves the sign, the space after it and a cell of
+/// text in `width` columns, and whether the space fits. Numbers are shed
+/// first (`Both`, then `Single`, then none); the sign is the last thing to go,
+/// so a changed line says what it is at any width.
+fn fit_gutter(wanted: DiffGutter, nw: usize, width: usize) -> (DiffGutter, bool) {
+    let ladder = match wanted {
+        DiffGutter::Both => &[DiffGutter::Both, DiffGutter::Single, DiffGutter::Off][..],
+        DiffGutter::Single => &[DiffGutter::Single, DiffGutter::Off][..],
+        DiffGutter::Off => &[DiffGutter::Off][..],
+    };
+    match ladder.iter().find(|g| numbers_width(**g, nw) + 3 <= width) {
+        Some(g) => (*g, true),
+        None => (DiffGutter::Off, false),
+    }
+}
+
 impl Diff<'_> {
     fn number_width(&self) -> usize {
         let top = self
@@ -447,11 +474,9 @@ impl Diff<'_> {
             DiffGutter::Single
         });
         let nw = self.number_width();
-        let gutter_w = match gutter {
-            DiffGutter::Both => 2 * nw + 4,
-            DiffGutter::Single => nw + 3,
-            DiffGutter::Off => 2,
-        };
+        let (gutter, gap) = fit_gutter(gutter, nw, width);
+        // Number columns, the sign, and the space after it when there is room.
+        let gutter_w = numbers_width(gutter, nw) + 1 + usize::from(gap);
         let mut rows = Vec::new();
         for (index, line) in self.lines.iter().enumerate().skip(self.scroll) {
             let changed = matches!(line.kind, DiffKind::Added | DiffKind::Removed);
@@ -481,7 +506,8 @@ impl Diff<'_> {
             } else {
                 0
             };
-            let avail = width.saturating_sub(prefix_w).max(1);
+            // Zero when even the sign takes the whole row: no body is shown.
+            let avail = width.saturating_sub(prefix_w);
             let all = pieces(line.text, usize::from(self.tab_width.max(1)));
             // The one ellipsis; ASCII spells it out where there is room.
             let mark = match (ascii, avail) {
@@ -490,7 +516,11 @@ impl Diff<'_> {
                 (true, _) => ".",
             };
             let mark_w = text::width(mark);
-            let cuts = split_rows(&all, avail, self.wrap, mark_w);
+            let cuts = if avail == 0 {
+                vec![(0, 0, false)]
+            } else {
+                split_rows(&all, avail, self.wrap, mark_w)
+            };
             let highlights = match (self.highlight, own_gutter) {
                 (Some(highlight), true) => highlight(line.text),
                 _ => Vec::new(),
@@ -522,7 +552,9 @@ impl Diff<'_> {
                         theme.fg(Role::Foreground)
                     };
                     spans.push(Span::styled(sign.to_string(), sign_style));
-                    spans.push(Span::raw(" "));
+                    if gap {
+                        spans.push(Span::raw(" "));
+                    }
                 } else if line.kind == DiffKind::Note {
                     spans.push(Span::raw(" ".repeat(gutter_w)));
                 }
@@ -588,6 +620,7 @@ impl Diff<'_> {
 
 impl Paint for Diff<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return;
         }
@@ -607,10 +640,15 @@ impl Paint for Diff<'_> {
             Line::from(row.spans.clone()).render(rect, buf);
         }
         if clipped {
-            let mut lines_shown: Vec<usize> = rows.iter().take(shown).map(|r| r.line).collect();
-            lines_shown.dedup();
-            let hidden = self.lines.len().saturating_sub(self.scroll) - lines_shown.len();
-            let more = format!("+{hidden} {}", text::display_safe(&self.words.more));
+            // Lines with a row that is not on screen, counted once each: a
+            // wrapped line cut off part-way is not fully shown either.
+            let mut hidden_lines: Vec<usize> = rows.iter().skip(shown).map(|r| r.line).collect();
+            hidden_lines.dedup();
+            let more = format!(
+                "+{} {}",
+                hidden_lines.len(),
+                text::display_safe(&self.words.more)
+            );
             let more = text::truncate(&more, usize::from(area.width), theme.ascii());
             let rect = Rect::new(area.x, area.y + shown as u16, area.width, 1);
             Line::from(Span::styled(more.into_owned(), theme.fg(Role::Muted))).render(rect, buf);
