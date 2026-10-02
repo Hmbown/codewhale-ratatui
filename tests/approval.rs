@@ -1671,3 +1671,216 @@ fn a_non_ascii_subject_keeps_the_rules_outside_ascii() {
     });
     testing::assert_frames_keep_the_rules(&frames);
 }
+
+fn native_decision_fixture() -> codewhale_ratatui::DecisionBand {
+    use codewhale_ratatui::{DecisionBand, DecisionBandAction, DecisionBandSave};
+    use ratatui::{
+        style::{Color, Style},
+        text::{Line, Span},
+    };
+    let plain = Style::default().fg(Color::Rgb(181, 192, 203));
+    DecisionBand {
+        body: (0..20)
+            .map(|i| Line::styled(format!("  request line {i}: 你好 cafe\u{0301}"), plain))
+            .collect(),
+        saves: vec![DecisionBandSave {
+            summary: "always allow".into(),
+            entries: vec!["change src/你好.rs".into()],
+            omitted: 2,
+            label: "Save:   ".into(),
+            separator: " · ".into(),
+            compact_more: " +{count} more".into(),
+            full_more: "... {count} more".into(),
+            label_style: plain,
+            summary_style: plain,
+            entries_style: plain,
+            more_style: plain,
+        }],
+        question: Line::styled("  Continue?", plain),
+        actions: vec![
+            DecisionBandAction {
+                line: Line::styled("  [1/y] Allow exactly this call", plain),
+                persistent: false,
+            },
+            DecisionBandAction {
+                line: Line::styled("  [p] Save this exact project rule", plain),
+                persistent: true,
+            },
+            DecisionBandAction {
+                line: Line::styled("> [3/n] Deny", plain.add_modifier(Modifier::BOLD)),
+                persistent: false,
+            },
+        ],
+        footer: Line::styled("  Enter choose; Alt+V details", plain),
+        save_hint: Some(Span::styled(" / s save ask rule", plain)),
+        background: Style::default().bg(Color::Rgb(21, 32, 43)),
+        rule: Span::styled("─", plain),
+        truncation_hint: Span::styled("  truncated: Alt+V", plain),
+        collapsed: None,
+    }
+}
+
+#[test]
+fn native_band_gallery_entries_keep_every_profile_and_bounds() {
+    for name in ["approval-native-band", "approval-native-band-collapsed"] {
+        let entry = codewhale_ratatui::gallery::entries()
+            .into_iter()
+            .find(|entry| entry.name == name)
+            .expect("actual native gallery fixture");
+        testing::assert_rules(entry.height, |area, buf, theme| {
+            (entry.draw)(area, buf, theme)
+        });
+    }
+}
+
+#[test]
+fn native_band_save_coverage_actions_and_wrapped_hitboxes_are_one_plan() {
+    let band = native_decision_fixture();
+    for width in [20, 40, 80] {
+        for height in [1, 6, 9, 12, 20, 40] {
+            let area = Rect::new(7, 5, width, height);
+            let plan = band.plan(area);
+            assert_eq!(plan.region.bottom(), area.bottom());
+            assert_eq!(plan.action_rects.len(), 3);
+            assert_eq!(plan.action_rects[1].height > 0, plan.save_shown);
+            if plan.save_shown {
+                assert!(plan.save_rect.height > 0);
+                assert!(plan.save_rect.bottom() <= plan.control_rect.y);
+            }
+            for rect in &plan.action_rects {
+                if !rect.is_empty() {
+                    assert_eq!(rect.width, width);
+                    assert!(rect.y >= plan.control_rect.y);
+                    assert!(rect.bottom() <= area.bottom());
+                }
+            }
+            let mut buf = Buffer::empty(area);
+            let painted = band.render(area, &mut buf);
+            assert_eq!(painted.region, plan.region);
+            assert_eq!(painted.action_rects, plan.action_rects);
+            let text = all_text(&buf);
+            if !plan.save_shown {
+                assert!(!text.contains("[p]"));
+                assert!(!text.contains("s save"));
+            }
+        }
+    }
+    let plan = band.plan(Rect::new(7, 5, 20, 40));
+    assert!(
+        plan.action_rects[0].height > 1,
+        "an option owns all of its wrapped rows"
+    );
+}
+
+#[test]
+fn native_band_clips_before_planning_and_preserves_guard_cells() {
+    use ratatui::buffer::Cell;
+    let band = native_decision_fixture();
+    let canvas = Rect::new(7, 5, 30, 12);
+    for requested in [
+        Rect::new(10, 7, 40, 20),
+        Rect::new(0, 0, 100, 100),
+        Rect::new(50, 50, 20, 20),
+        Rect::new(7, 5, 0, 10),
+    ] {
+        let before = Buffer::filled(canvas, Cell::new("~"));
+        let mut actual = before.clone();
+        let plan = band.render(requested, &mut actual);
+        let visible = requested.intersection(canvas);
+        let mut expected = before.clone();
+        band.render(visible, &mut expected);
+        assert_eq!(actual, expected);
+        for y in canvas.y..canvas.bottom() {
+            for x in canvas.x..canvas.right() {
+                if !visible.contains((x, y).into()) {
+                    assert_eq!(actual[(x, y)], before[(x, y)]);
+                }
+            }
+        }
+        if visible.is_empty() {
+            assert!(!plan.save_shown);
+            assert!(plan.action_rects.iter().all(|rect| rect.is_empty()));
+        }
+    }
+}
+
+#[test]
+fn native_band_collapsed_and_empty_frames_withdraw_all_interactive_geometry() {
+    use ratatui::text::Line;
+    let mut band = native_decision_fixture();
+    band.collapsed = Some(Line::from("  Waiting [Tab expand]"));
+    let area = Rect::new(7, 5, 40, 20);
+    let plan = band.plan(area);
+    assert_eq!(plan.region, Rect::new(7, 24, 40, 1));
+    assert!(!plan.save_shown);
+    assert_eq!(plan.action_rects, vec![Rect::default(); 3]);
+    band.collapsed = None;
+    let plan = band.plan(Rect::new(7, 5, 0, 20));
+    assert!(!plan.save_shown);
+    assert_eq!(plan.action_rects, vec![Rect::default(); 3]);
+}
+
+#[test]
+fn native_band_sanitizes_every_styled_field_before_fit_and_paint() {
+    fn hostile(value: &str) -> String {
+        format!("\u{202e}\n\t\u{1b}{value}\u{2066}\u{0007}")
+    }
+    fn hostile_line(line: &mut ratatui::text::Line<'static>) {
+        for span in &mut line.spans {
+            span.content = hostile(&span.content).into();
+        }
+    }
+    let clean = native_decision_fixture();
+    let mut dirty = clean.clone();
+    for line in &mut dirty.body {
+        hostile_line(line);
+    }
+    hostile_line(&mut dirty.question);
+    for action in &mut dirty.actions {
+        hostile_line(&mut action.line);
+    }
+    hostile_line(&mut dirty.footer);
+    if let Some(span) = &mut dirty.save_hint {
+        span.content = hostile(&span.content).into();
+    }
+    dirty.rule.content = hostile(&dirty.rule.content).into();
+    dirty.truncation_hint.content = hostile(&dirty.truncation_hint.content).into();
+    for save in &mut dirty.saves {
+        save.summary = hostile(&save.summary);
+        for entry in &mut save.entries {
+            *entry = hostile(entry);
+        }
+        save.label = hostile(&save.label);
+        save.separator = hostile(&save.separator);
+        save.compact_more = hostile(&save.compact_more);
+        save.full_more = hostile(&save.full_more);
+    }
+    for width in [20, 40, 80] {
+        for height in [1, 6, 12, 40] {
+            let area = Rect::new(7, 5, width, height);
+            let mut expected = Buffer::empty(area);
+            let expected_plan = clean.render(area, &mut expected);
+            let mut actual = Buffer::empty(area);
+            let actual_plan = dirty.render(area, &mut actual);
+            assert_eq!(actual, expected, "all content and exact styles, {area:?}");
+            assert_eq!(actual_plan.region, expected_plan.region);
+            assert_eq!(actual_plan.save_shown, expected_plan.save_shown);
+            assert_eq!(actual_plan.action_rects, expected_plan.action_rects);
+        }
+    }
+    let mut clean = clean;
+    clean.collapsed = Some(ratatui::text::Line::styled(
+        "  Waiting [Tab expand]",
+        clean.rule.style,
+    ));
+    dirty.collapsed = clean.collapsed.clone();
+    hostile_line(dirty.collapsed.as_mut().unwrap());
+    let area = Rect::new(7, 5, 40, 20);
+    let mut expected = Buffer::empty(area);
+    let mut actual = expected.clone();
+    clean.render(area, &mut expected);
+    let plan = dirty.render(area, &mut actual);
+    assert_eq!(actual, expected);
+    assert_eq!(plan.action_rects, vec![Rect::default(); 3]);
+    assert!(!plan.save_shown);
+}
