@@ -10,6 +10,7 @@ Cost panels. The **Underwater ocean** uses Codewhale's existing depth colors,
 context rise and phase transitions. All **16 fixed TUI themes** are included,
 with their own backgrounds and permission, mode and status inks.
 
+Run `cargo run --example starter` for a small editable native app.
 Run `cargo run --example showcase` to explore the components together.
 Run `cargo run --example gallery` to browse every component and variation.
 
@@ -20,6 +21,9 @@ additional ombrés and the animated whale give you more ways to compose your
 own app. The [view guide](VIEWS.md) connects Codewhale's terminal screens to
 these reusable parts; the [component guide](COMPONENTS.md) maps their APIs to
 source. Your app supplies its data, clock and actions.
+
+For library users: [quality and ecosystem notes](QUALITY.md) ·
+[rendering benchmarks](BENCHMARKS.md) · [changes](CHANGELOG.md).
 
 ## See the components
 
@@ -483,7 +487,7 @@ Use this repository as a Git dependency while the crate is developed:
 ```toml
 [dependencies]
 codewhale-ratatui = { git = "https://github.com/Hmbown/codewhale-ratatui" }
-ratatui = "=0.30.2"
+ratatui = "0.30.2"
 ```
 
 Rust 1.89 or later. The kit and host must share the same Ratatui and Crossterm
@@ -521,6 +525,36 @@ let composer = NativeComposer::new("Review the changes")
     .target("my-project / main");
 frame.render_widget(composer.themed(&theme), frame.area());
 ```
+
+Keep a widget and render it by reference across frames:
+
+```rust
+let widget = composer.themed(&theme);
+frame.render_widget(&widget, frame.area());
+```
+
+For a collection of different components, use `Themed::new(&dyn Paint, &theme)`.
+The library enables no Ratatui terminal backend; your application selects its
+backend. The [standalone consumer](tests/consumer/src/main.rs) demonstrates
+this with `TestBackend`. The [starter app](examples/starter.rs) shows native
+composition, Unicode editing, bracketed paste and terminal cleanup.
+
+Lists and pickers also support `frame.render_stateful_widget`: keep a
+`ListState` or `PickerState` in your app and pass the themed widget with that
+state. Rendering stores the scroll offset for the actual viewport, including
+query rows, tabs and clipping.
+
+```rust
+use codewhale_ratatui::{List, ListState, Paint};
+// Keep `state` in your app between frames.
+let rows = ["First session", "Second session"];
+let list = List::new(&rows, ListState::default());
+frame.render_stateful_widget(list.themed(&theme), frame.area(), &mut state);
+```
+
+Input states return outcomes for your app to act on. Typing and navigation
+can repeat while a key is held; submit, choose, toggle and cancel require an
+initial press. Modified navigation and activation shortcuts stay with your app.
 
 Compose the native conversation layout:
 
@@ -599,6 +633,7 @@ on their next paint; components hold roles rather than cached colors.
 ## Browse and regenerate
 
 ```sh
+cargo run --example starter                          # small native application
 cargo run --example gallery                          # interactive catalogue
 cargo run --example showcase                         # the full terminal studio
 cargo run --example habitat                          # live fish, jellyfish, bubbles
@@ -668,8 +703,13 @@ cargo fmt --check
 cargo clippy --all-targets --locked -- -D warnings
 cargo test --locked
 cargo test --example gallery --locked
+cargo run --locked --manifest-path tests/consumer/Cargo.toml
+RUSTDOCFLAGS=-Dwarnings cargo doc --locked --no-deps
 python3 vendor/codewhale-design/generate.py --check
 ```
+
+Run `cargo bench --bench render` for the prepared-widget and native-view
+measurements described in [BENCHMARKS.md](BENCHMARKS.md).
 
 Snapshots record the role each run uses, alongside its glyphs. Tests exercise
 profiles and widths, Unicode input, missing data, clipped output and disabled

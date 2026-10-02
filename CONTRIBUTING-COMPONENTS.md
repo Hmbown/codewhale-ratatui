@@ -26,8 +26,9 @@ nothing else, so work never collides.
    `fn handle_key(&mut self, key: crossterm::event::KeyEvent, ..) -> Outcome`
    that ignores `KeyEventKind::Release`. The host decides what an outcome
    does. `PickerState::handle_key` and `PickerOutcome` are the model.
-5. **No new runtime dependency.** `ratatui`, `crossterm`, `unicode-width`,
-   `unicode-segmentation` (and `libc` on unix). `tests/contract.rs` and CI
+5. **No new runtime dependency without the lead.** `ratatui`, `ratatui-core`, `crossterm`,
+   `unicode-width`, `unicode-segmentation`, native character decoding through
+   `serde`/`serde_json` (and `libc` on unix). `tests/contract.rs` and CI
    (`cargo tree` must show one ratatui and one crossterm) enforce it.
 6. **Names are unique crate-wide.** Everything `pub` in your module is
    re-exported from the crate root, so prefix it: `TextInputWords`, not

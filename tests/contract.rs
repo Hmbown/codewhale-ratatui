@@ -65,6 +65,8 @@ fn the_runtime_dependencies_are_the_current_ones() {
             "crossterm",
             "libc",
             "ratatui",
+            // Share underline style data with backend-free consumers.
+            "ratatui-core",
             // Native character export decoding and owner context values.
             "serde",
             "serde_json",

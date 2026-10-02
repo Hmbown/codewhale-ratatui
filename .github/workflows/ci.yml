@@ -54,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
@@ -85,6 +85,8 @@ jobs:
         with:
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo +1.89 test --locked
+      - name: Consumer also supports the declared Rust minimum
+        run: cargo +1.89 run --locked --manifest-path tests/consumer/Cargo.toml
 
   one-ratatui:
     # A second ratatui or crossterm in the tree means a host cannot share
@@ -108,6 +110,37 @@ jobs:
             echo "${dups}"
             exit 1
           fi
+
+  consumer:
+    name: Library consumer, docs and package
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    env:
+      RUSTDOCFLAGS: -Dwarnings
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Consumer chooses no terminal backend
+        run: |
+          cargo run --locked --manifest-path tests/consumer/Cargo.toml
+          mkdir -p target
+          cargo tree --locked --manifest-path tests/consumer/Cargo.toml --edges normal --prefix none > target/consumer-tree.txt
+          python3 -c "from pathlib import Path; import re; assert not re.search(r'^ratatui-(crossterm|termion|termwiz|termina) v', Path('target/consumer-tree.txt').read_text(), re.M), 'library selected a terminal backend'"
+      - name: Public API documentation has valid links
+        run: cargo doc --locked --no-deps
+      - name: The source package builds independently
+        run: cargo package --locked
+      - name: Packaged library tests have all their native assets
+        run: >-
+          python3 -c "import subprocess, tomllib; from pathlib import Path;
+          p = tomllib.loads(Path('Cargo.toml').read_text())['package'];
+          subprocess.run(['cargo', 'test', '--locked', '--lib', '--manifest-path',
+          'target/package/' + p['name'] + '-' + p['version'] + '/Cargo.toml'], check=True)"
+      - name: Benchmarks build without running timing thresholds
+        run: cargo check --locked --benches
 
   generated:
     # The vendored tokens and what is generated from them. Python and Node

@@ -188,12 +188,9 @@ fn every_gallery_entry_paints_only_inside_the_buffer_and_the_request() {
     assert_no_failures(&failures_for(|name| !name.starts_with("whale")));
 }
 
-/// `Whale::paint` (`src/whale.rs`) writes through `buf[(x, y)]` at coordinates
-/// taken from the requested area, so a request that leaves the buffer panics.
-/// It is not a catalogue file; the fix is one `area.intersection(buf.area)` at
-/// the top of `paint`. Run with `--ignored` to see it.
+/// The whale shares the same clipping contract, including a nonzero origin
+/// and requests extending outside the buffer.
 #[test]
-#[ignore = "src/whale.rs does not intersect its area with the buffer"]
 fn the_whale_paints_only_inside_the_buffer_and_the_request() {
     assert_no_failures(&failures_for(|name| name.starts_with("whale")));
 }

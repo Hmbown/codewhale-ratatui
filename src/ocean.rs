@@ -313,13 +313,29 @@ impl OceanColumn {
         let sidebar = theme.bg(Role::Sidebar).bg;
         for y in area.top()..area.bottom() {
             let water = self.sample(y, viewport, ramp);
+            // Text runs repeat the same ink on one shared row ground. Reuse
+            // its contrast verdict without allocating or caching theme state
+            // across frames; custom colors still take the same safety path.
+            let mut previous_ink = None;
             for x in area.left()..area.right() {
                 let cell = &mut buf[(x, y)];
                 if (Some(cell.bg) == background || Some(cell.bg) == sidebar)
                     && !cell.modifier.contains(Modifier::REVERSED)
-                    && (cell.symbol() == " " || ink_is_safe(cell.fg, water, theme))
                 {
-                    cell.set_bg(water);
+                    let safe = cell.symbol() == " " || {
+                        if let Some((ink, safe)) = previous_ink
+                            && ink == cell.fg
+                        {
+                            safe
+                        } else {
+                            let safe = ink_is_safe(cell.fg, water, theme);
+                            previous_ink = Some((cell.fg, safe));
+                            safe
+                        }
+                    };
+                    if safe {
+                        cell.set_bg(water);
+                    }
                 }
             }
         }

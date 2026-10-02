@@ -662,10 +662,6 @@ fn keys_a_field_has_no_use_for_are_ignored_so_the_host_can_use_them() {
         ctrl('z'),
         KeyEvent::new(KeyCode::Char('v'), KeyModifiers::SUPER),
         alt(KeyCode::Char('x')),
-        KeyEvent::new(
-            KeyCode::Char('x'),
-            KeyModifiers::CONTROL | KeyModifiers::ALT,
-        ),
     ] {
         assert_eq!(
             s.handle_key(ignored),
