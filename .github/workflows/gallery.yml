@@ -31,6 +31,12 @@ jobs:
         run: cargo run --locked --example gallery -- --svg target/readme-buffers
       - name: README previews match the actual buffers
         run: python3 tools/render-gallery.py target/readme-buffers assets/readme --readme README.md --check
+      - name: Component website exports remain complete
+        run: |
+          cargo run --locked --example website -- target/website-buffers
+          python3 -B tools/export-website.py target/website-buffers target/website-public
+          python3 -B tools/export-website.py target/website-buffers target/website-public --check
+          python3 -B -m unittest discover -s tests -p 'website_export_test.py'
       - name: Render the habitat motion frames
         run: cargo run --locked --example habitat -- --frames target/habitat-frames
       - name: Habitat animation matches the actual buffers
@@ -59,3 +65,8 @@ jobs:
           python3 tools/check-animation.py target/showcase-frames assets/readme/showcase.gif
           python3 tools/check-animation.py target/showcase-light-frames assets/readme/showcase-light.gif
           python3 tools/check-animation.py target/whale-action-frames assets/readme/whale-performance.gif
+      - name: Website motion preserves the native frames
+        run: |
+          python3 -B tools/export-web-motion.py target/website-public/motion
+          python3 -B tools/export-web-motion.py target/website-public/motion --check
+          python3 -B -m unittest discover -s tests -p 'web_motion_test.py'
