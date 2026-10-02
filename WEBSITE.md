@@ -5,7 +5,7 @@ individual `/ratatui/<gallery-name>` pages. Its source is in
 [`Hmbown/CodeWhale/web`](https://github.com/Hmbown/CodeWhale/tree/wave/0.10.1-next/web).
 Website deployment follows that repository's manual Cloudflare workflow.
 
-Visitors can search all 197 catalogue entries by name or public API, choose a
+Visitors can search all 199 catalogue entries by name or public API, choose a
 collection, compare nine terminal profiles and four column widths, inspect
 the exact Rust rendering source, download an SVG, and follow build and release
 checks. The native motion player has pause, restart, speed and frame controls.

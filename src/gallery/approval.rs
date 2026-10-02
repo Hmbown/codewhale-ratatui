@@ -3,13 +3,18 @@
 //! host maps its own request onto an [`ApprovalSubject`] and its own keys onto
 //! an [`ApprovalState`], and the card paints what it was given.
 
-use ratatui::{buffer::Buffer, layout::Rect};
+use ratatui::{
+    buffer::Buffer,
+    layout::Rect,
+    style::Modifier,
+    text::{Line, Span},
+};
 
 use super::Entry;
 use crate::{
     ApprovalCard, ApprovalChoice, ApprovalEffect, ApprovalKey, ApprovalKind, ApprovalScope,
-    ApprovalState, ApprovalSubject, ChoiceId, KeyHint, KeyHints, Paint, ReviewAggregate,
-    ReviewKind, ReviewVerdict, Theme,
+    ApprovalState, ApprovalSubject, ChoiceId, DecisionBand, DecisionBandAction, DecisionBandSave,
+    KeyHint, KeyHints, Paint, ReviewAggregate, ReviewKind, ReviewVerdict, Theme,
 };
 
 const ALLOW_ONCE: ChoiceId = ChoiceId(1);
@@ -178,8 +183,97 @@ fn aggregate(area: Rect, buf: &mut Buffer, theme: &Theme) {
     }
 }
 
+fn native_band(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let band = native_band_facts(theme);
+    band.paint(area, buf, theme);
+}
+
+fn native_band_collapsed(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let mut band = native_band_facts(theme);
+    band.collapsed = Some(Line::styled(
+        if theme.ascii() {
+            " Run checks - command [Tab expand] "
+        } else {
+            " Run checks — command [Tab expand] "
+        },
+        theme.fg(crate::Role::Primary),
+    ));
+    band.paint(area, buf, theme);
+}
+
+fn native_band_facts(theme: &Theme) -> DecisionBand {
+    let plain = theme.fg(crate::Role::Foreground);
+    let muted = theme.fg(crate::Role::Muted);
+    let primary = theme.fg(crate::Role::Primary);
+    DecisionBand {
+        body: vec![
+            Line::styled(
+                "  Runs a command: verify this project",
+                primary.add_modifier(Modifier::BOLD),
+            ),
+            Line::styled("  cargo test --workspace", plain),
+        ],
+        saves: vec![DecisionBandSave {
+            summary: "always ask first".into(),
+            entries: vec!["run cargo test --workspace in this project".into()],
+            omitted: 0,
+            label: "Save:   ".into(),
+            separator: if theme.ascii() { " / " } else { " · " }.into(),
+            compact_more: " +{count} more".into(),
+            full_more: "... {count} more".into(),
+            label_style: primary,
+            summary_style: plain,
+            entries_style: muted,
+            more_style: muted,
+        }],
+        question: Line::styled(
+            "  Do you want to proceed?",
+            plain.add_modifier(Modifier::BOLD),
+        ),
+        actions: vec![
+            DecisionBandAction {
+                line: Line::styled("  [1/y] Allow once", plain),
+                persistent: false,
+            },
+            DecisionBandAction {
+                line: Line::styled("  [2/a] Allow for this session", plain),
+                persistent: false,
+            },
+            DecisionBandAction {
+                line: Line::styled("  [p] Save this exact project rule", plain),
+                persistent: true,
+            },
+            DecisionBandAction {
+                line: Line::styled("> [3/n] Deny", primary.add_modifier(Modifier::BOLD)),
+                persistent: false,
+            },
+        ],
+        footer: Line::styled("  Enter chooses; Esc stops; Alt+V details", muted),
+        save_hint: Some(Span::styled(" / s save ask rule", primary)),
+        background: theme.bg(crate::Role::Background),
+        rule: Span::styled(
+            if theme.ascii() { "-" } else { "─" },
+            theme.fg(crate::Role::Border),
+        ),
+        truncation_hint: Span::styled("  Details truncated: Alt+V", muted),
+        collapsed: None,
+    }
+}
+
 pub(crate) fn entries() -> Vec<Entry> {
     vec![
+        Entry {
+            name: "approval-native-band",
+            width: 70,
+            height: 24,
+            draw: native_band,
+        },
+        Entry {
+            name: "approval-native-band-collapsed",
+            width: 70,
+            height: 3,
+            draw: native_band_collapsed,
+        },
         Entry {
             name: "approval-command",
             width: 70,

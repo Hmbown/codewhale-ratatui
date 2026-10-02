@@ -157,6 +157,8 @@
     "workflow-tree-clipped",
     "workflow-tree-long",
     "count-bars",
+    "approval-native-band",
+    "approval-native-band-collapsed",
     "approval-command",
     "approval-outside",
     "approval-patch",
@@ -746,10 +748,11 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
+        "approval-native-band",
+        "approval-native-band-collapsed",
         "approval-command",
         "approval-outside",
-        "approval-patch",
-        "approval-elevation"
+        "approval-patch"
       ]
     },
     {
@@ -757,6 +760,7 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
+        "approval-elevation",
         "approval-clipped",
         "approval-spoofed",
         "review-verdicts",
@@ -1405,10 +1409,11 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
+        "approval-native-band",
+        "approval-native-band-collapsed",
         "approval-command",
         "approval-outside",
-        "approval-patch",
-        "approval-elevation"
+        "approval-patch"
       ]
     },
     {
@@ -1416,6 +1421,7 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
+        "approval-elevation",
         "approval-clipped",
         "approval-spoofed",
         "review-verdicts",

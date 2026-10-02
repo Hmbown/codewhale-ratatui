@@ -2131,3 +2131,472 @@ impl Paint for ReviewAggregate {
         u16::try_from(sec.total_rows).unwrap_or(u16::MAX)
     }
 }
+
+// ---------------------------------------------------------------------------
+// Native bottom decision band over host-projected display facts
+// ---------------------------------------------------------------------------
+
+/// A caller-owned option in canonical decision order. The band never handles
+/// its key or decides its effect. A withheld persistent action retains an empty
+/// rectangle at this index so pointer dispatch cannot change its meaning.
+#[derive(Clone, Debug)]
+pub struct DecisionBandAction {
+    pub line: Line<'static>,
+    pub persistent: bool,
+}
+
+/// Validated rule coverage from the host. The band owns full/compact display
+/// fitting; it never reparses a command or constructs a permission rule.
+#[derive(Clone, Debug)]
+pub struct DecisionBandSave {
+    pub summary: String,
+    pub entries: Vec<String>,
+    pub omitted: usize,
+    pub label: String,
+    pub separator: String,
+    /// `{count}` is replaced with the number of additional rules.
+    pub compact_more: String,
+    pub full_more: String,
+    pub label_style: Style,
+    pub summary_style: Style,
+    pub entries_style: Style,
+    pub more_style: Style,
+}
+
+impl DecisionBandSave {
+    fn lines(&self, width: u16, compact: bool) -> Vec<Line<'static>> {
+        let entries = self.entries.join("; ");
+        if compact {
+            let more = if self.omitted > 0 {
+                self.compact_more
+                    .replace("{count}", &self.omitted.to_string())
+            } else {
+                String::new()
+            };
+            let budget = usize::from(width)
+                .saturating_sub(
+                    2 + self.label.chars().count()
+                        + self.summary.chars().count()
+                        + self.separator.chars().count()
+                        + more.chars().count(),
+                )
+                .max(12);
+            return vec![Line::from(vec![
+                Span::raw("  "),
+                Span::styled(self.label.clone(), self.label_style),
+                Span::styled(self.summary.clone(), self.summary_style),
+                Span::styled(
+                    format!(
+                        "{}{}{more}",
+                        self.separator,
+                        band_byte_clip(&entries, budget)
+                    ),
+                    self.entries_style,
+                ),
+            ])];
+        }
+        let mut lines = vec![
+            Line::from(vec![
+                Span::raw("  "),
+                Span::styled(self.label.clone(), self.label_style),
+                Span::styled(self.summary.clone(), self.summary_style),
+            ]),
+            Line::from(vec![
+                Span::raw("    "),
+                Span::styled(
+                    band_byte_clip(&entries, usize::from(width.saturating_sub(10)).max(20)),
+                    self.entries_style,
+                ),
+            ]),
+        ];
+        if self.omitted > 0 {
+            lines.push(Line::from(vec![
+                Span::raw("    "),
+                Span::styled(
+                    self.full_more.replace("{count}", &self.omitted.to_string()),
+                    self.more_style,
+                ),
+            ]));
+        }
+        lines
+    }
+}
+
+fn band_byte_clip(value: &str, budget: usize) -> String {
+    // Retain the native host's existing UTF-8-boundary preview contract.
+    // This coverage is informational; full validated rules stay with the host.
+    if value.len() <= budget {
+        return value.to_owned();
+    }
+    let budget = budget.saturating_sub(3);
+    let end = value
+        .char_indices()
+        .map(|(index, _)| index)
+        .take_while(|index| *index <= budget)
+        .last()
+        .unwrap_or(0);
+    format!("{}...", &value[..end])
+}
+
+fn band_safe_span(span: &Span<'static>) -> Span<'static> {
+    let mut safe = span.clone();
+    if let Cow::Owned(value) = text::display_safe(&span.content) {
+        safe.content = Cow::Owned(value);
+    }
+    safe
+}
+
+fn band_safe_line(line: &Line<'static>) -> Line<'static> {
+    let mut safe = line.clone();
+    safe.spans = line.spans.iter().map(band_safe_span).collect();
+    safe
+}
+
+/// Exact Ratatui word-wrap measurement, shared by band layout and painting.
+#[must_use]
+pub fn decision_wrapped_rows(lines: &[Line<'_>], width: u16) -> u16 {
+    use ratatui::widgets::{Paragraph, Wrap};
+    let safe: Vec<_> = lines
+        .iter()
+        .map(|line| {
+            let mut safe = line.clone();
+            for span in &mut safe.spans {
+                if let Cow::Owned(value) = text::display_safe(&span.content) {
+                    span.content = Cow::Owned(value);
+                }
+            }
+            safe
+        })
+        .collect();
+    let rows = if width == 0 {
+        lines.len()
+    } else {
+        Paragraph::new(safe)
+            .wrap(Wrap { trim: false })
+            .line_count(width)
+    };
+    u16::try_from(rows).unwrap_or(u16::MAX)
+}
+
+/// A native approval band over already-projected host display facts. Labels,
+/// styles, badges, risk/effect/owner data and decisions remain host authority.
+/// Every span and coverage string is run through [`text::display_safe`] before
+/// measurement and painting, preserving styles while removing bidi/controls.
+/// These are logical lines; final word-wrap, fit, save visibility, paint and
+/// pointer rectangles belong to the single plan below. No input handler or
+/// ApprovalState is constructed for this presentation.
+#[derive(Clone, Debug)]
+pub struct DecisionBand {
+    pub body: Vec<Line<'static>>,
+    pub saves: Vec<DecisionBandSave>,
+    pub question: Line<'static>,
+    pub actions: Vec<DecisionBandAction>,
+    pub footer: Line<'static>,
+    pub save_hint: Option<Span<'static>>,
+    pub background: Style,
+    pub rule: Span<'static>,
+    pub truncation_hint: Span<'static>,
+    pub collapsed: Option<Line<'static>>,
+}
+
+/// The complete painted contract. Empty action boxes remain at their original
+/// indices. A host can enable persistent keys only while `save_shown` is true.
+#[derive(Clone, Debug)]
+pub struct DecisionBandPlan {
+    pub region: Rect,
+    pub body_rect: Rect,
+    pub control_rect: Rect,
+    pub save_rect: Rect,
+    pub action_rects: Vec<Rect>,
+    pub save_shown: bool,
+    background: Style,
+    rule: Span<'static>,
+    hint: Span<'static>,
+    head: Vec<Line<'static>>,
+    save: Vec<Line<'static>>,
+    controls: Vec<Line<'static>>,
+    head_truncated: bool,
+    collapsed: Option<Line<'static>>,
+}
+
+impl DecisionBand {
+    fn controls(&self, offer_save: bool) -> Vec<Line<'static>> {
+        let mut controls = vec![self.question.clone()];
+        controls.extend(
+            self.actions
+                .iter()
+                .filter(|action| offer_save || !action.persistent)
+                .map(|action| action.line.clone()),
+        );
+        let mut footer = self.footer.clone();
+        if offer_save && let Some(hint) = &self.save_hint {
+            footer.spans.push(hint.clone());
+        }
+        controls.push(footer);
+        controls
+    }
+
+    #[must_use]
+    pub fn plan(&self, area: Rect) -> DecisionBandPlan {
+        self.sanitized().plan_safe(area)
+    }
+
+    fn sanitized(&self) -> Self {
+        let mut safe = self.clone();
+        safe.body = self.body.iter().map(band_safe_line).collect();
+        safe.question = band_safe_line(&self.question);
+        for action in &mut safe.actions {
+            action.line = band_safe_line(&action.line);
+        }
+        safe.footer = band_safe_line(&self.footer);
+        safe.save_hint = self.save_hint.as_ref().map(band_safe_span);
+        safe.rule = band_safe_span(&self.rule);
+        safe.truncation_hint = band_safe_span(&self.truncation_hint);
+        safe.collapsed = self.collapsed.as_ref().map(band_safe_line);
+        for save in &mut safe.saves {
+            save.summary = text::display_safe(&save.summary).into_owned();
+            for entry in &mut save.entries {
+                *entry = text::display_safe(entry).into_owned();
+            }
+            save.label = text::display_safe(&save.label).into_owned();
+            save.separator = text::display_safe(&save.separator).into_owned();
+            save.compact_more = text::display_safe(&save.compact_more).into_owned();
+            save.full_more = text::display_safe(&save.full_more).into_owned();
+        }
+        safe
+    }
+
+    fn plan_safe(&self, area: Rect) -> DecisionBandPlan {
+        let mut result = DecisionBandPlan {
+            region: Rect::new(area.x, area.bottom(), 0, 0),
+            body_rect: Rect::default(),
+            control_rect: Rect::default(),
+            save_rect: Rect::default(),
+            action_rects: vec![Rect::default(); self.actions.len()],
+            save_shown: false,
+            background: self.background,
+            rule: self.rule.clone(),
+            hint: self.truncation_hint.clone(),
+            head: Vec::new(),
+            save: Vec::new(),
+            controls: Vec::new(),
+            head_truncated: false,
+            collapsed: None,
+        };
+        if area.is_empty() {
+            return result;
+        }
+        if let Some(line) = &self.collapsed {
+            result.region = Rect::new(area.x, area.bottom().saturating_sub(1), area.width, 1);
+            result.collapsed = Some(line.clone());
+            return result;
+        }
+        let compact_save: Vec<_> = self
+            .saves
+            .iter()
+            .flat_map(|save| save.lines(area.width, true))
+            .collect();
+        let save_reserve = decision_wrapped_rows(&compact_save, area.width);
+        let controls_with_save = self.controls(true);
+        let mut compact_body = self.body.clone();
+        compact_body.extend(compact_save.iter().cloned());
+        let compact_region = band_region(area, &compact_body, save_reserve, &controls_with_save);
+        let compact_inner = compact_region.height.saturating_sub(1);
+        let controls_rows =
+            decision_wrapped_rows(&controls_with_save, area.width).min(compact_inner);
+        let save_shown =
+            !compact_save.is_empty() && save_reserve <= compact_inner.saturating_sub(controls_rows);
+        let (body, save, controls, reserve) = if save_shown {
+            let full_save: Vec<_> = self
+                .saves
+                .iter()
+                .flat_map(|save| save.lines(area.width, false))
+                .collect();
+            let mut full_body = self.body.clone();
+            full_body.extend(full_save.iter().cloned());
+            let full_region = band_region(area, &full_body, save_reserve, &controls_with_save);
+            let full_inner = full_region.height.saturating_sub(1);
+            let full_controls =
+                decision_wrapped_rows(&controls_with_save, area.width).min(full_inner);
+            if decision_wrapped_rows(&full_body, area.width)
+                <= full_inner.saturating_sub(full_controls)
+            {
+                (full_body, full_save, controls_with_save, save_reserve)
+            } else {
+                (compact_body, compact_save, controls_with_save, save_reserve)
+            }
+        } else {
+            (self.body.clone(), Vec::new(), self.controls(false), 0)
+        };
+        result.region = band_region(area, &body, reserve, &controls);
+        result.save_shown = save_shown;
+        let inner = result.region.height.saturating_sub(1);
+        let control_rows = decision_wrapped_rows(&controls, area.width).min(inner);
+        let body_height = inner.saturating_sub(control_rows);
+        result.body_rect = Rect::new(
+            area.x,
+            result.region.y.saturating_add(1),
+            area.width,
+            body_height,
+        );
+        result.control_rect =
+            Rect::new(area.x, result.body_rect.bottom(), area.width, control_rows);
+        let body_truncated = decision_wrapped_rows(&body, area.width) > body_height;
+        let save_rows = if body_truncated {
+            decision_wrapped_rows(&save, area.width).min(body_height)
+        } else {
+            decision_wrapped_rows(&save, area.width)
+        };
+        result.save_rect = Rect::new(
+            area.x,
+            if body_truncated {
+                result.body_rect.bottom().saturating_sub(save_rows)
+            } else {
+                result
+                    .body_rect
+                    .y
+                    .saturating_add(decision_wrapped_rows(&self.body, area.width))
+            },
+            area.width,
+            save_rows,
+        );
+        result.head_truncated = body_truncated;
+        result.head = if body_truncated {
+            self.body.clone()
+        } else {
+            body
+        };
+        result.save = if body_truncated { save } else { Vec::new() };
+        let mut shown_index = 0;
+        for (index, action) in self.actions.iter().enumerate() {
+            if action.persistent && !save_shown {
+                continue;
+            }
+            let first = 1 + shown_index;
+            shown_index += 1;
+            let top = decision_wrapped_rows(&controls[..first], area.width);
+            let bottom = decision_wrapped_rows(&controls[..first + 1], area.width);
+            let y = result.control_rect.y.saturating_add(top);
+            let height = bottom
+                .saturating_sub(top)
+                .min(result.control_rect.bottom().saturating_sub(y));
+            if height > 0 {
+                result.action_rects[index] = Rect::new(area.x, y, area.width, height);
+            }
+        }
+        result.controls = controls;
+        result
+    }
+
+    /// Paint and return the exact interactive contract for the visible buffer.
+    pub fn render(&self, area: Rect, buf: &mut Buffer) -> DecisionBandPlan {
+        let plan = self.plan(area.intersection(buf.area));
+        plan.paint(buf);
+        plan
+    }
+}
+
+impl DecisionBandPlan {
+    fn paint(&self, buf: &mut Buffer) {
+        use ratatui::widgets::{Block, Clear, Paragraph, Widget, Wrap};
+        if self.region.is_empty() {
+            return;
+        }
+        Clear.render(self.region, buf);
+        if let Some(line) = &self.collapsed {
+            Paragraph::new(line.clone()).render(self.region, buf);
+            return;
+        }
+        Block::default()
+            .style(self.background)
+            .render(self.region, buf);
+        let rule = self.rule.content.repeat(usize::from(self.region.width));
+        buf.set_stringn(
+            self.region.x,
+            self.region.y,
+            rule,
+            usize::from(self.region.width),
+            self.rule.style,
+        );
+        if self.head_truncated {
+            let head_height = self.body_rect.height.saturating_sub(self.save_rect.height);
+            if head_height > 0 {
+                let shown = head_height.saturating_sub(1);
+                if shown > 0 {
+                    Paragraph::new(self.head.clone())
+                        .wrap(Wrap { trim: false })
+                        .render(
+                            Rect {
+                                height: shown,
+                                ..self.body_rect
+                            },
+                            buf,
+                        );
+                }
+                buf.set_span(
+                    self.region.x,
+                    self.body_rect.y.saturating_add(shown),
+                    &self.hint,
+                    self.region.width,
+                );
+            }
+            if self.save_rect.height > 0 {
+                Paragraph::new(self.save.clone())
+                    .wrap(Wrap { trim: false })
+                    .render(self.save_rect, buf);
+            }
+        } else {
+            Paragraph::new(self.head.clone())
+                .wrap(Wrap { trim: false })
+                .render(self.body_rect, buf);
+        }
+        Paragraph::new(self.controls.clone())
+            .wrap(Wrap { trim: false })
+            .render(self.control_rect, buf);
+    }
+}
+
+fn band_region(
+    area: Rect,
+    body: &[Line<'static>],
+    save_rows: u16,
+    controls: &[Line<'static>],
+) -> Rect {
+    if area.is_empty() {
+        return Rect::new(area.x, area.bottom(), 0, 0);
+    }
+    let body_rows = decision_wrapped_rows(body, area.width);
+    let control_rows = decision_wrapped_rows(controls, area.width);
+    let desired = 1u16.saturating_add(body_rows).saturating_add(control_rows);
+    let controls_floor = 1u16.saturating_add(control_rows).min(area.height);
+    let head_rows = body_rows.saturating_sub(save_rows);
+    let preview_rows = if area.height >= 16 {
+        head_rows.min(4).saturating_add(save_rows)
+    } else {
+        save_rows
+    };
+    let preview_floor = controls_floor.saturating_add(preview_rows).min(area.height);
+    let preferred_cap = area.height.div_ceil(2);
+    let short_cap = area.height.saturating_mul(4).div_ceil(5);
+    let save_floor = controls_floor.saturating_add(save_rows).min(area.height);
+    let max_height = preferred_cap
+        .max(preview_floor.min(short_cap.saturating_add(save_rows)))
+        .max(save_floor)
+        .min(area.height);
+    let height = desired.clamp(controls_floor, max_height);
+    Rect::new(
+        area.x,
+        area.y.saturating_add(area.height.saturating_sub(height)),
+        area.width,
+        height,
+    )
+}
+
+impl Paint for DecisionBand {
+    fn paint(&self, area: Rect, buf: &mut Buffer, _theme: &Theme) {
+        self.render(area, buf);
+    }
+    fn height(&self, width: u16, _theme: &Theme) -> u16 {
+        self.plan(Rect::new(0, 0, width, u16::MAX)).region.height
+    }
+}

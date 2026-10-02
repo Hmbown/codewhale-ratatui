@@ -49,7 +49,7 @@ Try `cargo run --example starter` for a small editable app, or
 ## Explore the components
 
 Open a collection to see its full dark and light previews. Every one of the
-197 gallery entries is here, rendered from actual Ratatui buffers. The
+199 gallery entries is here, rendered from actual Ratatui buffers. The
 [component guide](COMPONENTS.md) maps them to Codewhale's terminal views.
 Run `cargo run --example gallery` to try every variation yourself.
 
@@ -429,7 +429,7 @@ Inline messages and optional tool, agent and fleet cards.
 
 <a id="work-and-results"></a>
 <details>
-<summary>Work and results · 23 examples</summary>
+<summary>Work and results · 25 examples</summary>
 
 Diffs, trees, progress, approvals and run results.
 
@@ -437,9 +437,9 @@ Diffs, trees, progress, approvals and run results.
 
 ![Diff, Diff wrapped, Diff no numbers, Diff highlighted, Count bars — dark truecolor](<assets/readme/display.dark-truecolor-2.svg>)
 
-![Approval command, Approval outside, Approval patch, Approval elevation — dark truecolor](<assets/readme/display.dark-truecolor-3.svg>)
+![Approval native band, Approval native band collapsed, Approval command, Approval outside, Approval patch — dark truecolor](<assets/readme/display.dark-truecolor-3.svg>)
 
-![Approval clipped, Approval spoofed, Review verdicts, Review aggregate — dark truecolor](<assets/readme/display.dark-truecolor-4.svg>)
+![Approval elevation, Approval clipped, Approval spoofed, Review verdicts, Review aggregate — dark truecolor](<assets/readme/display.dark-truecolor-4.svg>)
 
 <details>
 <summary>Light appearance</summary>
@@ -448,9 +448,9 @@ Diffs, trees, progress, approvals and run results.
 
 ![Diff, Diff wrapped, Diff no numbers, Diff highlighted, Count bars — light truecolor](<assets/readme/display.light-truecolor-2.svg>)
 
-![Approval command, Approval outside, Approval patch, Approval elevation — light truecolor](<assets/readme/display.light-truecolor-3.svg>)
+![Approval native band, Approval native band collapsed, Approval command, Approval outside, Approval patch — light truecolor](<assets/readme/display.light-truecolor-3.svg>)
 
-![Approval clipped, Approval spoofed, Review verdicts, Review aggregate — light truecolor](<assets/readme/display.light-truecolor-4.svg>)
+![Approval elevation, Approval clipped, Approval spoofed, Review verdicts, Review aggregate — light truecolor](<assets/readme/display.light-truecolor-4.svg>)
 
 </details>
 
@@ -764,7 +764,7 @@ on their next paint; components hold roles rather than cached colors.
 | Input and controls | `TextInput`, `Form`, `Toggle`, `Segmented` | Unicode-aware editing, masked fields, validation and controls that explain disabled state |
 | Search and empty states | `PickerQuery`, `PickerTabs`, `PickerMatches`, fuzzy matching helpers, `EmptyState` | Ranked choices, search highlights, tabs, previews and a clear next action when there are no results |
 | Work and results | `Receipt`, `ReceiptTable`, `Diff`, `WorkflowTree`, `CountBar` | Measured values, explicit unknowns, numbered additions/removals, workflow hierarchy and progress from known totals |
-| Decisions | `ApprovalCard`, `ReviewVerdict`, `ReviewAggregate` | What will happen, where, why, and the caller's available next actions |
+| Decisions | `ApprovalCard`, `DecisionBand`, `ReviewVerdict`, `ReviewAggregate` | What will happen, where, why, and the caller's available next actions |
 | Settings | `SettingRow`, `SettingDetail` | Value, source, lock reason, changed state, apply timing and reset details |
 | Feedback and motion | `Toasts`, `Spinner`, `VerificationSpinner`, `MotionStep`, `MotionSet`, `FrameBudget` | Working swell, verification tick, notices, measured elapsed time, bounded transitions and reduced/still motion |
 
@@ -958,3 +958,16 @@ state in words when the art cannot fit.
 
 MIT · [License](LICENSE). Use as a Git dependency during development;
 the crate has not been published to a package registry.
+
+### Native decision band
+
+`DecisionBand` extends the approval components with a bottom-anchored native
+band over caller-projected body, option and validated rule-coverage facts.
+`plan(area)` returns the same body/control/save region, stable option-order
+rectangles and save visibility that `render(area, buffer)` paints. A host keeps
+its own decision handler and enables persistent-save keys only while the last
+paint reports `save_shown`; no `ApprovalState` or second decision loop is needed.
+The gallery's `approval-native-band` and collapsed companion use this real API.
+The existing bordered `ApprovalCard` keeps its verbatim-subject and caller-key
+contract. The band accepts host-projected display lines; it does not reparse
+commands, infer policy or construct permission rules.
