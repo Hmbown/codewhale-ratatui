@@ -50,9 +50,14 @@ impl OceanPhase {
 }
 
 /// The native dark underwater ramp. Semantic tints come from [`Theme`].
-/// Construct with [`Self::for_theme`]; this does not replace a theme table.
+/// [`Self::for_theme`] resolves the guarded default; [`Self::new`] supplies
+/// exact caller colors for pure math. Neither replaces a theme table.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct OceanRamp {
+    surface: Color,
+    middle: Color,
+    deep: Color,
+    ambient: Color,
     attention: Color,
     failure: Color,
 }
@@ -69,6 +74,28 @@ impl OceanRamp {
     /// The authored completion pulse ends after 800 milliseconds.
     pub const COMPLETION_BREATH: Duration = Duration::from_millis(800);
 
+    /// An explicit caller-owned ramp. Pure sampling may use these exact
+    /// colors; guarded column painting still requires the normal theme and
+    /// capability gates and preserves its contrast policy.
+    #[must_use]
+    pub const fn new(
+        surface: Color,
+        middle: Color,
+        deep: Color,
+        ambient: Color,
+        attention: Color,
+        failure: Color,
+    ) -> Self {
+        Self {
+            surface,
+            middle,
+            deep,
+            ambient,
+            attention,
+            failure,
+        }
+    }
+
     /// Resolve the native field only where the host selected known dark
     /// truecolor Ocean grounds. A terminal-owned base is never overwritten.
     #[must_use]
@@ -83,10 +110,14 @@ impl OceanRamp {
         {
             return None;
         }
-        Some(Self {
-            attention: theme.color(Role::Attention)?,
-            failure: theme.color(Role::Danger)?,
-        })
+        Some(Self::new(
+            Self::SURFACE,
+            Self::MIDDLE,
+            Self::DEEP,
+            Self::AMBIENT,
+            theme.color(Role::Attention)?,
+            theme.color(Role::Danger)?,
+        ))
     }
 
     /// The native quadratic surface → middle → deep curve. Explicit context
@@ -96,12 +127,12 @@ impl OceanRamp {
     pub fn color_at_context(self, row: u16, height: u16, context_percent: u8) -> Color {
         let rise = f32::from(context_percent.min(100)) / 100.0;
         if height <= 1 {
-            return blend(Self::DEEP, Self::SURFACE, rise);
+            return mix_toward(self.surface, self.deep, rise);
         }
         let position = (f32::from(row.min(height - 1)) / f32::from(height - 1) + rise).min(1.0);
-        let toward_middle = blend(Self::MIDDLE, Self::SURFACE, position);
-        let toward_deep = blend(Self::DEEP, Self::MIDDLE, position);
-        blend(toward_deep, toward_middle, position)
+        let toward_middle = mix_toward(self.surface, self.middle, position);
+        let toward_deep = mix_toward(self.middle, self.deep, position);
+        mix_toward(toward_middle, toward_deep, position)
     }
 
     /// The native phase treatment at caller time. Waiting/approval are warm
@@ -130,7 +161,7 @@ impl OceanRamp {
             OceanPhase::Done => (0.018, 1.0 - depth),
             OceanPhase::Waiting | OceanPhase::Approval | OceanPhase::Failed => unreachable!(),
         };
-        blend(Self::AMBIENT, base, breath * bias * phase_depth)
+        mix_toward(base, self.ambient, breath * bias * phase_depth)
     }
 
     /// The native steady attention/failure tint, also used in reduced motion.
@@ -144,12 +175,12 @@ impl OceanRamp {
     ) -> Color {
         let base = self.color_at_context(row, height, context_percent);
         match phase {
-            OceanPhase::Waiting | OceanPhase::Approval => blend(
-                self.attention,
+            OceanPhase::Waiting | OceanPhase::Approval => mix_toward(
                 base,
+                self.attention,
                 0.10 * (0.6 + 0.4 * (1.0 - depth_at(row, height, context_percent))),
             ),
-            OceanPhase::Failed => blend(self.failure, base, 0.09),
+            OceanPhase::Failed => mix_toward(base, self.failure, 0.09),
             _ => base,
         }
     }
@@ -180,6 +211,16 @@ impl OceanRamp {
     }
 }
 
+// Explicit native ramps may carry a terminal-owned or indexed tint. There
+// is no RGB interpolation evidence in that case; retain the source color.
+fn mix_toward(from: Color, to: Color, amount: f32) -> Color {
+    if matches!((from, to), (Color::Rgb(..), Color::Rgb(..))) {
+        blend(to, from, amount)
+    } else {
+        from
+    }
+}
+
 fn depth_at(row: u16, height: u16, context_percent: u8) -> f32 {
     if height <= 1 {
         0.0
@@ -198,6 +239,7 @@ fn depth_at(row: u16, height: u16, context_percent: u8) -> f32 {
 /// here: this finishing pass paints backgrounds only.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct OceanColumn {
+    ramp: Option<OceanRamp>,
     elapsed: Duration,
     motion: MotionMode,
     phase: OceanPhase,
@@ -211,6 +253,7 @@ impl OceanColumn {
     #[must_use]
     pub const fn new(elapsed: Duration, motion: MotionMode) -> Self {
         Self {
+            ramp: None,
             elapsed,
             motion,
             phase: OceanPhase::Idle,
@@ -219,6 +262,15 @@ impl OceanColumn {
             context_percent: 0,
             presence: 1000,
         }
+    }
+
+    /// Supply the host's actual ramp without granting paint capability.
+    /// `color_at_y`, `apply` and `apply_matching` keep their existing theme,
+    /// terminal, semantic-surface and contrast guards.
+    #[must_use]
+    pub const fn ramp(mut self, ramp: OceanRamp) -> Self {
+        self.ramp = Some(ramp);
+        self
     }
 
     #[must_use]
@@ -270,11 +322,20 @@ impl OceanColumn {
     #[must_use]
     pub fn color_at_y(&self, y: u16, viewport: Rect, theme: &Theme) -> Option<Color> {
         let ramp = OceanRamp::for_theme(theme)?;
-        let viewport = self.viewport.unwrap_or(viewport);
-        Some(self.sample(y, viewport, ramp))
+        Some(self.color_at_y_with_ramp(y, viewport, ramp))
     }
 
-    fn sample(&self, y: u16, viewport: Rect, ramp: OceanRamp) -> Color {
+    /// Pure sampling under a caller-owned rendering policy.
+    /// Like the ramp's math helpers, this paints nothing and has no terminal
+    /// capability gate; guarded sampling and painting keep their own gates.
+    /// A builder-supplied `ramp` overrides this fallback ramp; `viewport`
+    /// likewise retains the shared absolute column. Motion, completion,
+    /// phase, context and presence follow the same kernel as guarded paint.
+    /// Hosts must keep their existing paint/terminal guards around the result.
+    #[must_use]
+    pub fn color_at_y_with_ramp(&self, y: u16, viewport: Rect, ramp: OceanRamp) -> Color {
+        let viewport = self.viewport.unwrap_or(viewport);
+        let ramp = self.ramp.unwrap_or(ramp);
         let height = viewport.height.max(1);
         let row = y.saturating_sub(viewport.y).min(height - 1);
         if self.motion.animates()
@@ -299,7 +360,7 @@ impl OceanColumn {
             self.phase,
             self.context_percent,
         );
-        blend(phase, base, f32::from(self.presence) / 1000.0)
+        mix_toward(base, phase, f32::from(self.presence) / 1000.0)
     }
 
     /// Finish ordinary `Background` and `Sidebar` cells, clipped to the
@@ -340,7 +401,7 @@ impl OceanColumn {
         let viewport = self.viewport.unwrap_or(area);
         let area = area.intersection(buf.area);
         for y in area.top()..area.bottom() {
-            let water = self.sample(y, viewport, ramp);
+            let water = self.color_at_y_with_ramp(y, viewport, ramp);
             // Text runs repeat the same ink on one shared row ground. Reuse
             // its contrast verdict without allocating or caching theme state
             // across frames; custom colors still take the same safety path.
