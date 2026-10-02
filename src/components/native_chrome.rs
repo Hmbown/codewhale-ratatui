@@ -138,7 +138,10 @@ impl<'a> WorkflowRun<'a> {
 }
 
 /// Localized words replace the native English defaults without changing the
-/// row grammar. A host may change the shortcut shown beside folded runs.
+/// row grammar. Count fields also accept templates: `done` may contain
+/// `{done}` and `{total}`; `failed`, `cancelled`, `queued` and `more` may
+/// contain `{count}`. Templates preserve a language's word and count order.
+/// A host may change the shortcut shown beside folded runs.
 #[derive(Clone, Debug)]
 pub struct WorkflowProgressWords {
     pub done: Cow<'static, str>,
@@ -188,10 +191,14 @@ impl<'a> WorkflowProgress<'a> {
         self
     }
     pub fn desired_rows(&self) -> u16 {
-        if self.runs.len() > MAX_RUN_ROWS {
+        Self::desired_rows_for(self.runs.len())
+    }
+    /// Reserve the native row budget before constructing the visible runs.
+    pub const fn desired_rows_for(runs: usize) -> u16 {
+        if runs > MAX_RUN_ROWS {
             (MAX_RUN_ROWS + 1) as u16
         } else {
-            self.runs.len() as u16
+            runs as u16
         }
     }
     /// Shared columns align visible runs. Narrow widths shed bar, tokens,
@@ -218,9 +225,13 @@ impl<'a> WorkflowProgress<'a> {
             .collect();
         let hidden = self.runs.len() - shown;
         if hidden > 0 {
+            let more = if self.words.more.contains("{count}") {
+                safe(&self.words.more).replace("{count}", &hidden.to_string())
+            } else {
+                format!("+{hidden} {}", safe(&self.words.more))
+            };
             let line = format!(
-                " +{hidden} {} {} {} {}",
-                safe(&self.words.more),
+                " {more} {} {} {}",
                 glyphs::pick("·", theme.ascii()),
                 glyphs::pick("↓", theme.ascii()),
                 safe(&self.words.manage)
@@ -248,6 +259,14 @@ impl Paint for WorkflowProgress<'_> {
 
 fn safe(value: &str) -> String {
     text::display_safe(value).into_owned()
+}
+fn counted(value: &str, count: usize) -> String {
+    let value = safe(value);
+    if value.contains("{count}") {
+        value.replace("{count}", &count.to_string())
+    } else {
+        format!("{count} {value}")
+    }
 }
 fn sentence(value: &str) -> String {
     let flat = value
@@ -337,7 +356,13 @@ impl RunCells {
     fn new(run: &WorkflowRun<'_>, words: &WorkflowProgressWords, ascii: bool) -> Self {
         let sep = if ascii { " . " } else { " · " };
         let done = if run.total > 0 {
-            format!("{}/{} {}", run.succeeded, run.total, safe(&words.done))
+            if words.done.contains("{done}") || words.done.contains("{total}") {
+                safe(&words.done)
+                    .replace("{done}", &run.succeeded.to_string())
+                    .replace("{total}", &run.total.to_string())
+            } else {
+                format!("{}/{} {}", run.succeeded, run.total, safe(&words.done))
+            }
         } else if run.failed == 0 {
             safe(&words.no_tasks)
         } else {
@@ -345,10 +370,10 @@ impl RunCells {
         };
         let mut problems = Vec::new();
         if run.failed > 0 {
-            problems.push(format!("{} {}", run.failed, safe(&words.failed)));
+            problems.push(counted(&words.failed, run.failed));
         }
         if run.cancelled > 0 {
-            problems.push(format!("{} {}", run.cancelled, safe(&words.cancelled)));
+            problems.push(counted(&words.cancelled, run.cancelled));
         }
         let problems = if problems.is_empty() {
             String::new()
@@ -370,10 +395,9 @@ impl RunCells {
         }
         if run.queued > 0 {
             chips.push(format!(
-                "{} {} {}",
+                "{} {}",
                 glyphs::pick("·", ascii),
-                run.queued,
-                safe(&words.queued)
+                counted(&words.queued, run.queued)
             ));
         }
         let why = run.reason.as_deref().map(reason).filter(|s| !s.is_empty());
