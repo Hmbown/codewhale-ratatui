@@ -321,6 +321,10 @@ fn translated_templates_keep_count_order_and_fit_before_clipping() {
     for fact in ["完了 2/4", "失敗 1", "中止 1", "待機 3"] {
         assert!(shown.contains(fact), "{shown}");
     }
+    let mut failed = progress.clone();
+    failed.runs[0].state = WorkflowRunState::Failed;
+    let failure = render(120, 1, |area, buf| failed.paint(area, buf, &theme));
+    assert!(!text(&failure).contains("{count}"));
     let narrow = render(50, 1, |area, buf| progress.paint(area, buf, &theme));
     let shown = text(&narrow);
     assert!(

@@ -402,7 +402,13 @@ impl RunCells {
         }
         let why = run.reason.as_deref().map(reason).filter(|s| !s.is_empty());
         let reason = match run.state {
-            WorkflowRunState::Failed => Some(why.unwrap_or_else(|| safe(&words.failed))),
+            WorkflowRunState::Failed => Some(why.unwrap_or_else(|| {
+                if words.failed.contains("{count}") {
+                    counted(&words.failed, run.failed)
+                } else {
+                    safe(&words.failed)
+                }
+            })),
             WorkflowRunState::Degraded => Some(why.map_or_else(
                 || safe(&words.gaps),
                 |why| format!("{}{sep}{why}", safe(&words.gaps)),
