@@ -887,6 +887,7 @@ impl Grid<'_> {
 const MIN_LABEL: usize = 10;
 
 fn paint_grid(grid: &Grid, area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let area = area.intersection(buf.area);
     if area.is_empty() {
         return;
     }

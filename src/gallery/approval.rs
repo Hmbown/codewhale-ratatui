@@ -150,7 +150,7 @@ fn verdicts(area: Rect, buf: &mut Buffer, theme: &Theme) {
             break;
         }
         card.paint(rect, buf, theme);
-        y = rect.bottom() + 1;
+        y = rect.bottom().saturating_add(1);
     }
 }
 
@@ -174,7 +174,7 @@ fn aggregate(area: Rect, buf: &mut Buffer, theme: &Theme) {
             break;
         }
         row.paint(rect, buf, theme);
-        y = rect.bottom() + 1;
+        y = rect.bottom().saturating_add(1);
     }
 }
 

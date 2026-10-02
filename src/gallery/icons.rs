@@ -34,10 +34,11 @@ fn icons(area: Rect, buf: &mut Buffer, theme: &Theme) {
         ])
         .render(
             Rect {
-                y: area.y + row as u16,
+                y: area.y.saturating_add(row as u16),
                 height: 1,
                 ..area
-            },
+            }
+            .intersection(area),
             buf,
         );
     }

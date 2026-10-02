@@ -505,6 +505,7 @@ fn guide_cells(ascii: bool, row: &Visible<'_>, skip: usize) -> String {
 
 impl Paint for WorkflowTree<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return;
         }

@@ -320,6 +320,7 @@ impl<'a> Tabs<'a> {
 
 impl Paint for Tabs<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         if area.is_empty() || self.items.is_empty() {
             return;
         }

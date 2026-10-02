@@ -112,9 +112,15 @@ fn status_picker(area: Rect, buf: &mut Buffer, theme: &Theme) {
         "Choose what the footer shows.",
         theme.fg(Role::Muted),
     ))
-    .render(Rect { height: 1, ..inner }, buf);
+    .render(
+        Rect {
+            height: inner.height.min(1),
+            ..inner
+        },
+        buf,
+    );
     let list = Rect {
-        y: inner.y + 2,
+        y: inner.y.saturating_add(2),
         height: inner.height.saturating_sub(2),
         ..inner
     };

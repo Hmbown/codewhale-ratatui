@@ -606,6 +606,10 @@ impl<'a> MotionDemo<'a> {
 
 impl Paint for MotionDemo<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
+        if area.is_empty() {
+            return;
+        }
         let (now, policy) = (self.now, self.policy);
         let row = |i: u16| (area.height > i).then_some(area.y + i);
         let put = |buf: &mut Buffer, x: u16, y: u16, s: &str, style: Style, max: u16| {

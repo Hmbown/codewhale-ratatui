@@ -8,10 +8,11 @@ use crate::{Paint, State, StatusMark, Theme};
 fn status_marks(area: Rect, buf: &mut Buffer, theme: &Theme) {
     for (row, state) in State::ALL.iter().enumerate() {
         let rect = Rect {
-            y: area.y + row as u16,
+            y: area.y.saturating_add(row as u16),
             height: 1,
             ..area
-        };
+        }
+        .intersection(area);
         StatusMark::new(*state).paint(rect, buf, theme);
     }
 }

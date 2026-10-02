@@ -327,6 +327,7 @@ impl Toasts {
 
 impl Paint for Toasts {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return;
         }

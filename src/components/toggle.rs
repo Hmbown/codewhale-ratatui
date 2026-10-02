@@ -131,6 +131,7 @@ impl<'a> Toggle<'a> {
 
 impl Paint for Toggle<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return;
         }

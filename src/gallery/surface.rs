@@ -35,20 +35,22 @@ fn depths(area: Rect, buf: &mut Buffer, theme: &Theme) {
 }
 
 fn horizon(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let row = |n: u16| {
+        Rect {
+            y: area.y.saturating_add(n),
+            height: 1,
+            ..area
+        }
+        .intersection(area)
+    };
     Line::from(Span::styled(
         "Edited summary.md",
         theme.fg(Role::Foreground),
     ))
-    .render(Rect { height: 1, ..area }, buf);
-    HorizonRule::new().aside("12% of context used").paint(
-        Rect {
-            y: area.y + 1,
-            height: 1,
-            ..area
-        },
-        buf,
-        theme,
-    );
+    .render(row(0), buf);
+    HorizonRule::new()
+        .aside("12% of context used")
+        .paint(row(1), buf, theme);
     Line::from(vec![
         Span::styled(
             format!("{} ", glyphs::pick("›", theme.ascii())),
@@ -56,18 +58,12 @@ fn horizon(area: Rect, buf: &mut Buffer, theme: &Theme) {
         ),
         Span::styled("Ask Codewhale to do something", theme.fg(Role::Muted)),
     ])
-    .render(
-        Rect {
-            y: area.y + 2,
-            height: 1,
-            ..area
-        },
-        buf,
-    );
+    .render(row(2), buf);
 }
 
 /// Work on the stage, for a dialog or a sheet to sit over.
 fn backdrop(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let area = area.intersection(buf.area);
     let lines = [
         "Edited summary.md",
         "Ran cargo test: 212 passed",

@@ -254,6 +254,7 @@ impl<'a> Segmented<'a> {
 
 impl Paint for Segmented<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         if area.is_empty() || self.options.is_empty() {
             return;
         }

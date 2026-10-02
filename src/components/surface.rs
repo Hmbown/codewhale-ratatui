@@ -173,6 +173,7 @@ impl<'a> Panel<'a> {
 
     /// Paint the panel and return the area left for content.
     pub fn draw(&self, area: Rect, buf: &mut Buffer, theme: &Theme) -> Rect {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return area;
         }
@@ -438,6 +439,7 @@ impl<'a> Dialog<'a> {
     /// Paint the dialog over whatever is in `area` and return the body area
     /// for the caller to fill.
     pub fn draw(&self, area: Rect, buf: &mut Buffer, theme: &Theme) -> Rect {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return area;
         }
@@ -594,6 +596,7 @@ impl<'a> Sheet<'a> {
     /// Paint the sheet over whatever is in `area` and return the body area
     /// for the caller to fill.
     pub fn draw(&self, area: Rect, buf: &mut Buffer, theme: &Theme) -> Rect {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return area;
         }
@@ -642,6 +645,7 @@ impl<'a> HorizonRule<'a> {
 
 impl Paint for HorizonRule<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return;
         }

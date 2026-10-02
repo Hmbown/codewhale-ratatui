@@ -9,7 +9,7 @@ use crate::{Heading, Paint, Segmented, SegmentedState, Tab, Tabs, TabsState, The
 
 fn row(area: Rect, y: u16, height: u16) -> Rect {
     Rect {
-        y: area.y + y,
+        y: area.y.saturating_add(y),
         height,
         ..area
     }

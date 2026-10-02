@@ -278,6 +278,7 @@ fn fits_after(items: &[KeyHint], sep: usize, width: usize, extra: usize) -> bool
 
 impl Paint for KeyHints {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         Paragraph::new(self.lines(area.width, theme)).render(area, buf);
     }
 
