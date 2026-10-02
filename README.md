@@ -21,6 +21,10 @@ actions are included. Your app owns the state and clock.
 [Components](#explore-the-components) · [Terminal view guide](VIEWS.md) ·
 [Design](DESIGN.md) · [Quality](QUALITY.md) · [Benchmarks](BENCHMARKS.md)
 
+The [website explorer](WEBSITE.md) separates every catalogue entry into a
+searchable component page, with terminal profiles, real width variants,
+Rust rendering source and controlled animation playback.
+
 ## Get started
 
 ```toml
