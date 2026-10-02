@@ -385,18 +385,19 @@ fn truncate_columns(value: &str, width: usize) -> String {
     if safe.width() <= width {
         return safe.into_owned();
     }
-    if width > 3 {
-        return text::truncate(&safe, width, true).into_owned();
-    }
+    let budget = if width > 3 { width - 3 } else { width };
     let mut result = String::new();
     let mut used = 0;
     for g in safe.graphemes(true) {
         let n = g.width();
-        if used + n > width {
+        if used + n > budget {
             break;
         }
         result.push_str(g);
-        used += n
+        used += n;
+    }
+    if width > 3 {
+        result.push_str("...");
     }
     result
 }

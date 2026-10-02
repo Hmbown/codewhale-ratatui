@@ -608,77 +608,32 @@ impl Workbar {
         }
     }
 
-    fn fitted_tabs(&self, area: Rect) -> (Vec<(WorkbarTab, Rect, String)>, Rect, String) {
+    fn dock_tab_row(&self, area: Rect, theme: Option<&Theme>) -> super::DockTabRow<'_> {
+        let styles = theme.map_or_else(super::DockTabStyles::default, |theme| {
+            super::DockTabStyles {
+                idle: theme.fg(Role::Muted).patch(theme.bg(Role::Sidebar)),
+                active: theme
+                    .fg(Role::Foreground)
+                    .patch(theme.bg(Role::Selected))
+                    .add_modifier(Modifier::BOLD),
+                close: theme.fg(Role::Hint),
+                ..Default::default()
+            }
+        });
         let close = if self.focused && area.width >= 60 {
             " Esc × "
         } else {
             " × "
         };
-        let close_width = (text::width(close) as u16).min(area.width);
-        let close_area = Rect {
-            x: area.right().saturating_sub(close_width),
-            y: if self.placement == WorkbarPlacement::Bottom {
-                area.y
-                    .saturating_add(1)
-                    .min(area.bottom().saturating_sub(1))
-            } else {
-                area.y
-            },
-            width: close_width,
-            height: u16::from(area.height > 0),
-        };
-        let mut entries: Vec<_> = WorkbarPanel::ORDER
-            .into_iter()
-            .filter_map(|panel| self.tabs.iter().find(|tab| tab.panel == panel).cloned())
-            .collect();
-        if !entries.iter().any(|tab| tab.panel == self.panel) {
-            entries.push(WorkbarTab::new(self.panel));
-            entries.sort_by_key(|tab| tab.panel.index());
+        super::DockTabRow {
+            tabs: &self.tabs,
+            active: self.panel,
+            bottom: self.placement == WorkbarPlacement::Bottom,
+            close: theme.map_or_else(|| close.into(), |theme| decorative(close, theme).into()),
+            hovered: None,
+            pressed: None,
+            styles,
         }
-        let fits = |tabs: &[WorkbarTab], counts: bool| {
-            tabs.iter()
-                .map(|tab| {
-                    text::width(tab.panel.label())
-                        + if counts && tab.count.is_some_and(|count| count > 0) {
-                            1 + tab.count.unwrap_or(0).to_string().len()
-                        } else {
-                            0
-                        }
-                        + 2
-                })
-                .sum::<usize>()
-                + tabs.len().saturating_sub(1) * 2
-                + usize::from(close_width)
-                + 2
-                <= usize::from(area.width)
-        };
-        let show_counts = fits(&entries, true);
-        while !fits(&entries, show_counts) && entries.len() > 1 {
-            let Some(index) = entries.iter().rposition(|tab| tab.panel != self.panel) else {
-                break;
-            };
-            entries.remove(index);
-        }
-        let mut x = area.x.saturating_add(1);
-        let mut visible = Vec::new();
-        for tab in entries {
-            let label = if show_counts && tab.count.is_some_and(|count| count > 0) {
-                format!("{} {}", tab.panel.label(), tab.count.unwrap_or(0))
-            } else {
-                tab.panel.label().to_owned()
-            };
-            let width = (text::width(&label).saturating_add(2) as u16).min(area.width);
-            if x.saturating_add(width) > close_area.x {
-                break;
-            }
-            visible.push((
-                tab,
-                Rect::new(x, close_area.y, width, 1),
-                format!(" {label} "),
-            ));
-            x = x.saturating_add(width).saturating_add(2);
-        }
-        (visible, close_area, close.into())
     }
 
     #[must_use]
@@ -691,17 +646,19 @@ impl Workbar {
         let layout = self.layout(area);
         let mut hitboxes = Vec::new();
         if self.placement.is_strip() && area.height >= 2 {
-            let (tabs, close, _) = self.fitted_tabs(area);
-            hitboxes.extend(tabs.into_iter().map(|(tab, area, _)| WorkbarHitbox {
-                target: WorkbarTarget::Panel(tab.panel),
-                area,
-            }));
-            if !close.is_empty() {
-                hitboxes.push(WorkbarHitbox {
-                    target: WorkbarTarget::Close,
-                    area: close,
-                });
-            }
+            hitboxes.extend(
+                self.dock_tab_row(area, None)
+                    .plan(area)
+                    .hitboxes()
+                    .into_iter()
+                    .map(|(target, area)| WorkbarHitbox {
+                        target: match target {
+                            super::DockTabTarget::Panel(panel) => WorkbarTarget::Panel(panel),
+                            super::DockTabTarget::Close => WorkbarTarget::Close,
+                        },
+                        area,
+                    }),
+            );
         }
         if layout.content.width > 0 {
             hitboxes.extend(
@@ -800,23 +757,7 @@ impl Paint for Workbar {
             );
         }
         if self.placement.is_strip() && area.height >= 2 {
-            let (tabs, close_area, close) = self.fitted_tabs(area);
-            for (tab, target, label) in tabs {
-                let style = if tab.panel == self.panel {
-                    theme
-                        .fg(Role::Foreground)
-                        .patch(theme.bg(Role::Selected))
-                        .add_modifier(Modifier::BOLD)
-                } else {
-                    theme.fg(Role::Muted).patch(theme.bg(Role::Sidebar))
-                };
-                row(target, buf, &Line::styled(label, style));
-            }
-            row(
-                close_area,
-                buf,
-                &Line::styled(decorative(&close, theme), theme.fg(Role::Hint)),
-            );
+            self.dock_tab_row(area, Some(theme)).plan(area).paint(buf);
         }
         if let Some(goal) = self.goal_text().filter(|_| layout.goal_height > 0) {
             let goal = decorative(&goal, theme);
