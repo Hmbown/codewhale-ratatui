@@ -99,6 +99,21 @@ Jump to: [Codewhale at work](#codewhale-at-work) · [Sessions and fleets](#sessi
 
 ![Motion and feedback — dark truecolor](<assets/readme/motion.dark-truecolor.svg>)
 
+<details>
+<summary>Watch the working and verification spinners, then the receipt arrive</summary>
+
+![Working, verifying and settling into a receipt — Ocean](<assets/readme/motion-demo.gif>)
+
+![Working, verifying and settling into a receipt — Paper](<assets/readme/motion-demo-light.gif>)
+
+A demonstration of the actual components at their normal cadence: the working swell,
+verification tick, state ink, selection movement and detail reveal.
+The demonstration supplies each state change; the component supplies its motion.
+Reduced and still modes use readable static marks and settle transitions immediately.
+Run `cargo run --example motion` to finish, restart, switch phases and change motion policy yourself.
+
+</details>
+
 ### Life in the water
 
 ![Life in the water — dark truecolor](<assets/readme/habitat.dark-truecolor-1.svg>)
@@ -187,11 +202,29 @@ Jump to: [Codewhale at work](#codewhale-at-work) · [Sessions and fleets](#sessi
 | Work and evidence | `Receipt`, `ReceiptTable`, `Diff`, `WorkflowTree`, `CountBar` | Measured values, explicit unknowns, numbered additions/removals, workflow hierarchy and progress from known totals |
 | Decisions | `ApprovalCard`, `ReviewVerdict`, `ReviewAggregate` | What will happen, where, why, and the caller's available next actions |
 | Settings | `SettingRow`, `SettingDetail` | Value, source, lock reason, changed state, apply timing and reset details |
-| Feedback and motion | `Toasts`, `Spinner`, motion helpers | Notices, measured elapsed time, bounded transitions and reduced/still motion |
+| Feedback and motion | `Toasts`, `Spinner`, `VerificationSpinner`, `MotionStep`, `MotionSet`, `FrameBudget` | Working swell, verification tick, notices, measured elapsed time, bounded transitions and reduced/still motion |
 
 Words and data arrive from the caller, with English defaults where useful.
 The kit does not calculate a diff, parse Markdown, validate credentials,
 authorize a command, estimate cost or run an agent.
+
+## Spinners and animation
+
+`Spinner` uses Codewhale's eight-frame swell; `VerificationSpinner` uses the
+Engine's distinct round verification tick. Both wait 400 ms before moving,
+advance at five steps per second, and keep the caller's work verb visible.
+Reduced and still motion show a static mark plus words. ASCII terminals have
+their own frames.
+
+`MotionStep` and `MotionSet` handle token-timed state ink, selection movement
+and detail reveal. The caller changes the state and supplies the instant;
+the state words change immediately. `FrameBudget` combines redraw deadlines
+and lets the host claim one primary spinner per frame. Once transitions
+settle, the host can wait for input instead of painting identical frames.
+
+The animated demonstrations are under [Motion and feedback](#motion-and-feedback).
+The normal gallery samples fixed instants; `cargo run --example motion` is
+the live example.
 
 ## Use it
 
@@ -265,6 +298,15 @@ dedicated habitat viewport separate from any decision overlay. The habitat
 never requests a frame itself. Selection and pointer helpers use the same clipped
 viewport passed to painting.
 
+The whale's ordinary `Paint` implementation shows its current poster pose.
+For animation, pass the packed `whale::Grid` evaluated by your existing
+owner to `Whale::paint_frame(area, buf, &theme, &grid)`. The widget paints that
+exact frame and its state words; it owns no Director or clock. The whole
+frame must fit, with a row for the label. Invalid, narrow or ASCII frames
+fall back to words. Repaint the underlying surface first because empty
+cells in the frame are transparent. This adapter does not port the
+authoritative Director's springs, clips or lifecycle into another runtime.
+
 The [gallery fixtures](src/gallery/) are runnable usage examples for every
 family. [Component contribution instructions](CONTRIBUTING-COMPONENTS.md)
 explain the rendering and ownership contracts.
@@ -290,6 +332,7 @@ on their next paint; components hold roles rather than cached colors.
 ```sh
 cargo run --example gallery                          # interactive catalogue
 cargo run --example habitat                          # live fish, jellyfish, bubbles
+cargo run --example motion                           # working, verification and transitions
 cargo run --example gallery -- --print dark-256     # ANSI preview to stdout
 cargo run --example gallery -- --dump out/          # .ans and styled .txt, all profiles
 cargo run --example gallery -- --svg target/readme-buffers
@@ -297,13 +340,19 @@ python3 tools/render-gallery.py target/readme-buffers assets/readme --readme REA
 python3 tools/render-gallery.py target/readme-buffers assets/readme --readme README.md --check
 ```
 
-The optional animation build needs Node, `sharp` and FFmpeg. Its source is
-the same public habitat components, exported to 80 deterministic SVG frames:
+The optional animation build needs Node, `sharp` and FFmpeg. Each animation
+comes from deterministic actual-buffer frames, using one shared media builder:
 
 ```sh
 cargo run --locked --example habitat -- --frames target/habitat-frames
-node tools/render-habitat.cjs target/habitat-frames assets/readme/habitat-motion.gif
-python3 tools/check-habitat.py
+node tools/render-animation.cjs target/habitat-frames assets/readme/habitat-motion.gif
+python3 tools/check-animation.py target/habitat-frames assets/readme/habitat-motion.gif
+cargo run --locked --example motion -- --frames target/motion-frames
+node tools/render-animation.cjs target/motion-frames assets/readme/motion-demo.gif
+python3 tools/check-animation.py target/motion-frames assets/readme/motion-demo.gif
+cargo run --locked --example motion -- --frames target/motion-light-frames --profile light-truecolor
+node tools/render-animation.cjs target/motion-light-frames assets/readme/motion-demo-light.gif
+python3 tools/check-animation.py target/motion-light-frames assets/readme/motion-demo-light.gif
 ```
 
 CI verifies both the current frame hash and the GIF file hash; it needs no
@@ -316,6 +365,9 @@ terminal profile, `w/W` switches width, `PgUp/PgDn` scrolls tall previews,
 17-action whale sheet on an ordinary-height terminal. `f` expands the canvas
 for the composed workspace scenes. The habitat example uses `p` for profile,
 `m` for motion and `q` to close.
+In the motion example, `Space` finishes or restarts the demonstration, `v`
+switches working/verification, `r` replays, `p` changes profile, and `m`
+changes motion policy. `q` or `Esc` closes it.
 
 Profiles: `dark-truecolor`, `dark-graphite`, `light-truecolor`, `dark-256`,
 `light-256`, `ansi-16`, `unknown-ground`, `no-color`, `ascii`.
