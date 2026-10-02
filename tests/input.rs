@@ -344,6 +344,44 @@ fn kill_to_start_and_end_split_at_the_cursor() {
     assert!(!b.kill_to_start());
 }
 
+/// Ctrl+U is "delete to the start of the line", not "clear": the suffix after
+/// the cursor stays, and the cut falls between whole graphemes.
+#[test]
+fn ctrl_u_deletes_only_from_the_start_to_the_cursor() {
+    // Combining mark, ZWJ family, regional-indicator flag, CJK, then ASCII.
+    let text = "e\u{301}\u{1f468}\u{200d}\u{1f469}\u{200d}\u{1f467}\u{1f1fa}\u{1f1f8}\u{9c8d}tail";
+    for (at, kept) in [
+        (0, text),
+        (
+            1,
+            "\u{1f468}\u{200d}\u{1f469}\u{200d}\u{1f467}\u{1f1fa}\u{1f1f8}\u{9c8d}tail",
+        ),
+        (2, "\u{1f1fa}\u{1f1f8}\u{9c8d}tail"),
+        (3, "\u{9c8d}tail"),
+        (4, "tail"),
+        (6, "il"),
+    ] {
+        let mut state = TextInputState::with_text(text);
+        state.buffer_mut().set_cursor(at);
+        let outcome = state.handle_key(ctrl('u'));
+        assert_eq!(state.text(), kept, "cursor at grapheme {at}");
+        assert_eq!(state.buffer().cursor(), 0, "cursor at grapheme {at}");
+        assert_eq!(
+            outcome,
+            if at == 0 {
+                TextInputOutcome::Ignored
+            } else {
+                TextInputOutcome::Changed
+            },
+            "cursor at grapheme {at}"
+        );
+    }
+    // At the end it clears the line, because everything is before the cursor.
+    let mut state = TextInputState::with_text("hello");
+    state.handle_key(ctrl('u'));
+    assert_eq!(state.text(), "");
+}
+
 #[test]
 fn moves_report_whether_the_cursor_moved() {
     let mut b = buffer("ab", 1);
