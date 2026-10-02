@@ -23,6 +23,9 @@ It does not restart inside each widget. Caller-reported waiting and approval
 add the native warm cast; failure stays steady; completion breathes and settles.
 Selections, elevated panels, diffs and code retain their own backgrounds.
 The caller supplies phase, context percentage, motion policy and elapsed time.
+Use `OceanColumn::viewport` for the shell bounds and `apply_matching` for each
+native chrome band's base ground. Keep elevated and semantic surfaces outside
+those bands; the finishing pass preserves their fills.
 The field only paints measured dark truecolor Ocean; other profiles retain
 their selected native or token grounds. The native light palettes keep their own grounds.
 

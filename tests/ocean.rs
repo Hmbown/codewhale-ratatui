@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use codewhale_ratatui::{
-    Caps, MotionMode, Paint, Role, Theme,
+    Caps, MotionMode, Paint, Role, Theme, TuiGround,
     color::{contrast_ratio, relative_luminance},
     gallery,
     ocean::{OceanColumn, OceanPhase, OceanRamp},
@@ -367,6 +367,192 @@ fn shared_viewport_is_continuous_across_bands_and_buffer_clipping() {
             assert_eq!(clipped[(x, y)], full[(x, y)]);
         }
     }
+}
+
+#[test]
+fn explicit_native_chrome_grounds_join_one_continuous_column() {
+    let theme = Profile::DarkTrue.theme().tui();
+    let viewport = Rect::new(7, 9, 40, 12);
+    let conversation = Rect::new(7, 9, 40, 4);
+    let composer = Rect::new(7, 13, 40, 4);
+    let footer = Rect::new(7, 17, 40, 4);
+    let column = OceanColumn::new(Duration::from_millis(22_500), MotionMode::Full)
+        .phase(OceanPhase::Working)
+        .context_percent(24)
+        .viewport(viewport);
+    let composer_ground = theme.tui_ground(TuiGround::Composer).bg.unwrap();
+    let footer_ground = theme.tui_ground(TuiGround::Footer).bg.unwrap();
+    let mut actual = ordinary(viewport, &theme);
+    actual.set_style(viewport, theme.fg(Role::Foreground));
+    actual.set_style(composer, theme.tui_ground(TuiGround::Composer));
+    actual.set_style(footer, theme.tui_ground(TuiGround::Footer));
+    actual.set_string(10, 14, "海 e\u{301}", theme.fg(Role::Foreground));
+    actual[(12, 18)]
+        .set_symbol("x")
+        .set_style(Style::default().add_modifier(Modifier::BOLD | Modifier::UNDERLINED));
+
+    let mut default_only = actual.clone();
+    column.apply(viewport, &mut default_only, &theme);
+    assert_eq!(
+        default_only[(10, 14)].bg,
+        composer_ground,
+        "ordinary application must keep the composer's distinct panel ground"
+    );
+
+    let mut expected = actual.clone();
+    let ordinary_ground = theme.bg(Role::Background).bg.unwrap();
+    for cell in &mut expected.content {
+        // Wide-character continuation cells retain their Reset ground;
+        // only the explicit native chrome grounds join ordinary water.
+        if [composer_ground, footer_ground].contains(&cell.bg) {
+            cell.set_bg(ordinary_ground);
+        }
+    }
+    column.apply(viewport, &mut expected, &theme);
+    column.apply(conversation, &mut actual, &theme);
+    column.apply_matching(composer, &mut actual, &theme, composer_ground);
+    column.apply_matching(footer, &mut actual, &theme, footer_ground);
+    assert_eq!(actual, expected, "chrome must share absolute column rows");
+}
+
+#[test]
+fn matching_a_chrome_ground_preserves_other_fills_and_unsafe_ink() {
+    let theme = Profile::DarkTrue.theme().tui();
+    let area = Rect::new(3, 5, 12, 1);
+    let ground = theme.tui_ground(TuiGround::Composer).bg.unwrap();
+    let mut buf = Buffer::empty(area);
+    buf.set_style(
+        area,
+        theme
+            .tui_ground(TuiGround::Composer)
+            .patch(theme.fg(Role::Foreground)),
+    );
+    buf[(3, 5)].set_symbol("海");
+    buf[(4, 5)]
+        .set_symbol("e\u{301}")
+        .set_style(Style::default().add_modifier(Modifier::BOLD | Modifier::UNDERLINED));
+    let protected = [
+        theme.tui_ground(TuiGround::Elevated).bg.unwrap(),
+        theme.tui_ground(TuiGround::Selection).bg.unwrap(),
+        theme.tui_ground(TuiGround::DiffAdded).bg.unwrap(),
+        theme.tui_ground(TuiGround::DiffRemoved).bg.unwrap(),
+        Color::Rgb(41, 17, 31),
+        Color::Reset,
+    ];
+    for (index, background) in protected.into_iter().enumerate() {
+        buf[(5 + index as u16, 5)]
+            .set_symbol("x")
+            .set_bg(background);
+    }
+    buf[(11, 5)].set_symbol("?").set_fg(Color::Reset);
+    buf[(12, 5)].set_symbol("?").set_fg(OceanRamp::SURFACE);
+    buf[(13, 5)]
+        .set_symbol("?")
+        .set_style(Style::default().add_modifier(Modifier::REVERSED));
+    let before = buf.clone();
+    OceanColumn::new(Duration::ZERO, MotionMode::Still)
+        .apply_matching(area, &mut buf, &theme, ground);
+    for x in [3, 4, 14] {
+        assert_eq!(buf[(x, 5)].bg, OceanRamp::SURFACE);
+    }
+    for x in 5..14 {
+        assert_eq!(buf[(x, 5)], before[(x, 5)], "protected cell at {x}");
+    }
+    for (old, new) in before.content.iter().zip(&buf.content) {
+        let mut restored = new.clone();
+        restored.set_bg(old.bg);
+        assert_eq!(&restored, old, "matching may change only the background");
+    }
+}
+
+#[test]
+fn explicit_ground_clips_without_restarting_the_absolute_column() {
+    let theme = Profile::DarkTrue.theme().tui();
+    let viewport = Rect::new(7, 9, 40, 12);
+    let visible = Rect::new(11, 13, 8, 4);
+    let request = Rect::new(9, 11, 7, 5);
+    let ground = theme.tui_ground(TuiGround::Composer).bg.unwrap();
+    let mut buf = Buffer::empty(visible);
+    buf.set_style(visible, theme.tui_ground(TuiGround::Composer));
+    let before = buf.clone();
+    let column = OceanColumn::new(Duration::ZERO, MotionMode::Still)
+        .context_percent(24)
+        .viewport(viewport);
+    column.apply_matching(request, &mut buf, &theme, ground);
+    for y in visible.top()..visible.bottom() {
+        for x in visible.left()..visible.right() {
+            if request.contains(ratatui::layout::Position::new(x, y)) {
+                assert_eq!(
+                    buf[(x, y)].bg,
+                    column.color_at_y(y, viewport, &theme).unwrap()
+                );
+            } else {
+                assert_eq!(buf[(x, y)], before[(x, y)], "outside the requested band");
+            }
+        }
+    }
+    let before = buf.clone();
+    column.apply_matching(Rect::new(0, 0, 1, 1), &mut buf, &theme, ground);
+    column.apply_matching(Rect::new(11, 13, 0, 0), &mut buf, &theme, ground);
+    assert_eq!(buf, before, "empty and off-buffer requests are inert");
+
+    let edge = Rect::new(u16::MAX - 4, u16::MAX - 3, 4, 3);
+    let mut at_edge = Buffer::empty(edge);
+    at_edge.set_style(edge, theme.tui_ground(TuiGround::Composer));
+    let column = OceanColumn::new(Duration::ZERO, MotionMode::Still).viewport(edge);
+    column.apply_matching(edge, &mut at_edge, &theme, ground);
+    assert_eq!(at_edge[(edge.x, edge.y)].bg, OceanRamp::SURFACE);
+    assert_eq!(
+        at_edge[(edge.right() - 1, edge.bottom() - 1)].bg,
+        OceanRamp::DEEP
+    );
+}
+
+#[test]
+fn explicit_matching_keeps_fallback_profiles_and_host_owned_themes() {
+    for profile in Profile::ALL {
+        let theme = profile.theme();
+        if OceanRamp::for_theme(&theme).is_some() {
+            continue;
+        }
+        let area = Rect::new(2, 3, 40, 12);
+        let ground = Color::Rgb(13, 34, 58);
+        let mut buf = Buffer::empty(area);
+        buf.set_style(area, Style::default().bg(ground).fg(Color::White));
+        buf.set_string(3, 4, "海 e\u{301}", Style::default());
+        let before = buf.clone();
+        OceanColumn::new(Duration::from_millis(22_500), MotionMode::Full)
+            .phase(OceanPhase::Approval)
+            .apply_matching(area, &mut buf, &theme, ground);
+        assert_eq!(buf, before, "{} remains host-owned", profile.name());
+    }
+    for palette in [
+        codewhale_ratatui::TuiPalette::WhaleLight,
+        codewhale_ratatui::TuiPalette::Matrix,
+        codewhale_ratatui::TuiPalette::Terminal,
+    ] {
+        let theme = Profile::DarkTrue.theme().tui_palette(palette);
+        let area = Rect::new(2, 3, 40, 12);
+        let ground = Color::Rgb(13, 34, 58);
+        let mut buf = Buffer::empty(area);
+        buf.set_style(area, Style::default().bg(ground));
+        let before = buf.clone();
+        OceanColumn::new(Duration::ZERO, MotionMode::Full)
+            .apply_matching(area, &mut buf, &theme, ground);
+        assert_eq!(buf, before, "{} retains its own ground", palette.name());
+    }
+    let theme = Profile::DarkTrue.theme().tui().without_base_ground();
+    let area = Rect::new(2, 3, 40, 12);
+    let ground = Color::Rgb(13, 34, 58);
+    let mut buf = Buffer::empty(area);
+    buf.set_style(area, Style::default().bg(ground));
+    let before = buf.clone();
+    OceanColumn::new(Duration::ZERO, MotionMode::Full)
+        .apply_matching(area, &mut buf, &theme, ground);
+    assert_eq!(
+        buf, before,
+        "matching cannot opt a host theme into base grounds"
+    );
 }
 
 #[test]

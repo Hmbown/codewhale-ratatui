@@ -122,10 +122,10 @@ def palette(profile):
              "sidebar": (0, "sidebar"), "edge": (7, "border"),
              "fg": (5, "foreground"), "muted": (6, "muted_foreground"),
              "accent": (9, "primary")}
-    # Native terminal-owned grounds have no fixed RGB; the export uses white.
+    # Reset inherits the same measured host ground as the buffer exporter.
     return {name: "#" + ("".join(f"{channel:02x}" for channel in native["roles"][index])
                          if isinstance(native["roles"][index], list)
-                         else "ffffff" if light else colors[role])
+                         else colors[role])
             for name, (index, role) in roles.items()}
 
 

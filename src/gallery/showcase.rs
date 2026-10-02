@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use ratatui::{
     buffer::Buffer,
-    layout::Rect,
+    layout::{Margin, Rect},
     style::Modifier,
     text::{Line, Span},
 };
@@ -14,18 +14,20 @@ use crate::{
     ApprovalCard, ApprovalChoice, ApprovalEffect, ApprovalKey, ApprovalKind, ApprovalScope,
     ApprovalState, ApprovalSubject, ChoiceId, Depth, Diff, DiffGutter, DiffWrap, Form, FormField,
     FormState, Habitat, HabitatDensity, HorizonRule, Message, MetricKind, MetricSegment,
-    MetricsLine, MotionMode, NativeComposer, OceanColumn, OceanPhase, Ombre, OmbreDirection, Paint,
-    PaneHeader, Picker, PickerItem, PickerMatches, PickerState, PostureBar, Receipt, ReceiptValue,
-    Role, Segmented, SegmentedState, SettingDetail, SettingRow, Spinner, State, StatusMark,
-    TerminalShell, TextInputState, Theme, Toggle, ToggleState, TuiPalette, VerificationSpinner,
-    WaterPalette, Whale, WhaleState, WorkbarPanel, WorkbarState, WorkflowProgress, WorkflowRun,
-    WorkflowRunState, parse_unified,
+    MetricsLine, MotionMode, NativeComposer, NativeComposerDensity, OceanColumn, OceanPhase, Ombre,
+    OmbreDirection, Paint, PaneHeader, Picker, PickerItem, PickerMatches, PickerState, PostureBar,
+    Receipt, ReceiptValue, Role, Segmented, SegmentedState, SettingDetail, SettingRow, Spinner,
+    State, StatusMark, TerminalShell, TextInputState, Theme, Toggle, ToggleState, TuiGround,
+    TuiInk, TuiPalette, VerificationSpinner, WaterPalette, Whale, WhaleState, Workbar,
+    WorkbarAgent, WorkbarPanel, WorkbarRow, WorkbarState, WorkbarTab, WorkbarTone,
+    WorkflowProgress, WorkflowRun, WorkflowRunState, parse_unified,
     testing::Profile,
     text,
     whale_motion::{Activity, ColoredGrid, Context, Inputs, Presence, Stage, colored_braille},
 };
 
-/// Example row facts shared by rendering and the optional keyboard host.
+/// Rows for the standalone workbar gallery. The Work view uses
+/// [`ShowcaseState::workbar`] for its phase-aware fixture.
 #[must_use]
 pub fn workbar_rows(panel: WorkbarPanel) -> Vec<crate::WorkbarRow> {
     super::workbar::sample(panel).rows
@@ -102,6 +104,39 @@ impl ShowcasePhase {
     }
 }
 
+/// Native permission labels for the specimen. These never grant the gallery
+/// host access to a command, provider or filesystem operation.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum ShowcasePermission {
+    #[default]
+    Ask,
+    AutoReview,
+    FullAccess,
+}
+impl ShowcasePermission {
+    pub const fn next(self) -> Self {
+        match self {
+            Self::Ask => Self::AutoReview,
+            Self::AutoReview => Self::FullAccess,
+            Self::FullAccess => Self::Ask,
+        }
+    }
+    pub const fn word(self) -> &'static str {
+        match self {
+            Self::Ask => "ask",
+            Self::AutoReview => "auto-review",
+            Self::FullAccess => "full access",
+        }
+    }
+    pub const fn ink(self) -> TuiInk {
+        match self {
+            Self::Ask => TuiInk::PermissionAsk,
+            Self::AutoReview => TuiInk::PermissionAutoReview,
+            Self::FullAccess => TuiInk::PermissionFullAccess,
+        }
+    }
+}
+
 /// State kept by the example host. Its clock is an elapsed Duration, supplied
 /// to the renderer; the fields do not infer account, cost or execution state.
 #[derive(Clone, Debug)]
@@ -115,6 +150,9 @@ pub struct ShowcaseState {
     pub motion: MotionMode,
     pub focus: usize,
     pub editing: bool,
+    pub permission: ShowcasePermission,
+    pub queued: Vec<String>,
+    pub followups: Vec<String>,
     pub details: ToggleState,
     pub readouts: ToggleState,
     pub draft: TextInputState,
@@ -159,10 +197,13 @@ impl ShowcaseState {
             profile: Profile::DarkTrue,
             motion: MotionMode::Full,
             focus: 0,
-            editing: false,
+            editing: true,
+            permission: ShowcasePermission::Ask,
+            queued: Vec::new(),
+            followups: Vec::new(),
             details: ToggleState::from(false),
             readouts: ToggleState::from(true),
-            draft: TextInputState::with_text("Review the changes."),
+            draft: TextInputState::with_text("Also preserve the search shortcut."),
             form: FormState::new(vec![
                 FormField::text("Project")
                     .value("codewhale-ratatui")
@@ -195,6 +236,124 @@ impl ShowcaseState {
     }
     pub fn phase_elapsed(&self, elapsed: Duration) -> Duration {
         elapsed.saturating_sub(self.phase_started)
+    }
+
+    /// The work view and its keyboard host consume the same phase-aware rows.
+    #[must_use]
+    pub fn workbar(&self) -> Workbar {
+        let mut dock = super::workbar::sample(self.dock.panel);
+        let done = self.phase == ShowcasePhase::Done;
+        let live = if done {
+            WorkbarTone::Success
+        } else {
+            WorkbarTone::Live
+        };
+        let mark = if done { "✓" } else { "●" };
+        dock.rows = match self.dock.panel {
+            WorkbarPanel::Tasks => vec![
+                WorkbarRow::new("session:selection", "Preserve session selection")
+                    .mark("✓")
+                    .tone(WorkbarTone::Success),
+                WorkbarRow::new("session:layout", "Refine the narrow layout")
+                    .mark(mark)
+                    .tone(live),
+            ],
+            WorkbarPanel::Fleet => vec![
+                WorkbarRow::new("worker:build", "Builder").mark(mark).agent(
+                    WorkbarAgent::new(
+                        "builder",
+                        if done { "completed" } else { "running" },
+                        "Keep the session list readable in compact windows",
+                    )
+                    .elapsed_seconds(6),
+                ),
+                WorkbarRow::new("worker:review", "Reviewer")
+                    .mark("✓")
+                    .agent(
+                        WorkbarAgent::new(
+                            "reviewer",
+                            "completed",
+                            "Check search and keyboard selection",
+                        )
+                        .elapsed_seconds(3),
+                    ),
+            ],
+            WorkbarPanel::Jobs => vec![
+                WorkbarRow::new("shell:layout", "Check the compact session layout")
+                    .mark(mark)
+                    .tone(live),
+            ],
+            WorkbarPanel::Files => vec![
+                WorkbarRow::new("files:edited", "Edited 2")
+                    .mark("▾")
+                    .tone(WorkbarTone::Heading)
+                    .selectable(false),
+                WorkbarRow::new("files:list", "src/components/native_views.rs")
+                    .mark("✎")
+                    .tone(WorkbarTone::Success)
+                    .detail("+18 -8"),
+                WorkbarRow::new("files:gallery", "src/gallery/native_views.rs")
+                    .mark("✎")
+                    .tone(WorkbarTone::Success)
+                    .detail("+6 -2"),
+            ],
+            WorkbarPanel::Notes => vec![
+                WorkbarRow::new("notes:1", "Keep search visible at every width")
+                    .mark("▪")
+                    .tone(WorkbarTone::Live),
+                WorkbarRow::new("notes:2", "Preserve selection while filtering")
+                    .mark("▪")
+                    .tone(WorkbarTone::Live),
+            ],
+            WorkbarPanel::Context => vec![
+                WorkbarRow::new("context:budget", "30.7k of 128k · 24% · compacts at 90%")
+                    .mark("◔")
+                    .tone(WorkbarTone::Live),
+                WorkbarRow::new("context:system", "system + tools · 8.4k")
+                    .mark("·")
+                    .selectable(false),
+                WorkbarRow::new("context:conversation", "conversation + output · 22.3k")
+                    .mark("·")
+                    .selectable(false),
+                WorkbarRow::new("context:compact", "compact now")
+                    .mark("▸")
+                    .tone(WorkbarTone::Live),
+            ],
+            WorkbarPanel::Git => vec![
+                WorkbarRow::new("git:branch", "session-layout · up to date")
+                    .mark("⎇")
+                    .tone(WorkbarTone::Live)
+                    .detail("codewhale-ratatui"),
+                WorkbarRow::new("git:changes", "2 modified files")
+                    .mark("±")
+                    .tone(WorkbarTone::Live)
+                    .detail("/diff"),
+            ],
+            WorkbarPanel::Cost => dock.rows,
+        };
+        if self.dock.panel == WorkbarPanel::Tasks {
+            dock.goal = Some("Make session navigation feel effortless".into());
+            dock.progress = Some(
+                if done {
+                    "TODO · 2/2 · done"
+                } else {
+                    "TODO · 1/2 · 1 left"
+                }
+                .into(),
+            );
+        }
+        dock.tabs = WorkbarPanel::ORDER
+            .into_iter()
+            .map(|panel| match panel {
+                WorkbarPanel::Tasks
+                | WorkbarPanel::Fleet
+                | WorkbarPanel::Files
+                | WorkbarPanel::Notes => WorkbarTab::new(panel).count(2),
+                WorkbarPanel::Jobs => WorkbarTab::new(panel).count(1),
+                _ => WorkbarTab::new(panel),
+            })
+            .collect();
+        self.dock.apply(dock)
     }
     pub fn active_motion(&self) -> bool {
         self.motion == MotionMode::Full
@@ -391,32 +550,55 @@ fn mode_word(mode: MotionMode) -> &'static str {
 }
 
 impl ShowcaseFrame<'_> {
+    fn native_composer(&self, theme: &Theme) -> NativeComposer<'_> {
+        let mut composer = NativeComposer::new(self.state.draft.text())
+            .density(NativeComposerDensity::Compact)
+            .cursor(self.state.draft.cursor())
+            .placeholder("Write a task or use /.")
+            .focused(self.state.editing && !self.state.dock.focused)
+            .can_submit(!self.state.draft.text().is_empty());
+        if matches!(
+            self.state.phase,
+            ShowcasePhase::Working | ShowcasePhase::Verifying
+        ) {
+            composer = composer.submit_hint(if theme.ascii() {
+                "Enter send after this turn"
+            } else {
+                "↵ send after this turn"
+            });
+        }
+        composer
+    }
+
     /// Native slot geometry shared with the terminal cursor owner.
     #[must_use]
     pub fn work_areas(&self, area: Rect, theme: &Theme) -> crate::ShellAreas {
-        let dock = self
-            .state
-            .dock
-            .apply(super::workbar::sample(self.state.dock.panel))
-            .max_height(7);
-        let composer_height = NativeComposer::new(self.state.draft.text())
-            .desired_height(area.width, area.height)
-            .min(5);
+        let dock = self.state.workbar();
+        let dock_rows = if self.state.readouts.on {
+            dock.height(area.width, theme)
+        } else {
+            0
+        };
+        let pending_rows = u16::from(!self.state.queued.is_empty());
+        let workflow_rows = u16::from(self.state.details.on);
+        let composer_budget = area
+            .height
+            .saturating_sub(3 + 2 + dock_rows + pending_rows + workflow_rows)
+            .max(1)
+            .min(area.height);
+        let composer_height = self
+            .native_composer(theme)
+            .desired_height(area.width, composer_budget);
         TerminalShell::new(composer_height)
-            .workflow_rows(u16::from(self.state.details.on))
-            .workbar_rows(if self.state.readouts.on {
-                dock.height(area.width, theme)
-            } else {
-                0
-            })
+            .pending_rows(pending_rows)
+            .workflow_rows(workflow_rows)
+            .workbar_rows(dock_rows)
             .areas(area)
     }
 
     #[must_use]
     pub fn composer_cursor(&self, area: Rect, theme: &Theme) -> Option<ratatui::layout::Position> {
-        NativeComposer::new(self.state.draft.text())
-            .cursor(self.state.draft.cursor())
-            .focused(self.state.editing)
+        self.native_composer(theme)
             .cursor_position(self.work_areas(area, theme).composer)
     }
 
@@ -453,7 +635,7 @@ impl ShowcaseFrame<'_> {
             }
         };
         if self.state.palette == WaterPalette::Ocean {
-            OceanColumn::new(
+            let column = OceanColumn::new(
                 self.elapsed,
                 if self.state.active_motion() {
                     self.state.motion
@@ -462,9 +644,26 @@ impl ShowcaseFrame<'_> {
                 },
             )
             .phase(phase)
+            .context_percent(if self.state.section == ShowcaseSection::Work {
+                24
+            } else {
+                0
+            })
             .completion_elapsed(self.state.phase_elapsed(self.elapsed))
-            .viewport(area)
-            .apply(area, buf, &theme);
+            .viewport(area);
+            column.apply(area, buf, &theme);
+            if self.state.section == ShowcaseSection::Work {
+                let regions = self.work_areas(area, &theme);
+                for (region, ground) in [
+                    (regions.composer, TuiGround::Composer),
+                    (regions.posture, TuiGround::Footer),
+                    (regions.metrics, TuiGround::Header),
+                ] {
+                    if let Some(ground) = theme.tui_ground(ground).bg {
+                        column.apply_matching(region, buf, &theme, ground);
+                    }
+                }
+            }
         } else {
             Ombre::new(self.state.palette)
                 .direction(self.state.direction)
@@ -484,7 +683,7 @@ impl ShowcaseFrame<'_> {
         let elapsed = self.state.phase_elapsed(self.elapsed);
         match self.state.phase {
             ShowcasePhase::Working => {
-                Spinner::new("Checking the narrow view", elapsed, self.state.motion)
+                Spinner::new("Checking the narrow layout", elapsed, self.state.motion)
                     .paint(area, buf, theme)
             }
             ShowcasePhase::Verifying => {
@@ -528,63 +727,102 @@ impl ShowcaseFrame<'_> {
         }
     }
     fn composer(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
-        NativeComposer::new(self.state.draft.text())
-            .cursor(self.state.draft.cursor())
-            .placeholder("Ask Codewhale anything")
-            .focused(self.state.editing)
-            .can_submit(!self.state.draft.text().is_empty())
-            .submit_hint("Enter send  Shift+Enter newline")
-            .paint(area, buf, theme);
+        self.native_composer(theme).paint(area, buf, theme);
     }
 
     fn work(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
-        let dock = self
-            .state
-            .dock
-            .apply(super::workbar::sample(self.state.dock.panel))
-            .max_height(7);
+        let dock = self.state.workbar();
         let regions = self.work_areas(area, theme);
         TerminalShell::new(0).paint(area, buf, theme);
-        Message::native("Polish the workbar and update the gallery.")
+        let user = Message::native("Make the session picker readable in narrow windows.")
             .role(Role::Primary)
-            .marker(crate::glyphs::USER)
-            .paint(band(regions.conversation, 1, 3), buf, theme);
+            .marker(crate::glyphs::USER);
+        let mut next = 1;
+        let height = user.height(regions.conversation.width, theme);
+        user.paint(band(regions.conversation, next, height), buf, theme);
+        next += height + 1;
         let reply = match self.state.phase {
             ShowcasePhase::Working => {
-                "The native layout is in place. I'm checking the narrow view."
+                "The list now keeps its search field, numbering and current-session marker.\nLong titles wrap cleanly, and the selection stays visible as the window narrows.\n\nI'm checking the compact layout before wrapping up."
             }
-            ShowcasePhase::NeedsYou => "Review the command below before continuing.",
-            ShowcasePhase::Verifying => "Checking the changes and rendering the component gallery.",
-            ShowcasePhase::Done => "The changes are ready for review.",
+            ShowcasePhase::NeedsYou if self.state.approval_open => {
+                "Review the command below before continuing."
+            }
+            ShowcasePhase::NeedsYou => "The turn is paused. Your draft is still here.",
+            ShowcasePhase::Verifying => {
+                "The list, search field and current-session marker keep their place.\nI'm checking the compact layout and keyboard navigation."
+            }
+            ShowcasePhase::Done => {
+                "The session picker is ready for review.\nSearch, numbering and selection remain visible in narrow windows."
+            }
         };
-        Message::native(reply).paint(band(regions.conversation, 5, 5), buf, theme);
-        if regions.conversation.height >= 13 {
-            self.marker(band(regions.conversation, 11, 1), buf, theme);
+        let reply = Message::native(reply);
+        let height = reply.height(regions.conversation.width, theme);
+        reply.paint(band(regions.conversation, next, height), buf, theme);
+        next += height + 1;
+        for followup in &self.state.followups {
+            let message = Message::native(followup).marker(crate::glyphs::USER);
+            let height = message.height(regions.conversation.width, theme);
+            message.paint(band(regions.conversation, next, height), buf, theme);
+            next = next.saturating_add(height).saturating_add(1);
         }
-        Habitat::new(
-            self.elapsed,
-            if self.state.active_motion() {
-                self.state.motion
-            } else {
-                MotionMode::Still
-            },
-        )
-        .density(HabitatDensity::Sparse)
-        .paint(regions.conversation, buf, theme);
-        self.composer(regions.composer, buf, theme);
-        PostureBar::new("ask")
-            .permission_key("Shift+Tab")
-            .mode_ink("work", crate::TuiInk::ModeWork)
-            .turn_clock(self.state.phase.word(), self.state.phase.state().role())
-            .hint(
-                if self.state.editing {
-                    "Esc keep draft"
+        if next < regions.conversation.height {
+            self.marker(band(regions.conversation, next, 1), buf, theme);
+        }
+        if theme.native_palette() == Some(TuiPalette::Underwater) {
+            Habitat::new(
+                self.elapsed,
+                if self.state.active_motion() {
+                    self.state.motion
                 } else {
-                    "Ctrl+X workbar"
+                    MotionMode::Still
                 },
-                Role::Hint,
             )
-            .paint(regions.posture, buf, theme);
+            .density(HabitatDensity::Sparse)
+            .paint(regions.conversation, buf, theme);
+        }
+        if let Some(queued) = self.state.queued.last() {
+            caption(
+                regions.pending,
+                buf,
+                theme,
+                &format!(
+                    "{} queued {} {}",
+                    self.state.queued.len(),
+                    if theme.ascii() { "." } else { "·" },
+                    queued
+                ),
+                Role::Primary,
+            );
+        }
+        self.composer(regions.composer, buf, theme);
+        buf.set_style(regions.posture, theme.tui_ground(TuiGround::Footer));
+        let mut posture = PostureBar::new(self.state.permission.word())
+            .permission_ink(self.state.permission.ink())
+            .permission_key("Shift+Tab")
+            .mode_ink("work", TuiInk::ModeWork)
+            .context_percent(24);
+        if self.state.phase == ShowcasePhase::Done {
+            posture = posture.session_clock("worked 6 s", Role::Muted);
+        } else {
+            posture = posture.turn_clock(
+                format!(
+                    "{} {}",
+                    self.state.phase.word().to_lowercase(),
+                    crate::duration(self.state.phase_elapsed(self.elapsed))
+                ),
+                self.state.phase.state().role(),
+            );
+        }
+        if self.state.editing
+            && matches!(
+                self.state.phase,
+                ShowcasePhase::Working | ShowcasePhase::Verifying
+            )
+        {
+            posture = posture.hint("Esc to interrupt", Role::Hint);
+        }
+        posture.paint(regions.posture, buf, theme);
         WorkflowProgress::new(vec![
             WorkflowRun::new(
                 "Update the component library",
@@ -611,12 +849,21 @@ impl ShowcaseFrame<'_> {
             }),
         ])
         .paint(regions.workflows, buf, theme);
+        buf.set_style(regions.metrics, theme.tui_ground(TuiGround::Header));
         MetricsLine::new(vec![
-            MetricSegment::new(MetricKind::Model, "", "codewhale"),
+            MetricSegment::new(MetricKind::Model, "", "deepseek-v4"),
             MetricSegment::new(MetricKind::Context, "ctx", "24%"),
+            MetricSegment::new(MetricKind::Workspace, "", "codewhale-ratatui"),
+            MetricSegment::new(MetricKind::GitBranch, "", "session-layout"),
         ])
-        .help_hint("F6 components · F9 theme")
-        .paint(regions.metrics, buf, theme);
+        .help_hint("F6 components")
+        .paint(
+            regions
+                .metrics
+                .inner(Margin::new(u16::from(regions.metrics.width >= 8), 0)),
+            buf,
+            theme,
+        );
         dock.paint(regions.workbar, buf, theme);
     }
 
@@ -995,14 +1242,14 @@ pub(crate) fn entries() -> Vec<Entry> {
     vec![
         Entry {
             name: "showcase-work",
-            width: 112,
-            height: 38,
+            width: 104,
+            height: 30,
             draw: |a, b, t| fixture(ShowcaseSection::Work, ShowcasePhase::Working, a, b, t),
         },
         Entry {
             name: "showcase-decision",
-            width: 112,
-            height: 38,
+            width: 104,
+            height: 30,
             draw: |a, b, t| fixture(ShowcaseSection::Decisions, ShowcasePhase::NeedsYou, a, b, t),
         },
         Entry {

@@ -1,8 +1,8 @@
 {
-  "source_sha256": "c3e7a9ad76721bb20917834fdbfd832dfbc29a3c86d1d68f20a0ffe27f37fc74",
-  "gif_sha256": "9f9ab8e0e650c6c05117a3d26103e72e097282e689859cdf803c6d2719109b25",
+  "source_sha256": "6a2d958e1baed0bbad701115ed5a9376cb9dd3f94412be30b43bbb4b79ab819a",
+  "gif_sha256": "9314c4c6c041f2500db8a2f3de685812331a5ab452ae1f7ac762616afa1dce56",
   "frames": 128,
-  "width": 1120,
-  "height": 760,
+  "width": 1040,
+  "height": 600,
   "frame_ms": 200
 }
