@@ -5,11 +5,8 @@
 
 use std::fmt::Write as _;
 
-use ratatui::{
-    buffer::Buffer,
-    layout::Rect,
-    style::{Color, Modifier, Style},
-};
+use ratatui::{buffer::Buffer, layout::Rect};
+use ratatui_core::style::{Color, Modifier, Style};
 
 use crate::{Caps, Role, Theme, color::ColorDepth, detect::Appearance, text, theme::Ground};
 
@@ -143,7 +140,7 @@ impl Frame {
         }
     }
 
-    /// The glyphs, one line per row ([`text`]).
+    /// The glyphs, one line per row ([`text()`]).
     #[must_use]
     pub fn text(&self) -> String {
         text(&self.buf)

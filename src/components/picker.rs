@@ -189,8 +189,14 @@ impl PickerState {
     /// `rows` rows, and say what happened. Keys: `↑`/`↓` (wrapping), `Home`,
     /// `End`, `PgUp`, `PgDn`, `Enter`, `Space`, `Esc`. Releases and other
     /// keys are [`PickerOutcome::Ignored`]; so is every key on an empty list.
+    /// Modified keys belong to the host. Held keys repeat navigation only.
     pub fn handle_key(&mut self, key: KeyEvent, len: usize, rows: u16) -> PickerOutcome {
-        if key.kind == KeyEventKind::Release || len == 0 {
+        if key.kind == KeyEventKind::Release
+            || len == 0
+            || !key.modifiers.is_empty()
+            || (key.kind == KeyEventKind::Repeat
+                && matches!(key.code, KeyCode::Enter | KeyCode::Esc | KeyCode::Char(' ')))
+        {
             return PickerOutcome::Ignored;
         }
         self.scroll_into_view(len, rows);
@@ -231,7 +237,8 @@ impl PickerState {
     /// `Home` and `End` are never eaten. Without a query line, `Home`/`End`
     /// and `←`/`→` (tabs) also move, and `Space` toggles. Navigation skips
     /// disabled rows, and `Enter`/`Space` on one are ignored. `Esc` cancels
-    /// even with nothing shown. Releases are [`PickerOutcome::Ignored`].
+    /// even with nothing shown. Held keys repeat editing/navigation only;
+    /// modified activation/navigation and releases are ignored.
     ///
     /// When the query or the tab changes, rebuild the [`PickerMatches`] and
     /// [`PickerState::reset`] (a tab change resets for you).
@@ -244,8 +251,33 @@ impl PickerState {
         if key.kind == KeyEventKind::Release {
             return PickerOutcome::Ignored;
         }
+        let allowed_modifiers = match key.code {
+            KeyCode::Tab | KeyCode::BackTab => {
+                key.modifiers.is_empty() || key.modifiers == KeyModifiers::SHIFT
+            }
+            KeyCode::Char(' ') => {
+                key.modifiers.is_empty() || key.modifiers == KeyModifiers::CONTROL
+            }
+            KeyCode::Enter
+            | KeyCode::Esc
+            | KeyCode::Up
+            | KeyCode::Down
+            | KeyCode::PageUp
+            | KeyCode::PageDown => key.modifiers.is_empty(),
+            _ => true,
+        };
+        if !allowed_modifiers {
+            return PickerOutcome::Ignored;
+        }
         let len = picker.shown_len();
         let typing = picker.query.is_some();
+        if key.kind == KeyEventKind::Repeat
+            && (matches!(key.code, KeyCode::Enter | KeyCode::Esc)
+                || (key.code == KeyCode::Char(' ')
+                    && (!typing || key.modifiers == KeyModifiers::CONTROL)))
+        {
+            return PickerOutcome::Ignored;
+        }
         let enabled = |i: usize| {
             picker
                 .shown_item(i)
@@ -279,6 +311,9 @@ impl PickerState {
             // No tabs to change: Tab is the host's (focus), never the query's.
             KeyCode::Tab | KeyCode::BackTab => return PickerOutcome::Ignored,
             KeyCode::Left | KeyCode::Right if !typing && tabs > 1 => {
+                if !key.modifiers.is_empty() {
+                    return PickerOutcome::Ignored;
+                }
                 return tab(key.code == KeyCode::Right, self);
             }
             KeyCode::Enter => {
@@ -305,8 +340,10 @@ impl PickerState {
                     _ => settle_at((self.selected + page).min(len - 1), len, true, enabled),
                 };
             }
-            KeyCode::Home if !typing && len > 0 => self.selected = settle_at(0, len, true, enabled),
-            KeyCode::End if !typing && len > 0 => {
+            KeyCode::Home if !typing && len > 0 && key.modifiers.is_empty() => {
+                self.selected = settle_at(0, len, true, enabled)
+            }
+            KeyCode::End if !typing && len > 0 && key.modifiers.is_empty() => {
                 self.selected = settle_at(len - 1, len, false, enabled);
             }
             _ => {
@@ -610,6 +647,19 @@ fn label_runs(
 /// kept), [`Picker::tabs`], [`Picker::preview`] (beside the list at
 /// [`PICKER_PREVIEW_MIN_WIDTH`] columns and up, dropped below) and
 /// [`Picker::words`].
+///
+/// Ratatui's stateful adapter persists selection and the viewport offset in
+/// your own [`PickerState`], overriding the constructor's state snapshot:
+///
+/// ```no_run
+/// use codewhale_ratatui::{Paint, Picker, PickerItem, PickerState, Theme};
+/// # fn draw(frame: &mut ratatui::Frame<'_>, state: &mut PickerState) {
+/// let theme = Theme::detect().tui();
+/// let items = [PickerItem::new("Underwater"), PickerItem::new("Dracula")];
+/// let picker = Picker::new(&items, PickerState::default()).query("", 0);
+/// frame.render_stateful_widget(picker.themed(&theme), frame.area(), state);
+/// # }
+/// ```
 #[derive(Clone, Copy)]
 pub struct Picker<'a> {
     pub items: &'a [PickerItem],
@@ -1191,6 +1241,41 @@ impl Paint for Picker<'_> {
             n => u16::try_from(n).unwrap_or(u16::MAX),
         };
         head.saturating_add(body)
+    }
+}
+
+/// Render with persistent host state instead of the constructor's snapshot.
+/// Query rows, tabs and clipping are included in the stored scroll offset.
+impl ratatui::widgets::StatefulWidget for crate::Themed<'_, Picker<'_>> {
+    type State = PickerState;
+    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+        ratatui::widgets::StatefulWidget::render(&self, area, buf, state);
+    }
+}
+
+impl ratatui::widgets::StatefulWidget for &crate::Themed<'_, Picker<'_>> {
+    type State = PickerState;
+    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+        let area = area.intersection(buf.area);
+        if area.is_empty() {
+            return;
+        }
+        let mut view = Picker {
+            items: self.component.items,
+            state: *state,
+            query: self.component.query,
+            tabs: self.component.tabs,
+            matches: self.component.matches,
+            preview: self.component.preview,
+            preview_min: self.component.preview_min,
+            words: self.component.words,
+        };
+        let viewport = view.layout(area).list;
+        if !viewport.is_empty() {
+            state.scroll_into_view(view.shown_len(), viewport.height);
+            view.state = *state;
+        }
+        view.paint(area, buf, self.theme);
     }
 }
 

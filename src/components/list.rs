@@ -284,14 +284,19 @@ impl ListState {
     /// say what happened. Keys: `↑`/`↓` (wrapping, skipping disabled rows),
     /// `Home`, `End`, `PgUp`, `PgDn`, `Enter`, `Space`, `Esc`. Releases and
     /// other keys are [`ListOutcome::Ignored`]; so are Enter and Space on a
-    /// disabled row. Esc cancels even an empty list.
+    /// disabled row. Esc cancels even an empty list. Modified keys belong
+    /// to the host; held keys repeat navigation but never choose or toggle.
     pub fn handle_key<R: ListRow>(
         &mut self,
         key: KeyEvent,
         rows: &[R],
         viewport: Rect,
     ) -> ListOutcome {
-        if key.kind == KeyEventKind::Release {
+        if key.kind == KeyEventKind::Release
+            || !key.modifiers.is_empty()
+            || (key.kind == KeyEventKind::Repeat
+                && matches!(key.code, KeyCode::Enter | KeyCode::Esc | KeyCode::Char(' ')))
+        {
             return ListOutcome::Ignored;
         }
         let len = rows.len();
@@ -411,6 +416,20 @@ struct Placed {
 }
 
 /// A scrolling list of caller-painted rows.
+///
+/// Use [`Paint::paint`] with a state snapshot, or render the themed widget
+/// with application-owned [`ListState`]. Stateful rendering stores the
+/// actual viewport offset, including variable-height rows and clipping:
+///
+/// ```no_run
+/// use codewhale_ratatui::{List, ListState, Paint, Theme};
+/// # fn draw(frame: &mut ratatui::Frame<'_>, state: &mut ListState) {
+/// let theme = Theme::detect().tui();
+/// let rows = ["First session", "Second session"];
+/// let list = List::new(&rows, ListState::default());
+/// frame.render_stateful_widget(list.themed(&theme), frame.area(), state);
+/// # }
+/// ```
 pub struct List<'a, R: ListRow> {
     rows: &'a [R],
     state: ListState,
@@ -568,5 +587,38 @@ impl<R: ListRow> Paint for List<'_, R> {
             .map(|r| usize::from(r.height(content).max(1)))
             .sum();
         u16::try_from(total).unwrap_or(u16::MAX)
+    }
+}
+
+/// Render with application-owned selection and scroll state. This explicit
+/// state overrides the constructor's snapshot; the resolved viewport offset
+/// is stored after clipping and scrollbar layout.
+impl<R: ListRow> StatefulWidget for crate::Themed<'_, List<'_, R>> {
+    type State = ListState;
+    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+        StatefulWidget::render(&self, area, buf, state);
+    }
+}
+
+impl<R: ListRow> StatefulWidget for &crate::Themed<'_, List<'_, R>> {
+    type State = ListState;
+    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+        let area = area.intersection(buf.area);
+        if area.is_empty() {
+            return;
+        }
+        if self.component.rows.is_empty() {
+            *state = ListState::default();
+            self.component.paint(area, buf, self.theme);
+            return;
+        }
+        state.selected = state.selected.min(self.component.rows.len() - 1);
+        let view = List {
+            rows: self.component.rows,
+            state: *state,
+            empty: None,
+        };
+        state.offset = view.place(area).offset;
+        view.paint(area, buf, self.theme);
     }
 }

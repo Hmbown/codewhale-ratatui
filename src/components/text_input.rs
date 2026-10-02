@@ -238,26 +238,50 @@ impl LineBuffer {
     }
 
     /// Insert `text` at the cursor: a typed character, or a paste. The text
-    /// is made safe first ([`LineBuffer::sanitize`]): a pasted newline is
-    /// dropped, not turned into a space, and a paste that would pass the
-    /// limit is cut at it.
+    /// is made safe in context ([`LineBuffer::sanitize`]): a typed combining
+    /// mark or joiner may extend a visible grapheme already in the line.
+    /// A pasted newline is dropped, not turned into a space, and a paste
+    /// that would pass the limit is cut without removing existing text.
     pub fn insert_str(&mut self, text: &str) -> bool {
-        let mut clean = Self::sanitize(text);
-        if clean.is_empty() {
+        let safe = text::display_safe(text);
+        if safe.is_empty() {
             return false;
         }
-        // Bytes are an upper bound on graphemes: count only when it matters.
-        if self.text.len() + clean.len() > self.limit {
-            let room = self.limit.saturating_sub(self.len());
-            if room == 0 {
-                return false;
+        let prefix = &self.text[..self.cursor];
+        let clean_prefix = Self::sanitize(&format!("{prefix}{safe}"));
+        // The stored prefix is already safe. Sanitize input beside it so
+        // extensions survive while invisible-only clusters do not consume
+        // the paste budget or hide later visible text.
+        let clean = &clean_prefix[prefix.len()..];
+        // At each insertion boundary a cluster can join its neighbor. Keep
+        // two extra incoming clusters so extending a full line is possible;
+        // then enforce the cap on the combined, sanitized result.
+        let room = self.limit.saturating_sub(self.len()).saturating_add(2);
+        let mut end = clean
+            .grapheme_indices(true)
+            .nth(room)
+            .map_or(clean.len(), |(at, _)| at);
+        while end > 0 {
+            let insertion = &clean[..end];
+            let mut candidate = self.text.clone();
+            candidate.insert_str(self.cursor, insertion);
+            let cursor = Self::sanitize(&candidate[..self.cursor + insertion.len()]).len();
+            let candidate = Self::sanitize(&candidate);
+            if candidate.graphemes(true).count() <= self.limit {
+                if candidate == self.text {
+                    return false;
+                }
+                self.text = candidate;
+                self.cursor = cursor;
+                self.snap_cursor();
+                return true;
             }
-            clean = clean.graphemes(true).take(room).collect();
+            end = insertion
+                .grapheme_indices(true)
+                .next_back()
+                .map_or(0, |(at, _)| at);
         }
-        self.text.insert_str(self.cursor, &clean);
-        self.cursor += clean.len();
-        self.snap_cursor();
-        true
+        false
     }
 
     /// Typed text can join the grapheme after the cursor (`e` before a
@@ -331,6 +355,9 @@ impl LineBuffer {
         }
         self.text.replace_range(from..to, "");
         self.cursor = from;
+        // Removing a separator can join neighboring regional indicators
+        // into one flag. The old byte boundary may now be inside a grapheme.
+        self.snap_cursor();
         true
     }
 
@@ -721,8 +748,10 @@ impl TextInputState {
     }
 
     /// Apply a key press and say what happened (see the module's key table).
-    /// Releases and every key a field has no use for (Tab, the arrows up and
-    /// down, `Ctrl+C`, `Cmd` chords) are [`TextInputOutcome::Ignored`].
+    /// Editing and movement accept held-key repeats. Enter/Esc require an
+    /// unmodified initial press. Releases and every key a field has no use
+    /// for (Tab, the arrows up and down, `Ctrl+C`, `Cmd` chords) are
+    /// [`TextInputOutcome::Ignored`].
     pub fn handle_key(&mut self, key: KeyEvent) -> TextInputOutcome {
         match self.apply(key) {
             KeyEffect::Nothing => TextInputOutcome::Ignored,
@@ -747,8 +776,17 @@ impl TextInputState {
         );
         let word = ctrl || alt;
         let effect = match key.code {
-            KeyCode::Enter => return KeyEffect::Submit,
-            KeyCode::Esc => return KeyEffect::Cancel,
+            KeyCode::Enter | KeyCode::Esc => {
+                return if key.kind == KeyEventKind::Press && mods.is_empty() {
+                    if key.code == KeyCode::Enter {
+                        KeyEffect::Submit
+                    } else {
+                        KeyEffect::Cancel
+                    }
+                } else {
+                    KeyEffect::Nothing
+                };
+            }
             KeyCode::Char(c) => {
                 if keys::is_ctrl_h_backspace(&key) {
                     self.edit(LineBuffer::backspace)

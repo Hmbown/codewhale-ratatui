@@ -30,6 +30,73 @@ fn ordinary(area: Rect, theme: &Theme) -> Buffer {
     buf
 }
 
+/// Repeated ink runs and changing custom colors must retain exactly the
+/// same per-cell contrast decisions, including unknown inks and raised fills.
+#[test]
+fn text_runs_keep_the_original_per_cell_contrast_policy() {
+    let theme = Profile::DarkTrue.theme().tui();
+    let area = Rect::new(7, 5, 112, 38);
+    let ramp = OceanRamp::for_theme(&theme).unwrap();
+    let colors = [
+        Color::Reset,
+        Color::Rgb(4, 15, 28),
+        Color::Rgb(100, 140, 175),
+        Color::White,
+        Color::Indexed(200),
+        theme.color(Role::Foreground).unwrap(),
+        theme.color(Role::Dim).unwrap(),
+        theme.color(Role::Border).unwrap(),
+        theme.color(Role::BorderStrong).unwrap(),
+    ];
+    for phase in PHASES {
+        let elapsed = Duration::from_millis(22_500);
+        let mut actual = ordinary(area, &theme);
+        for y in area.top()..area.bottom() {
+            for x in area.left()..area.right() {
+                let cell = &mut actual[(x, y)];
+                cell.set_symbol(if x % 7 == 0 { " " } else { "x" });
+                cell.set_fg(colors[usize::from(x / 4 + y) % colors.len()]);
+                if x % 11 == 0 {
+                    cell.set_style(theme.bg(Role::Selected));
+                }
+                if x % 13 == 0 {
+                    cell.modifier.insert(Modifier::REVERSED);
+                }
+            }
+        }
+        let mut expected = actual.clone();
+        for y in area.top()..area.bottom() {
+            let water = ramp.color_at_phase_context(y - area.y, area.height, elapsed, phase, 0);
+            for x in area.left()..area.right() {
+                let cell = &mut expected[(x, y)];
+                let floor = if Some(cell.fg) == theme.color(Role::Border) {
+                    1.0
+                } else if [Role::BorderStrong, Role::Dim]
+                    .iter()
+                    .any(|role| theme.color(*role) == Some(cell.fg))
+                {
+                    3.0
+                } else {
+                    4.5
+                };
+                if [Role::Background, Role::Sidebar]
+                    .iter()
+                    .any(|role| theme.bg(*role).bg == Some(cell.bg))
+                    && !cell.modifier.contains(Modifier::REVERSED)
+                    && (cell.symbol() == " "
+                        || contrast_ratio(cell.fg, water).is_some_and(|ratio| ratio >= floor))
+                {
+                    cell.set_bg(water);
+                }
+            }
+        }
+        OceanColumn::new(elapsed, MotionMode::Full)
+            .phase(phase)
+            .apply(area, &mut actual, &theme);
+        assert_eq!(actual, expected, "{phase:?}");
+    }
+}
+
 #[test]
 fn authored_stops_and_depth_match_the_native_terminal() {
     let ramp = OceanRamp::for_theme(&Profile::DarkTrue.theme()).unwrap();

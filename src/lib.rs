@@ -67,24 +67,67 @@ pub trait Paint {
     }
 
     /// Wrap as a ratatui [`Widget`] for `frame.render_widget`.
+    ///
+    /// Render the returned wrapper by reference to reuse it across frames.
+    /// [`Themed::new`] also accepts a `dyn Paint` for heterogeneous collections.
     fn themed<'a>(&'a self, theme: &'a Theme) -> Themed<'a, Self>
     where
         Self: Sized,
     {
-        Themed {
-            component: self,
-            theme,
-        }
+        Themed::new(self, theme)
     }
 }
 
 /// A component paired with the theme it paints with.
-pub struct Themed<'a, P: Paint> {
+///
+/// The wrapper borrows both values. Rendering it by reference leaves the
+/// component and wrapper available for another frame, without cloning either.
+///
+/// ```no_run
+/// use codewhale_ratatui::{NativeComposer, Paint, Theme};
+/// # fn draw(frame: &mut ratatui::Frame<'_>) {
+/// let theme = Theme::detect().tui();
+/// let composer = NativeComposer::new("Review the changes");
+/// let widget = composer.themed(&theme);
+/// frame.render_widget(&widget, frame.area());
+/// # }
+/// ```
+///
+/// Use [`Themed::new`] when the component's concrete type is erased:
+///
+/// ```no_run
+/// use codewhale_ratatui::{KeyHint, KeyHints, NativeComposer, Paint, Themed, Theme};
+/// # fn draw(frame: &mut ratatui::Frame<'_>) {
+/// let theme = Theme::detect().tui();
+/// let composer = NativeComposer::new("Review the changes");
+/// let hints = KeyHints::new(vec![KeyHint::new("Enter", "send")]);
+/// let parts: [&dyn Paint; 2] = [&composer, &hints];
+/// # let areas = [frame.area(), frame.area()];
+/// for (part, area) in parts.into_iter().zip(areas) {
+///     frame.render_widget(Themed::new(part, &theme), area);
+/// }
+/// # }
+/// ```
+#[must_use]
+pub struct Themed<'a, P: Paint + ?Sized> {
     component: &'a P,
     theme: &'a Theme,
 }
 
-impl<P: Paint> Widget for Themed<'_, P> {
+impl<'a, P: Paint + ?Sized> Themed<'a, P> {
+    /// Borrow a component and its theme, including a `dyn Paint` component.
+    pub const fn new(component: &'a P, theme: &'a Theme) -> Self {
+        Self { component, theme }
+    }
+}
+
+impl<P: Paint + ?Sized> Widget for Themed<'_, P> {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        (&self).render(area, buf);
+    }
+}
+
+impl<P: Paint + ?Sized> Widget for &Themed<'_, P> {
     fn render(self, area: Rect, buf: &mut Buffer) {
         self.component.paint(area, buf, self.theme);
     }

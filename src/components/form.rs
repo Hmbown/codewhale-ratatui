@@ -382,19 +382,28 @@ impl FormState {
     }
 
     /// Apply a key press and say what happened (see the module's key list).
-    /// Releases are [`FormOutcome::Ignored`].
+    /// Navigation and editing accept held-key repeats. Submit, cancel and
+    /// checkbox toggles require an initial press; modified navigation and
+    /// activation keys belong to the host. Releases are ignored.
     pub fn handle_key(&mut self, key: KeyEvent) -> FormOutcome {
         if key.kind == KeyEventKind::Release || self.fields.is_empty() {
             return FormOutcome::Ignored;
         }
         let shift = key.modifiers.contains(KeyModifiers::SHIFT);
         match key.code {
-            KeyCode::Tab if !shift => self.step(true),
-            KeyCode::Tab | KeyCode::BackTab => self.step(false),
-            KeyCode::Down => self.step(true),
-            KeyCode::Up => self.step(false),
-            KeyCode::Enter => self.submit(),
-            KeyCode::Esc => FormOutcome::Cancelled,
+            KeyCode::Tab | KeyCode::BackTab
+                if key.modifiers.is_empty() || key.modifiers == KeyModifiers::SHIFT =>
+            {
+                self.step(key.code == KeyCode::Tab && !shift)
+            }
+            KeyCode::Down if key.modifiers.is_empty() => self.step(true),
+            KeyCode::Up if key.modifiers.is_empty() => self.step(false),
+            KeyCode::Enter if key.kind == KeyEventKind::Press && key.modifiers.is_empty() => {
+                self.submit()
+            }
+            KeyCode::Esc if key.kind == KeyEventKind::Press && key.modifiers.is_empty() => {
+                FormOutcome::Cancelled
+            }
             _ => self.edit(key),
         }
     }
@@ -413,9 +422,8 @@ impl FormState {
             },
             Some(FormFieldKind::Check(on))
                 if key.code == KeyCode::Char(' ')
-                    && !key
-                        .modifiers
-                        .intersects(KeyModifiers::CONTROL | KeyModifiers::ALT) =>
+                    && key.kind == KeyEventKind::Press
+                    && key.modifiers.is_empty() =>
             {
                 *on = !*on;
                 self.after_edit();
