@@ -51,7 +51,7 @@ Gallery names are the exact names accepted by the gallery example; the
 | Engine `phase_strip.rs`, `infoline.rs`, `ui/frame.rs` | `PostureBar`, `MetricsLine`, `TerminalShell` | Native extraction | `posture-*`, `metrics-*`, `showcase-work`, `showcase-narrow` |
 | Engine `views/mod.rs::render_underwater_surface`, `session_picker.rs::SessionPickerView` | `InstrumentSurface`, `SessionList`, `SessionRow` | Native extraction and view recipes | `native-*` |
 | Engine `crates/palette/src/{rgb,tokens,themes}.rs` | `TuiPalette`, `TuiInk` | Generated source palette | all 16 `tui-theme-*` previews |
-| Engine `widgets/pending_input_preview.rs::PendingInputPreview`, `ContextPreviewItem`; GPUI `workspace/queue.rs::QueuedMessage`, `RowAction`, `Workspace::render_queue`, `workspace/render/composer.rs` attachments | `PendingInputPreview`, `PendingInputItem`, `PendingInputStatus`, `PendingInputAction`, `ContextPreviewItem`, `ContextPreviewState` | Composite | `pending-queued`, `pending-steering`, `pending-paused`, `pending-context` |
+| Engine `widgets/pending_input_preview.rs::PendingInputPreview`, `ContextPreviewItem`; GPUI `workspace/queue.rs::QueuedMessage`, `RowAction`, `Workspace::render_queue`, `workspace/render/composer.rs` attachments | `PendingInputPreview`, `PendingInputItem`, `PendingInputStatus`, `PendingInputAction`, `ContextPreviewItem`, `ContextPreviewState`, `PendingCard`, `PendingCardWords`, `PendingCardContext`, `PendingCardStyles` | Composite | `pending-queued`, `pending-steering`, `pending-paused`, `pending-context`, `pending-native-mixed`, `pending-native-queued` |
 | Engine `markdown_render.rs::Block`, `RenderedMarkdownLine`, `history/message.rs::render_message_with_copy_metadata`; GPUI `workspace/markdown.rs::MessageText`, `text`, `sanitize` | `Transcript`, `TranscriptBlock`, `TranscriptSpan`, `TranscriptSpanRole`, `CodeBlock`, `TranscriptLink`, `TranscriptAction` | Primitive/composite | `transcript-prose`, `transcript-list-table`, `transcript-code`, `transcript-links` |
 | Engine `agent_roster.rs::render_agent_roster`, `widgets/workflow_panel.rs::row_receipt_text`, `gate_receipts.rs`; GPUI `usage.rs::TurnRow`, `workbar.rs::Readout`, `working_context.rs::ExecutionReceipt` | `Receipt`, `ReceiptTable`, `ReceiptValue`, `Cost`, formatting helpers | Primitive/composite | `receipt-row`, `receipt-table`, `receipt-table-compact`, `receipt-table-minimal`, `receipt-table-clipped` |
 | Engine `diff_render.rs::BoundedDiffRender`, `render_diff_bounded`, `history/file_mutation.rs`; GPUI `review.rs::DiffRowKind`, `workspace/render/review.rs::ReviewRows` | `Diff`, `DiffLine`, `DiffKind`, `DiffGutter`, `DiffHighlight`, `parse_unified` | Primitive | `diff`, `diff-wrapped`, `diff-no-numbers`, `diff-highlighted`, `review-scene` |
@@ -82,6 +82,13 @@ item and reports the resulting state. An empty preview takes zero rows.
 `Unconfirmed` context must not become an assertion that a file was included
 or sent. Approval policy and attention prioritization remain with the host;
 compose this preview beside `AttentionQueue` and `Composer` as appropriate.
+
+`PendingCard` accepts the native composer's sending, editing and queued input,
+independent context inclusion/removability/selection facts, priority notices,
+localized `PendingCardWords` and optional five-slot `PendingCardStyles`. It
+shares one measured row plan with `PendingInputPreview`, including clipping
+and the one-row controls fallback. The host still owns every queue mutation,
+child request and keyboard action.
 
 `Transcript::new(blocks)` accepts already-authored blocks and semantic
 spans. Headings, prose, quotes, lists, tables and `CodeBlock` do not require
