@@ -12,17 +12,7 @@ fn project_scene_has_real_readouts_and_a_usable_composer() {
         .unwrap();
     for profile in Profile::ALL {
         let shown = text(&gallery::render(project, &profile.theme()));
-        for expected in [
-            "Workbar",
-            "TODO",
-            "CONTEXT",
-            "GIT",
-            "PRICE",
-            "PLUGINS",
-            "Show me the review",
-            "Files & review",
-            "Needs you",
-        ] {
+        for expected in ["Show me the review", "Files & review", "Needs you"] {
             assert!(
                 shown.contains(expected),
                 "{} is missing {expected}:\n{shown}",
@@ -64,7 +54,7 @@ fn review_scene_contains_exact_decision_and_unknown_evidence() {
         shown.contains("Allow once") && shown.contains("Deny"),
         "{shown}"
     );
-    assert!(shown.contains("Evidence for this change"), "{shown}");
+    assert!(shown.contains("Run results"), "{shown}");
     assert!(
         shown.contains('—'),
         "unreported measurements must remain unknown"

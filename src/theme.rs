@@ -167,6 +167,7 @@ pub struct Theme {
     caps: Caps,
     grounds: bool,
     ground: Ground,
+    native: Option<crate::TuiPalette>,
 }
 
 impl Theme {
@@ -176,6 +177,7 @@ impl Theme {
             caps,
             grounds: true,
             ground: Ground::Ocean,
+            native: None,
         }
     }
 
@@ -184,7 +186,68 @@ impl Theme {
     #[must_use]
     pub const fn ground(mut self, ground: Ground) -> Self {
         self.ground = ground;
+        self.native = None;
         self
+    }
+
+    /// Use one of the palettes shipped by the current Codewhale TUI.
+    /// Terminal capability and unknown-ground fallbacks remain in force.
+    #[must_use]
+    pub const fn tui_palette(mut self, palette: crate::TuiPalette) -> Self {
+        self.native = Some(palette);
+        self
+    }
+
+    #[must_use]
+    pub const fn native_palette(&self) -> Option<crate::TuiPalette> {
+        self.native
+    }
+
+    /// A distinct native TUI semantic ink, adapted by the same terminal rules.
+    #[must_use]
+    pub fn tui_ink(&self, ink: crate::TuiInk) -> Style {
+        if self.caps.paints_tokens()
+            && let Some(palette) = self.native
+        {
+            let color = match (self.depth(), palette.ink(ink)) {
+                (ColorDepth::Ansi256, Color::Rgb(r, g, b)) => {
+                    Color::Indexed(crate::color::rgb_to_ansi256(r, g, b))
+                }
+                (_, color) => color,
+            };
+            Style::default().fg(color)
+        } else {
+            self.fg(ink.fallback_role())
+        }
+    }
+
+    /// Native background slots such as composer and footer. Limited color
+    /// and unknown-ground terminals keep the existing capability fallbacks.
+    #[must_use]
+    pub fn tui_ground(&self, ground: crate::TuiGround) -> Style {
+        if self.paints_grounds()
+            && let Some(palette) = self.native
+        {
+            let color = match (self.depth(), palette.ground(ground)) {
+                (ColorDepth::Ansi256, Color::Rgb(r, g, b)) => {
+                    Color::Indexed(crate::color::rgb_to_ansi256(r, g, b))
+                }
+                (_, color) => color,
+            };
+            Style::default().bg(color)
+        } else {
+            self.bg(ground.fallback_role())
+        }
+    }
+
+    /// Codewhale's default Underwater, or its light palette on a light terminal.
+    #[must_use]
+    pub const fn tui(self) -> Self {
+        self.tui_palette(if self.light() {
+            crate::TuiPalette::WhaleLight
+        } else {
+            crate::TuiPalette::Underwater
+        })
     }
 
     /// The dark grounds this theme was built with.
@@ -232,6 +295,11 @@ impl Theme {
     /// The exact token color (`0xRRGGBB`), before depth adaptation.
     #[must_use]
     pub const fn token_hex(&self, role: Role) -> u32 {
+        if let Some(palette) = self.native
+            && let Color::Rgb(r, g, b) = palette.color(role)
+        {
+            return ((r as u32) << 16) | ((g as u32) << 8) | b as u32;
+        }
         if self.light() {
             roles::LIGHT[role.index()]
         } else if matches!(self.ground, Ground::Ocean) {
@@ -246,14 +314,25 @@ impl Theme {
     /// tinted values; 256 colors still show the token grounds.
     #[must_use]
     pub const fn token(&self, role: Role) -> Color {
-        rgb(self.token_hex(role))
+        match self.native {
+            Some(palette) => palette.color(role),
+            None => rgb(self.token_hex(role)),
+        }
     }
 
     /// The color this terminal shows for `role`, or `None` when it shows the
     /// terminal's own color.
     #[must_use]
-    pub const fn color(&self, role: Role) -> Option<Color> {
+    pub fn color(&self, role: Role) -> Option<Color> {
         if self.caps.paints_tokens() {
+            if self.native.is_some() {
+                return Some(match (self.caps.depth, self.token(role)) {
+                    (ColorDepth::Ansi256, Color::Rgb(r, g, b)) => {
+                        Color::Indexed(crate::color::rgb_to_ansi256(r, g, b))
+                    }
+                    (_, color) => color,
+                });
+            }
             return Some(match self.caps.depth {
                 ColorDepth::TrueColor => self.token(role),
                 _ if self.light() => Color::Indexed(roles::LIGHT_256[role.index()]),

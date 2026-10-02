@@ -23,6 +23,8 @@ use crate::{
 
 /// A plain-text transcript entry. The host supplies its author and marker;
 /// this component neither parses Markdown nor guesses who sent the message.
+/// [`Message::native`] uses the current TUI's inline speaker mark and dim
+/// continuation rail. A nonempty author adds the optional heading variation.
 #[derive(Clone, Debug)]
 pub struct Message<'a> {
     pub author: Cow<'a, str>,
@@ -42,6 +44,16 @@ impl<'a> Message<'a> {
         }
     }
 
+    /// The current Codewhale transcript's plain-text message decoration:
+    /// `● body` first, then `▏ ` before each continuation. The host can choose
+    /// another speaker with [`Self::marker`] and its ink with [`Self::role`].
+    /// Whitespace-only assistant entries render nothing. No Markdown parser,
+    /// streaming clock, or session state is introduced by this constructor.
+    #[must_use]
+    pub fn native(body: impl Into<Cow<'a, str>>) -> Self {
+        Self::new("", body).role(Role::Primary)
+    }
+
     #[must_use]
     pub fn role(mut self, role: Role) -> Self {
         self.author_role = role;
@@ -58,6 +70,9 @@ impl<'a> Message<'a> {
     fn lines(&self, width: u16, theme: &Theme) -> Vec<Line<'static>> {
         if width == 0 {
             return Vec::new();
+        }
+        if self.author.is_empty() {
+            return self.native_lines(width, theme);
         }
         let mut lines = vec![Line::from(vec![
             Span::styled(
@@ -79,12 +94,77 @@ impl<'a> Message<'a> {
         lines.extend(body_lines(&body, rail, theme, Role::Foreground));
         lines
     }
+
+    fn native_lines(&self, width: u16, theme: &Theme) -> Vec<Line<'static>> {
+        // The native assistant skips stray blank streaming cells, including
+        // caller text whose only visible content disappears during sanitizing.
+        if self.marker == glyphs::CURRENT
+            && self
+                .body
+                .split('\n')
+                .all(|line| text::display_safe(line).trim().is_empty())
+        {
+            return Vec::new();
+        }
+        let marker = safe(glyphs::pick(self.marker, theme.ascii()));
+        let marker_width = text::width(&marker);
+        // Native message.rs reserves prefix + two cells before wrapping,
+        // while the painted prefix itself occupies prefix + one cell.
+        let reserved = u16::try_from(marker_width.saturating_add(2)).unwrap_or(u16::MAX);
+        let mut body = wrapped(
+            &self.body,
+            width.saturating_sub(reserved).max(1),
+            theme.ascii(),
+        );
+        if body.lines.is_empty() {
+            body.lines.push(String::new());
+        }
+        body.lines
+            .into_iter()
+            .enumerate()
+            .map(|(index, body)| {
+                let mut spans = Vec::new();
+                if !marker.is_empty() {
+                    if index == 0 {
+                        spans.push(Span::styled(
+                            marker.clone(),
+                            theme.fg(self.author_role).add_modifier(Modifier::BOLD),
+                        ));
+                        spans.push(Span::raw(" "));
+                    } else {
+                        let rail = glyphs::pick(glyphs::TRANSCRIPT_RAIL, theme.ascii());
+                        spans.push(Span::styled(
+                            format!("{}{}", rail.trim_end(), " ".repeat(marker_width)),
+                            theme.fg(Role::Dim),
+                        ));
+                    }
+                }
+                spans.push(Span::styled(body, theme.fg(Role::Foreground)));
+                Line::from(spans)
+            })
+            .collect()
+    }
 }
 
 impl Paint for Message<'_> {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
         let area = area.intersection(buf.area);
-        paint_lines(&self.lines(area.width, theme), area, buf);
+        for (index, line) in self
+            .lines(area.width, theme)
+            .iter()
+            .take(usize::from(area.height))
+            .enumerate()
+        {
+            super::workbench::row(
+                Rect {
+                    y: area.y.saturating_add(rows(index)),
+                    height: 1,
+                    ..area
+                },
+                buf,
+                line,
+            );
+        }
     }
 
     fn height(&self, width: u16, theme: &Theme) -> u16 {

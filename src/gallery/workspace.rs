@@ -12,7 +12,7 @@ use crate::{
 };
 
 fn message(area: Rect, buf: &mut Buffer, theme: &Theme) {
-    let first = Message::new("You", "Show every component in the README.")
+    let first = Message::native("Show every component in the README.")
         .role(Role::Primary)
         .marker(glyphs::USER);
     let first_height = first.height(area.width, theme).min(area.height);
@@ -31,7 +31,7 @@ fn message(area: Rect, buf: &mut Buffer, theme: &Theme) {
         height: area.height.saturating_sub(first_height.saturating_add(1)),
         ..area
     };
-    Message::new("Codewhale", "The gallery uses the same components as the library.\n\nEach preview includes light, dark and ASCII treatments.")
+    Message::native( "The gallery uses the same components as the library.\n\nEach preview includes light, dark and ASCII treatments.")
         .paint(rest, buf, theme);
 }
 

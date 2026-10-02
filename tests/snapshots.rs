@@ -13,7 +13,7 @@ use codewhale_ratatui::{
 fn dump(entry: &gallery::Entry) -> String {
     let mut out = String::new();
     for profile in Profile::ALL {
-        let theme = profile.theme();
+        let theme = gallery::theme_for(entry, &profile.theme());
         let buf = gallery::render(entry, &theme);
         out.push_str(&format!("== {}\n", profile.name()));
         out.push_str(&testing::styled(&buf, &theme));

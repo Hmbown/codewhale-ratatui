@@ -1,16 +1,84 @@
 {
   "entries": [
+    "instrument-surface",
+    "session-list",
+    "view-sessions",
+    "view-sessions-narrow",
+    "view-sessions-compact",
+    "view-sessions-empty",
+    "view-settings",
+    "view-settings-narrow",
+    "view-commands",
+    "view-models",
+    "view-models-narrow",
+    "view-providers",
+    "view-theme",
+    "view-mode",
+    "view-status",
+    "view-file-picker",
+    "view-fleet-dock",
+    "view-jobs-dock",
+    "view-files-dock",
+    "view-context-dock",
+    "view-git-dock",
+    "view-cost-dock",
+    "native-composer",
+    "native-composer-narrow",
+    "native-composer-quiet",
+    "native-composer-target",
+    "workflow-progress-live",
+    "workflow-progress-settled",
+    "workflow-progress-queued",
+    "workflow-progress-narrow",
+    "posture-bar",
+    "posture-narrow",
+    "posture-context-cap",
+    "posture-compact",
+    "metrics-line",
+    "metrics-narrow",
+    "metrics-compact",
+    "metrics-startup",
+    "workbar-tasks",
+    "workbar-fleet",
+    "workbar-jobs",
+    "workbar-files",
+    "workbar-notes",
+    "workbar-context",
+    "workbar-git",
+    "workbar-cost",
+    "workbar-top",
+    "workbar-narrow",
+    "workbar-left",
+    "workbar-right",
+    "tui-theme-underwater",
+    "tui-theme-underwater-retro",
+    "tui-theme-shoreline",
+    "tui-theme-shoreline-light",
+    "tui-theme-whale",
+    "tui-theme-whale-light",
+    "tui-theme-terminal",
+    "tui-theme-grayscale",
+    "tui-theme-catppuccin-mocha",
+    "tui-theme-tokyo-night",
+    "tui-theme-dracula",
+    "tui-theme-gruvbox-dark",
+    "tui-theme-claude",
+    "tui-theme-matrix",
+    "tui-theme-solarized-light",
+    "tui-theme-uwu",
     "workspace-scene",
     "review-scene",
     "fleet-scene",
     "workspace-scene-narrow",
+    "showcase-work",
+    "showcase-decision",
+    "showcase-color",
+    "showcase-life",
+    "showcase-narrow",
     "workbench-frame",
     "pane-header",
     "context-ribbon",
     "context-ribbon-narrow",
-    "workbar",
-    "workbar-narrow",
-    "workbar-unreported",
     "attention-queue",
     "attention-focused",
     "attention-narrow",
@@ -109,47 +177,445 @@
     "agent-card",
     "fleet",
     "setting-row",
-    "setting-detail"
+    "setting-detail",
+    "atmosphere-ocean",
+    "atmosphere-lagoon",
+    "atmosphere-dusk",
+    "atmosphere-coral",
+    "atmosphere-graphite",
+    "ocean-column",
+    "ocean-phases",
+    "ocean-context",
+    "ocean-reduced",
+    "pending-queued",
+    "pending-steering",
+    "pending-paused",
+    "pending-context",
+    "transcript-prose",
+    "transcript-list-table",
+    "transcript-code",
+    "transcript-links"
   ],
   "boards": [
     {
-      "file": "scenes.dark-truecolor-1.svg",
+      "file": "studio.dark-truecolor-1.svg",
       "profile": "dark-truecolor",
-      "group": "scenes",
+      "group": "studio",
       "entries": [
-        "workspace-scene"
+        "showcase-work"
       ]
     },
     {
-      "file": "scenes.dark-truecolor-2.svg",
+      "file": "studio.dark-truecolor-2.svg",
       "profile": "dark-truecolor",
-      "group": "scenes",
+      "group": "studio",
       "entries": [
-        "review-scene"
+        "showcase-decision"
       ]
     },
     {
-      "file": "scenes.dark-truecolor-3.svg",
+      "file": "studio.dark-truecolor-3.svg",
       "profile": "dark-truecolor",
-      "group": "scenes",
+      "group": "studio",
       "entries": [
-        "fleet-scene"
+        "showcase-color"
       ]
     },
     {
-      "file": "scenes.dark-truecolor-4.svg",
+      "file": "studio.dark-truecolor-4.svg",
       "profile": "dark-truecolor",
-      "group": "scenes",
+      "group": "studio",
       "entries": [
-        "workspace-scene-narrow"
+        "showcase-life"
       ]
     },
     {
-      "file": "scenes.dark-truecolor-5.svg",
+      "file": "studio.dark-truecolor-5.svg",
       "profile": "dark-truecolor",
-      "group": "scenes",
+      "group": "studio",
       "entries": [
-        "habitat-scene"
+        "showcase-narrow"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "instrument-surface"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "session-list"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-3.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-sessions"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-4.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-sessions-narrow"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-5.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-sessions-compact"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-6.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-sessions-empty"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-7.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-settings"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-8.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-settings-narrow"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-9.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-commands"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-10.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-models"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-11.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-models-narrow"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-12.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-providers"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-13.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-theme"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-14.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-mode"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-15.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-status"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-16.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-file-picker"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-17.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-fleet-dock"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-18.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-jobs-dock"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-19.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-files-dock"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-20.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-context-dock"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-21.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-git-dock"
+      ]
+    },
+    {
+      "file": "native-views.dark-truecolor-22.svg",
+      "profile": "dark-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-cost-dock"
+      ]
+    },
+    {
+      "file": "native-chrome.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "native-chrome",
+      "entries": [
+        "native-composer",
+        "native-composer-narrow",
+        "native-composer-quiet",
+        "native-composer-target",
+        "workflow-progress-live",
+        "workflow-progress-settled",
+        "workflow-progress-queued",
+        "workflow-progress-narrow",
+        "posture-bar",
+        "posture-narrow",
+        "posture-context-cap",
+        "posture-compact",
+        "metrics-line",
+        "metrics-narrow",
+        "metrics-compact"
+      ]
+    },
+    {
+      "file": "native-chrome.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "native-chrome",
+      "entries": [
+        "metrics-startup",
+        "workflow-tree",
+        "workflow-tree-selected",
+        "workflow-tree-clipped",
+        "workflow-tree-long"
+      ]
+    },
+    {
+      "file": "workbar.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "workbar",
+      "entries": [
+        "workbar-tasks",
+        "workbar-fleet",
+        "workbar-jobs",
+        "workbar-files",
+        "workbar-notes",
+        "workbar-context",
+        "workbar-git",
+        "workbar-cost"
+      ]
+    },
+    {
+      "file": "workbar.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "workbar",
+      "entries": [
+        "workbar-top",
+        "workbar-narrow",
+        "workbar-left",
+        "workbar-right"
+      ]
+    },
+    {
+      "file": "tui-palettes.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-underwater",
+        "tui-theme-underwater-retro",
+        "tui-theme-shoreline"
+      ]
+    },
+    {
+      "file": "tui-palettes.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-shoreline-light",
+        "tui-theme-whale",
+        "tui-theme-whale-light"
+      ]
+    },
+    {
+      "file": "tui-palettes.dark-truecolor-3.svg",
+      "profile": "dark-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-terminal",
+        "tui-theme-grayscale",
+        "tui-theme-catppuccin-mocha"
+      ]
+    },
+    {
+      "file": "tui-palettes.dark-truecolor-4.svg",
+      "profile": "dark-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-tokyo-night",
+        "tui-theme-dracula",
+        "tui-theme-gruvbox-dark"
+      ]
+    },
+    {
+      "file": "tui-palettes.dark-truecolor-5.svg",
+      "profile": "dark-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-claude",
+        "tui-theme-matrix",
+        "tui-theme-solarized-light"
+      ]
+    },
+    {
+      "file": "tui-palettes.dark-truecolor-6.svg",
+      "profile": "dark-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-uwu"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-ocean"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-lagoon"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-3.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-dusk"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-4.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-coral"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-5.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-graphite"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-6.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-column"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-7.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-phases"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-8.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-context"
+      ]
+    },
+    {
+      "file": "water.dark-truecolor-9.svg",
+      "profile": "dark-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-reduced"
+      ]
+    },
+    {
+      "file": "transcript.dark-truecolor.svg",
+      "profile": "dark-truecolor",
+      "group": "transcript",
+      "entries": [
+        "pending-queued",
+        "pending-steering",
+        "pending-paused",
+        "pending-context",
+        "transcript-prose",
+        "transcript-list-table",
+        "transcript-code",
+        "transcript-links"
       ]
     },
     {
@@ -177,16 +643,6 @@
         "tool-card",
         "agent-card",
         "fleet"
-      ]
-    },
-    {
-      "file": "workbar.dark-truecolor.svg",
-      "profile": "dark-truecolor",
-      "group": "workbar",
-      "entries": [
-        "workbar",
-        "workbar-narrow",
-        "workbar-unreported"
       ]
     },
     {
@@ -292,12 +748,10 @@
       "group": "display",
       "entries": [
         "diff-highlighted",
-        "workflow-tree",
-        "workflow-tree-selected",
-        "workflow-tree-clipped",
-        "workflow-tree-long",
         "count-bars",
-        "approval-command"
+        "approval-command",
+        "approval-outside",
+        "approval-patch"
       ]
     },
     {
@@ -305,10 +759,10 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
-        "approval-outside",
-        "approval-patch",
         "approval-elevation",
-        "approval-clipped"
+        "approval-clipped",
+        "approval-spoofed",
+        "review-verdicts"
       ]
     },
     {
@@ -316,8 +770,6 @@
       "profile": "dark-truecolor",
       "group": "display",
       "entries": [
-        "approval-spoofed",
-        "review-verdicts",
         "review-aggregate"
       ]
     },
@@ -384,43 +836,464 @@
       ]
     },
     {
-      "file": "scenes.light-truecolor-1.svg",
-      "profile": "light-truecolor",
+      "file": "scenes.dark-truecolor-1.svg",
+      "profile": "dark-truecolor",
       "group": "scenes",
       "entries": [
         "workspace-scene"
       ]
     },
     {
-      "file": "scenes.light-truecolor-2.svg",
-      "profile": "light-truecolor",
+      "file": "scenes.dark-truecolor-2.svg",
+      "profile": "dark-truecolor",
       "group": "scenes",
       "entries": [
         "review-scene"
       ]
     },
     {
-      "file": "scenes.light-truecolor-3.svg",
-      "profile": "light-truecolor",
+      "file": "scenes.dark-truecolor-3.svg",
+      "profile": "dark-truecolor",
       "group": "scenes",
       "entries": [
         "fleet-scene"
       ]
     },
     {
-      "file": "scenes.light-truecolor-4.svg",
-      "profile": "light-truecolor",
+      "file": "scenes.dark-truecolor-4.svg",
+      "profile": "dark-truecolor",
       "group": "scenes",
       "entries": [
         "workspace-scene-narrow"
       ]
     },
     {
-      "file": "scenes.light-truecolor-5.svg",
-      "profile": "light-truecolor",
+      "file": "scenes.dark-truecolor-5.svg",
+      "profile": "dark-truecolor",
       "group": "scenes",
       "entries": [
         "habitat-scene"
+      ]
+    },
+    {
+      "file": "studio.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "studio",
+      "entries": [
+        "showcase-work"
+      ]
+    },
+    {
+      "file": "studio.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "studio",
+      "entries": [
+        "showcase-decision"
+      ]
+    },
+    {
+      "file": "studio.light-truecolor-3.svg",
+      "profile": "light-truecolor",
+      "group": "studio",
+      "entries": [
+        "showcase-color"
+      ]
+    },
+    {
+      "file": "studio.light-truecolor-4.svg",
+      "profile": "light-truecolor",
+      "group": "studio",
+      "entries": [
+        "showcase-life"
+      ]
+    },
+    {
+      "file": "studio.light-truecolor-5.svg",
+      "profile": "light-truecolor",
+      "group": "studio",
+      "entries": [
+        "showcase-narrow"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "instrument-surface"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "session-list"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-3.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-sessions"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-4.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-sessions-narrow"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-5.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-sessions-compact"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-6.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-sessions-empty"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-7.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-settings"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-8.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-settings-narrow"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-9.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-commands"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-10.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-models"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-11.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-models-narrow"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-12.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-providers"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-13.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-theme"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-14.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-mode"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-15.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-status"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-16.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-file-picker"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-17.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-fleet-dock"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-18.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-jobs-dock"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-19.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-files-dock"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-20.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-context-dock"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-21.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-git-dock"
+      ]
+    },
+    {
+      "file": "native-views.light-truecolor-22.svg",
+      "profile": "light-truecolor",
+      "group": "native-views",
+      "entries": [
+        "view-cost-dock"
+      ]
+    },
+    {
+      "file": "native-chrome.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "native-chrome",
+      "entries": [
+        "native-composer",
+        "native-composer-narrow",
+        "native-composer-quiet",
+        "native-composer-target",
+        "workflow-progress-live",
+        "workflow-progress-settled",
+        "workflow-progress-queued",
+        "workflow-progress-narrow",
+        "posture-bar",
+        "posture-narrow",
+        "posture-context-cap",
+        "posture-compact",
+        "metrics-line",
+        "metrics-narrow",
+        "metrics-compact"
+      ]
+    },
+    {
+      "file": "native-chrome.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "native-chrome",
+      "entries": [
+        "metrics-startup",
+        "workflow-tree",
+        "workflow-tree-selected",
+        "workflow-tree-clipped",
+        "workflow-tree-long"
+      ]
+    },
+    {
+      "file": "workbar.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "workbar",
+      "entries": [
+        "workbar-tasks",
+        "workbar-fleet",
+        "workbar-jobs",
+        "workbar-files",
+        "workbar-notes",
+        "workbar-context",
+        "workbar-git",
+        "workbar-cost"
+      ]
+    },
+    {
+      "file": "workbar.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "workbar",
+      "entries": [
+        "workbar-top",
+        "workbar-narrow",
+        "workbar-left",
+        "workbar-right"
+      ]
+    },
+    {
+      "file": "tui-palettes.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-underwater",
+        "tui-theme-underwater-retro",
+        "tui-theme-shoreline"
+      ]
+    },
+    {
+      "file": "tui-palettes.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-shoreline-light",
+        "tui-theme-whale",
+        "tui-theme-whale-light"
+      ]
+    },
+    {
+      "file": "tui-palettes.light-truecolor-3.svg",
+      "profile": "light-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-terminal",
+        "tui-theme-grayscale",
+        "tui-theme-catppuccin-mocha"
+      ]
+    },
+    {
+      "file": "tui-palettes.light-truecolor-4.svg",
+      "profile": "light-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-tokyo-night",
+        "tui-theme-dracula",
+        "tui-theme-gruvbox-dark"
+      ]
+    },
+    {
+      "file": "tui-palettes.light-truecolor-5.svg",
+      "profile": "light-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-claude",
+        "tui-theme-matrix",
+        "tui-theme-solarized-light"
+      ]
+    },
+    {
+      "file": "tui-palettes.light-truecolor-6.svg",
+      "profile": "light-truecolor",
+      "group": "tui-palettes",
+      "entries": [
+        "tui-theme-uwu"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-ocean"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-lagoon"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-3.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-dusk"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-4.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-coral"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-5.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "atmosphere-graphite"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-6.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-column"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-7.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-phases"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-8.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-context"
+      ]
+    },
+    {
+      "file": "water.light-truecolor-9.svg",
+      "profile": "light-truecolor",
+      "group": "water",
+      "entries": [
+        "ocean-reduced"
+      ]
+    },
+    {
+      "file": "transcript.light-truecolor.svg",
+      "profile": "light-truecolor",
+      "group": "transcript",
+      "entries": [
+        "pending-queued",
+        "pending-steering",
+        "pending-paused",
+        "pending-context",
+        "transcript-prose",
+        "transcript-list-table",
+        "transcript-code",
+        "transcript-links"
       ]
     },
     {
@@ -448,16 +1321,6 @@
         "tool-card",
         "agent-card",
         "fleet"
-      ]
-    },
-    {
-      "file": "workbar.light-truecolor.svg",
-      "profile": "light-truecolor",
-      "group": "workbar",
-      "entries": [
-        "workbar",
-        "workbar-narrow",
-        "workbar-unreported"
       ]
     },
     {
@@ -563,12 +1426,10 @@
       "group": "display",
       "entries": [
         "diff-highlighted",
-        "workflow-tree",
-        "workflow-tree-selected",
-        "workflow-tree-clipped",
-        "workflow-tree-long",
         "count-bars",
-        "approval-command"
+        "approval-command",
+        "approval-outside",
+        "approval-patch"
       ]
     },
     {
@@ -576,10 +1437,10 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
-        "approval-outside",
-        "approval-patch",
         "approval-elevation",
-        "approval-clipped"
+        "approval-clipped",
+        "approval-spoofed",
+        "review-verdicts"
       ]
     },
     {
@@ -587,8 +1448,6 @@
       "profile": "light-truecolor",
       "group": "display",
       "entries": [
-        "approval-spoofed",
-        "review-verdicts",
         "review-aggregate"
       ]
     },
@@ -652,6 +1511,46 @@
       "group": "whale-actions",
       "entries": [
         "whale-actions"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-1.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "workspace-scene"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-2.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "review-scene"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-3.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "fleet-scene"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-4.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "workspace-scene-narrow"
+      ]
+    },
+    {
+      "file": "scenes.light-truecolor-5.svg",
+      "profile": "light-truecolor",
+      "group": "scenes",
+      "entries": [
+        "habitat-scene"
       ]
     },
     {

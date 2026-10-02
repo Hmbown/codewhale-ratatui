@@ -26,14 +26,14 @@ expression: dump(&entry)
    ▏ Host facts: preserved                                                 │  ▏ inspect first.
                                                                            │  ▏ Open visual review
                                                                            │
-  Workbar                                                                  │
   ───────────────────────────────────────────────────────────────────────  │
-   TODO  1                CONTEXT  2              GIT  3                   │
-   3 / 5 complete         28.4k                  ╸4 files changed          │
-   2 in progress          of 128k tokens          workspace-polish         │               ⣀⡀
-   PRICE  4               PLUGINS  5                                       │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
-   $0.38                  4                                                │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
-   reported this turn     enabled by you                                   │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc ×   │
+   Goal: Make the work dock reusable                                       │
+   TODO · 1/3 · 2 left                                                     │
+   1 · ✓ Read the existing component                          completed ┃  │               ⣀⡀
+                                                                           │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
+                                                                           │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
+                                                                           │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
                                                                            │           ⢾⣿⣷⣤⣤⣶⣾⣿⢿⣿⡿⠉⠉⡏
   codewhale-ratatui · workspace-polish · 3 attachments · +1 details        │           ⠘⢿⣿⣿⣿⣿⣿⣿⣶⠏  ⠌
   ───────────────────────────────────────────────────────────────────────  │            ⠈⠉⠛⣛⣽⣿⣟⣁⠤⠔
@@ -251,79 +251,71 @@ r22 c76..78 fg=Foreground bg=Sidebar
 r22 c78..110 bg=Selected
 r22 c110..112 fg=Foreground bg=Sidebar
 r23 c0..2 fg=Foreground bg=Background
-r23 c2..9 fg=Foreground bg=Background bold
-r23 c9..75 fg=Foreground bg=Background
+r23 c2..73 fg=Border bg=Sidebar
+r23 c73..75 fg=Foreground bg=Background
 r23 c75..76 fg=Border bg=Background
 r23 c76..78 fg=Foreground bg=Sidebar
 r23 c78..110 bg=Selected
 r23 c110..112 fg=Foreground bg=Sidebar
 r24 c0..2 fg=Foreground bg=Background
-r24 c2..73 fg=Border bg=Background
+r24 c2..3 fg=Foreground bg=Sidebar
+r24 c3..10 fg=Foreground bg=Selected bold
+r24 c10..12 fg=Foreground bg=Sidebar
+r24 c12..19 fg=Muted bg=Sidebar
+r24 c19..21 fg=Foreground bg=Sidebar
+r24 c21..27 fg=Muted bg=Sidebar
+r24 c27..29 fg=Foreground bg=Sidebar
+r24 c29..36 fg=Muted bg=Sidebar
+r24 c36..38 fg=Foreground bg=Sidebar
+r24 c38..45 fg=Muted bg=Sidebar
+r24 c45..47 fg=Foreground bg=Sidebar
+r24 c47..56 fg=Muted bg=Sidebar
+r24 c56..58 fg=Foreground bg=Sidebar
+r24 c58..63 fg=Muted bg=Sidebar
+r24 c63..66 fg=Foreground bg=Sidebar
+r24 c66..73 fg=Hint bg=Sidebar
 r24 c73..75 fg=Foreground bg=Background
 r24 c75..76 fg=Border bg=Background
 r24 c76..112 fg=Foreground bg=Sidebar
-r25 c0..3 fg=Foreground bg=Background
-r25 c3..10 fg=Muted bg=Background
-r25 c10..26 fg=Foreground bg=Background
-r25 c26..36 fg=Muted bg=Background
-r25 c36..49 fg=Foreground bg=Background
-r25 c49..50 fg=Foreground bg=Selected
-r25 c50..56 fg=Muted bg=Selected
-r25 c56..73 fg=Foreground bg=Selected
+r25 c0..2 fg=Foreground bg=Background
+r25 c2..3 fg=Foreground bg=Sidebar
+r25 c3..36 fg=Live bg=Sidebar bold
+r25 c36..73 fg=Foreground bg=Sidebar
 r25 c73..75 fg=Foreground bg=Background
 r25 c75..76 fg=Border bg=Background
 r25 c76..112 fg=Foreground bg=Sidebar
-r26 c0..3 fg=Foreground bg=Background
-r26 c3..17 fg=Foreground bg=Background bold
-r26 c17..26 fg=Foreground bg=Background
-r26 c26..31 fg=Foreground bg=Background bold
-r26 c31..49 fg=Foreground bg=Background
-r26 c49..50 fg=Primary bg=Selected
-r26 c50..65 fg=Foreground bg=Selected bold
-r26 c65..73 fg=Foreground bg=Selected
+r26 c0..2 fg=Foreground bg=Background
+r26 c2..3 fg=Foreground bg=Sidebar
+r26 c3..22 fg=Muted bg=Sidebar
+r26 c22..73 fg=Foreground bg=Sidebar
 r26 c73..75 fg=Foreground bg=Background
 r26 c75..76 fg=Border bg=Background
 r26 c76..112 fg=Foreground bg=Sidebar
-r27 c0..3 fg=Foreground bg=Background
-r27 c3..16 fg=Muted bg=Background
-r27 c16..26 fg=Foreground bg=Background
-r27 c26..40 fg=Muted bg=Background
-r27 c40..49 fg=Foreground bg=Background
-r27 c49..50 fg=Foreground bg=Selected
-r27 c50..66 fg=Muted bg=Selected
-r27 c66..73 fg=Foreground bg=Selected
+r27 c0..2 fg=Foreground bg=Background
+r27 c2..3 fg=Foreground bg=Sidebar
+r27 c3..71 fg=Live bg=Selected bold
+r27 c71..72 fg=Foreground bg=Sidebar
+r27 c72..73 fg=Live bg=Sidebar
 r27 c73..75 fg=Foreground bg=Background
 r27 c75..76 fg=Border bg=Background
 r27 c76..91 fg=Foreground bg=Sidebar
 r27 c91..93 fg=#83b4fb bg=Sidebar
 r27 c93..112 fg=Foreground bg=Sidebar
-r28 c0..3 fg=Foreground bg=Background
-r28 c3..11 fg=Muted bg=Background
-r28 c11..26 fg=Foreground bg=Background
-r28 c26..36 fg=Muted bg=Background
-r28 c36..75 fg=Foreground bg=Background
+r28 c0..75 fg=Foreground bg=Background
 r28 c75..76 fg=Border bg=Background
 r28 c76..88 fg=Foreground bg=Sidebar
 r28 c88..96 fg=#77b0f6 bg=Sidebar
 r28 c96..97 fg=Foreground bg=Sidebar
 r28 c97..101 fg=#77b0f6 bg=Sidebar
 r28 c101..112 fg=Foreground bg=Sidebar
-r29 c0..3 fg=Foreground bg=Background
-r29 c3..8 fg=Foreground bg=Background bold
-r29 c8..26 fg=Foreground bg=Background
-r29 c26..27 fg=Foreground bg=Background bold
-r29 c27..75 fg=Foreground bg=Background
+r29 c0..75 fg=Foreground bg=Background
 r29 c75..76 fg=Border bg=Background
 r29 c76..87 fg=Foreground bg=Sidebar
 r29 c87..91 fg=#6aabf2 bg=Sidebar
 r29 c91..93 fg=Foreground bg=Sidebar
 r29 c93..101 fg=#6aabf2 bg=Sidebar
 r29 c101..112 fg=Foreground bg=Sidebar
-r30 c0..3 fg=Foreground bg=Background
-r30 c3..21 fg=Muted bg=Background
-r30 c21..26 fg=Foreground bg=Background
-r30 c26..40 fg=Muted bg=Background
-r30 c40..75 fg=Foreground bg=Background
+r30 c0..75 fg=Foreground bg=Background
 r30 c75..76 fg=Border bg=Background
 r30 c76..87 fg=Foreground bg=Sidebar
 r30 c87..90 fg=#5da6ee bg=Sidebar
@@ -423,14 +415,14 @@ r37 c90..112 fg=Foreground bg=Sidebar
    ▏ Host facts: preserved                                                 │  ▏ inspect first.
                                                                            │  ▏ Open visual review
                                                                            │
-  Workbar                                                                  │
   ───────────────────────────────────────────────────────────────────────  │
-   TODO  1                CONTEXT  2              GIT  3                   │
-   3 / 5 complete         28.4k                  ╸4 files changed          │
-   2 in progress          of 128k tokens          workspace-polish         │               ⣀⡀
-   PRICE  4               PLUGINS  5                                       │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
-   $0.38                  4                                                │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
-   reported this turn     enabled by you                                   │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc ×   │
+   Goal: Make the work dock reusable                                       │
+   TODO · 1/3 · 2 left                                                     │
+   1 · ✓ Read the existing component                          completed ┃  │               ⣀⡀
+                                                                           │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
+                                                                           │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
+                                                                           │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
                                                                            │           ⢾⣿⣷⣤⣤⣶⣾⣿⢿⣿⡿⠉⠉⡏
   codewhale-ratatui · workspace-polish · 3 attachments · +1 details        │           ⠘⢿⣿⣿⣿⣿⣿⣿⣶⠏  ⠌
   ───────────────────────────────────────────────────────────────────────  │            ⠈⠉⠛⣛⣽⣿⣟⣁⠤⠔
@@ -648,79 +640,71 @@ r22 c76..78 fg=Foreground bg=Sidebar
 r22 c78..110 bg=Selected
 r22 c110..112 fg=Foreground bg=Sidebar
 r23 c0..2 fg=Foreground bg=Background
-r23 c2..9 fg=Foreground bg=Background bold
-r23 c9..75 fg=Foreground bg=Background
+r23 c2..73 fg=Border bg=Sidebar
+r23 c73..75 fg=Foreground bg=Background
 r23 c75..76 fg=Border bg=Background
 r23 c76..78 fg=Foreground bg=Sidebar
 r23 c78..110 bg=Selected
 r23 c110..112 fg=Foreground bg=Sidebar
 r24 c0..2 fg=Foreground bg=Background
-r24 c2..73 fg=Border bg=Background
+r24 c2..3 fg=Foreground bg=Sidebar
+r24 c3..10 fg=Foreground bg=Selected bold
+r24 c10..12 fg=Foreground bg=Sidebar
+r24 c12..19 fg=Muted bg=Sidebar
+r24 c19..21 fg=Foreground bg=Sidebar
+r24 c21..27 fg=Muted bg=Sidebar
+r24 c27..29 fg=Foreground bg=Sidebar
+r24 c29..36 fg=Muted bg=Sidebar
+r24 c36..38 fg=Foreground bg=Sidebar
+r24 c38..45 fg=Muted bg=Sidebar
+r24 c45..47 fg=Foreground bg=Sidebar
+r24 c47..56 fg=Muted bg=Sidebar
+r24 c56..58 fg=Foreground bg=Sidebar
+r24 c58..63 fg=Muted bg=Sidebar
+r24 c63..66 fg=Foreground bg=Sidebar
+r24 c66..73 fg=Hint bg=Sidebar
 r24 c73..75 fg=Foreground bg=Background
 r24 c75..76 fg=Border bg=Background
 r24 c76..112 fg=Foreground bg=Sidebar
-r25 c0..3 fg=Foreground bg=Background
-r25 c3..10 fg=Muted bg=Background
-r25 c10..26 fg=Foreground bg=Background
-r25 c26..36 fg=Muted bg=Background
-r25 c36..49 fg=Foreground bg=Background
-r25 c49..50 fg=Foreground bg=Selected
-r25 c50..56 fg=Muted bg=Selected
-r25 c56..73 fg=Foreground bg=Selected
+r25 c0..2 fg=Foreground bg=Background
+r25 c2..3 fg=Foreground bg=Sidebar
+r25 c3..36 fg=Live bg=Sidebar bold
+r25 c36..73 fg=Foreground bg=Sidebar
 r25 c73..75 fg=Foreground bg=Background
 r25 c75..76 fg=Border bg=Background
 r25 c76..112 fg=Foreground bg=Sidebar
-r26 c0..3 fg=Foreground bg=Background
-r26 c3..17 fg=Foreground bg=Background bold
-r26 c17..26 fg=Foreground bg=Background
-r26 c26..31 fg=Foreground bg=Background bold
-r26 c31..49 fg=Foreground bg=Background
-r26 c49..50 fg=Primary bg=Selected
-r26 c50..65 fg=Foreground bg=Selected bold
-r26 c65..73 fg=Foreground bg=Selected
+r26 c0..2 fg=Foreground bg=Background
+r26 c2..3 fg=Foreground bg=Sidebar
+r26 c3..22 fg=Muted bg=Sidebar
+r26 c22..73 fg=Foreground bg=Sidebar
 r26 c73..75 fg=Foreground bg=Background
 r26 c75..76 fg=Border bg=Background
 r26 c76..112 fg=Foreground bg=Sidebar
-r27 c0..3 fg=Foreground bg=Background
-r27 c3..16 fg=Muted bg=Background
-r27 c16..26 fg=Foreground bg=Background
-r27 c26..40 fg=Muted bg=Background
-r27 c40..49 fg=Foreground bg=Background
-r27 c49..50 fg=Foreground bg=Selected
-r27 c50..66 fg=Muted bg=Selected
-r27 c66..73 fg=Foreground bg=Selected
+r27 c0..2 fg=Foreground bg=Background
+r27 c2..3 fg=Foreground bg=Sidebar
+r27 c3..71 fg=Live bg=Selected bold
+r27 c71..72 fg=Foreground bg=Sidebar
+r27 c72..73 fg=Live bg=Sidebar
 r27 c73..75 fg=Foreground bg=Background
 r27 c75..76 fg=Border bg=Background
 r27 c76..91 fg=Foreground bg=Sidebar
 r27 c91..93 fg=#83b4fb bg=Sidebar
 r27 c93..112 fg=Foreground bg=Sidebar
-r28 c0..3 fg=Foreground bg=Background
-r28 c3..11 fg=Muted bg=Background
-r28 c11..26 fg=Foreground bg=Background
-r28 c26..36 fg=Muted bg=Background
-r28 c36..75 fg=Foreground bg=Background
+r28 c0..75 fg=Foreground bg=Background
 r28 c75..76 fg=Border bg=Background
 r28 c76..88 fg=Foreground bg=Sidebar
 r28 c88..96 fg=#77b0f6 bg=Sidebar
 r28 c96..97 fg=Foreground bg=Sidebar
 r28 c97..101 fg=#77b0f6 bg=Sidebar
 r28 c101..112 fg=Foreground bg=Sidebar
-r29 c0..3 fg=Foreground bg=Background
-r29 c3..8 fg=Foreground bg=Background bold
-r29 c8..26 fg=Foreground bg=Background
-r29 c26..27 fg=Foreground bg=Background bold
-r29 c27..75 fg=Foreground bg=Background
+r29 c0..75 fg=Foreground bg=Background
 r29 c75..76 fg=Border bg=Background
 r29 c76..87 fg=Foreground bg=Sidebar
 r29 c87..91 fg=#6aabf2 bg=Sidebar
 r29 c91..93 fg=Foreground bg=Sidebar
 r29 c93..101 fg=#6aabf2 bg=Sidebar
 r29 c101..112 fg=Foreground bg=Sidebar
-r30 c0..3 fg=Foreground bg=Background
-r30 c3..21 fg=Muted bg=Background
-r30 c21..26 fg=Foreground bg=Background
-r30 c26..40 fg=Muted bg=Background
-r30 c40..75 fg=Foreground bg=Background
+r30 c0..75 fg=Foreground bg=Background
 r30 c75..76 fg=Border bg=Background
 r30 c76..87 fg=Foreground bg=Sidebar
 r30 c87..90 fg=#5da6ee bg=Sidebar
@@ -820,14 +804,14 @@ r37 c90..112 fg=Foreground bg=Sidebar
    ▏ Host facts: preserved                                                 │  ▏ inspect first.
                                                                            │  ▏ Open visual review
                                                                            │
-  Workbar                                                                  │
   ───────────────────────────────────────────────────────────────────────  │
-   TODO  1                CONTEXT  2              GIT  3                   │
-   3 / 5 complete         28.4k                  ╸4 files changed          │
-   2 in progress          of 128k tokens          workspace-polish         │               ⣀⡀
-   PRICE  4               PLUGINS  5                                       │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
-   $0.38                  4                                                │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
-   reported this turn     enabled by you                                   │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc ×   │
+   Goal: Make the work dock reusable                                       │
+   TODO · 1/3 · 2 left                                                     │
+   1 · ✓ Read the existing component                          completed ┃  │               ⣀⡀
+                                                                           │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
+                                                                           │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
+                                                                           │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
                                                                            │           ⢾⣿⣷⣤⣤⣶⣾⣿⢿⣿⡿⠉⠉⡏
   codewhale-ratatui · workspace-polish · 3 attachments · +1 details        │           ⠘⢿⣿⣿⣿⣿⣿⣿⣶⠏  ⠌
   ───────────────────────────────────────────────────────────────────────  │            ⠈⠉⠛⣛⣽⣿⣟⣁⠤⠔
@@ -1045,79 +1029,71 @@ r22 c76..78 fg=Foreground bg=Sidebar
 r22 c78..110 bg=Selected
 r22 c110..112 fg=Foreground bg=Sidebar
 r23 c0..2 fg=Foreground bg=Background
-r23 c2..9 fg=Foreground bg=Background bold
-r23 c9..75 fg=Foreground bg=Background
+r23 c2..73 fg=Border bg=Sidebar
+r23 c73..75 fg=Foreground bg=Background
 r23 c75..76 fg=Border bg=Background
 r23 c76..78 fg=Foreground bg=Sidebar
 r23 c78..110 bg=Selected
 r23 c110..112 fg=Foreground bg=Sidebar
 r24 c0..2 fg=Foreground bg=Background
-r24 c2..73 fg=Border bg=Background
+r24 c2..3 fg=Foreground bg=Sidebar
+r24 c3..10 fg=Foreground bg=Selected bold
+r24 c10..12 fg=Foreground bg=Sidebar
+r24 c12..19 fg=Muted bg=Sidebar
+r24 c19..21 fg=Foreground bg=Sidebar
+r24 c21..27 fg=Muted bg=Sidebar
+r24 c27..29 fg=Foreground bg=Sidebar
+r24 c29..36 fg=Muted bg=Sidebar
+r24 c36..38 fg=Foreground bg=Sidebar
+r24 c38..45 fg=Muted bg=Sidebar
+r24 c45..47 fg=Foreground bg=Sidebar
+r24 c47..56 fg=Muted bg=Sidebar
+r24 c56..58 fg=Foreground bg=Sidebar
+r24 c58..63 fg=Muted bg=Sidebar
+r24 c63..66 fg=Foreground bg=Sidebar
+r24 c66..73 fg=Hint bg=Sidebar
 r24 c73..75 fg=Foreground bg=Background
 r24 c75..76 fg=Border bg=Background
 r24 c76..112 fg=Foreground bg=Sidebar
-r25 c0..3 fg=Foreground bg=Background
-r25 c3..10 fg=Muted bg=Background
-r25 c10..26 fg=Foreground bg=Background
-r25 c26..36 fg=Muted bg=Background
-r25 c36..49 fg=Foreground bg=Background
-r25 c49..50 fg=Foreground bg=Selected
-r25 c50..56 fg=Muted bg=Selected
-r25 c56..73 fg=Foreground bg=Selected
+r25 c0..2 fg=Foreground bg=Background
+r25 c2..3 fg=Foreground bg=Sidebar
+r25 c3..36 fg=Live bg=Sidebar bold
+r25 c36..73 fg=Foreground bg=Sidebar
 r25 c73..75 fg=Foreground bg=Background
 r25 c75..76 fg=Border bg=Background
 r25 c76..112 fg=Foreground bg=Sidebar
-r26 c0..3 fg=Foreground bg=Background
-r26 c3..17 fg=Foreground bg=Background bold
-r26 c17..26 fg=Foreground bg=Background
-r26 c26..31 fg=Foreground bg=Background bold
-r26 c31..49 fg=Foreground bg=Background
-r26 c49..50 fg=Primary bg=Selected
-r26 c50..65 fg=Foreground bg=Selected bold
-r26 c65..73 fg=Foreground bg=Selected
+r26 c0..2 fg=Foreground bg=Background
+r26 c2..3 fg=Foreground bg=Sidebar
+r26 c3..22 fg=Muted bg=Sidebar
+r26 c22..73 fg=Foreground bg=Sidebar
 r26 c73..75 fg=Foreground bg=Background
 r26 c75..76 fg=Border bg=Background
 r26 c76..112 fg=Foreground bg=Sidebar
-r27 c0..3 fg=Foreground bg=Background
-r27 c3..16 fg=Muted bg=Background
-r27 c16..26 fg=Foreground bg=Background
-r27 c26..40 fg=Muted bg=Background
-r27 c40..49 fg=Foreground bg=Background
-r27 c49..50 fg=Foreground bg=Selected
-r27 c50..66 fg=Muted bg=Selected
-r27 c66..73 fg=Foreground bg=Selected
+r27 c0..2 fg=Foreground bg=Background
+r27 c2..3 fg=Foreground bg=Sidebar
+r27 c3..71 fg=Live bg=Selected bold
+r27 c71..72 fg=Foreground bg=Sidebar
+r27 c72..73 fg=Live bg=Sidebar
 r27 c73..75 fg=Foreground bg=Background
 r27 c75..76 fg=Border bg=Background
 r27 c76..91 fg=Foreground bg=Sidebar
 r27 c91..93 fg=#1c87d5 bg=Sidebar
 r27 c93..112 fg=Foreground bg=Sidebar
-r28 c0..3 fg=Foreground bg=Background
-r28 c3..11 fg=Muted bg=Background
-r28 c11..26 fg=Foreground bg=Background
-r28 c26..36 fg=Muted bg=Background
-r28 c36..75 fg=Foreground bg=Background
+r28 c0..75 fg=Foreground bg=Background
 r28 c75..76 fg=Border bg=Background
 r28 c76..88 fg=Foreground bg=Sidebar
 r28 c88..96 fg=#1a7fd2 bg=Sidebar
 r28 c96..97 fg=Foreground bg=Sidebar
 r28 c97..101 fg=#1a7fd2 bg=Sidebar
 r28 c101..112 fg=Foreground bg=Sidebar
-r29 c0..3 fg=Foreground bg=Background
-r29 c3..8 fg=Foreground bg=Background bold
-r29 c8..26 fg=Foreground bg=Background
-r29 c26..27 fg=Foreground bg=Background bold
-r29 c27..75 fg=Foreground bg=Background
+r29 c0..75 fg=Foreground bg=Background
 r29 c75..76 fg=Border bg=Background
 r29 c76..87 fg=Foreground bg=Sidebar
 r29 c87..91 fg=#1877ce bg=Sidebar
 r29 c91..93 fg=Foreground bg=Sidebar
 r29 c93..101 fg=#1877ce bg=Sidebar
 r29 c101..112 fg=Foreground bg=Sidebar
-r30 c0..3 fg=Foreground bg=Background
-r30 c3..21 fg=Muted bg=Background
-r30 c21..26 fg=Foreground bg=Background
-r30 c26..40 fg=Muted bg=Background
-r30 c40..75 fg=Foreground bg=Background
+r30 c0..75 fg=Foreground bg=Background
 r30 c75..76 fg=Border bg=Background
 r30 c76..87 fg=Foreground bg=Sidebar
 r30 c87..90 fg=#166fcb bg=Sidebar
@@ -1217,14 +1193,14 @@ r37 c90..112 fg=Foreground bg=Sidebar
    ▏ Host facts: preserved                                                 │  ▏ inspect first.
                                                                            │  ▏ Open visual review
                                                                            │
-  Workbar                                                                  │
   ───────────────────────────────────────────────────────────────────────  │
-   TODO  1                CONTEXT  2              GIT  3                   │
-   3 / 5 complete         28.4k                  ╸4 files changed          │
-   2 in progress          of 128k tokens          workspace-polish         │               ⣀⡀
-   PRICE  4               PLUGINS  5                                       │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
-   $0.38                  4                                                │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
-   reported this turn     enabled by you                                   │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc ×   │
+   Goal: Make the work dock reusable                                       │
+   TODO · 1/3 · 2 left                                                     │
+   1 · ✓ Read the existing component                          completed ┃  │               ⣀⡀
+                                                                           │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
+                                                                           │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
+                                                                           │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
                                                                            │           ⢾⣿⣷⣤⣤⣶⣾⣿⢿⣿⡿⠉⠉⡏
   codewhale-ratatui · workspace-polish · 3 attachments · +1 details        │           ⠘⢿⣿⣿⣿⣿⣿⣿⣶⠏  ⠌
   ───────────────────────────────────────────────────────────────────────  │            ⠈⠉⠛⣛⣽⣿⣟⣁⠤⠔
@@ -1442,79 +1418,71 @@ r22 c76..78 fg=Foreground bg=Sidebar
 r22 c78..110 bg=Selected
 r22 c110..112 fg=Foreground bg=Sidebar
 r23 c0..2 fg=Foreground bg=Background
-r23 c2..9 fg=Foreground bg=Background bold
-r23 c9..75 fg=Foreground bg=Background
+r23 c2..73 fg=Border bg=Sidebar
+r23 c73..75 fg=Foreground bg=Background
 r23 c75..76 fg=Border bg=Background
 r23 c76..78 fg=Foreground bg=Sidebar
 r23 c78..110 bg=Selected
 r23 c110..112 fg=Foreground bg=Sidebar
 r24 c0..2 fg=Foreground bg=Background
-r24 c2..73 fg=Border bg=Background
+r24 c2..3 fg=Foreground bg=Sidebar
+r24 c3..10 fg=Foreground bg=Selected bold
+r24 c10..12 fg=Foreground bg=Sidebar
+r24 c12..19 fg=Muted bg=Sidebar
+r24 c19..21 fg=Foreground bg=Sidebar
+r24 c21..27 fg=Muted bg=Sidebar
+r24 c27..29 fg=Foreground bg=Sidebar
+r24 c29..36 fg=Muted bg=Sidebar
+r24 c36..38 fg=Foreground bg=Sidebar
+r24 c38..45 fg=Muted bg=Sidebar
+r24 c45..47 fg=Foreground bg=Sidebar
+r24 c47..56 fg=Muted bg=Sidebar
+r24 c56..58 fg=Foreground bg=Sidebar
+r24 c58..63 fg=Muted bg=Sidebar
+r24 c63..66 fg=Foreground bg=Sidebar
+r24 c66..73 fg=Hint bg=Sidebar
 r24 c73..75 fg=Foreground bg=Background
 r24 c75..76 fg=Border bg=Background
 r24 c76..112 fg=Foreground bg=Sidebar
-r25 c0..3 fg=Foreground bg=Background
-r25 c3..10 fg=Muted bg=Background
-r25 c10..26 fg=Foreground bg=Background
-r25 c26..36 fg=Muted bg=Background
-r25 c36..49 fg=Foreground bg=Background
-r25 c49..50 fg=Foreground bg=Selected
-r25 c50..56 fg=Muted bg=Selected
-r25 c56..73 fg=Foreground bg=Selected
+r25 c0..2 fg=Foreground bg=Background
+r25 c2..3 fg=Foreground bg=Sidebar
+r25 c3..36 fg=Live bg=Sidebar bold
+r25 c36..73 fg=Foreground bg=Sidebar
 r25 c73..75 fg=Foreground bg=Background
 r25 c75..76 fg=Border bg=Background
 r25 c76..112 fg=Foreground bg=Sidebar
-r26 c0..3 fg=Foreground bg=Background
-r26 c3..17 fg=Foreground bg=Background bold
-r26 c17..26 fg=Foreground bg=Background
-r26 c26..31 fg=Foreground bg=Background bold
-r26 c31..49 fg=Foreground bg=Background
-r26 c49..50 fg=Primary bg=Selected
-r26 c50..65 fg=Foreground bg=Selected bold
-r26 c65..73 fg=Foreground bg=Selected
+r26 c0..2 fg=Foreground bg=Background
+r26 c2..3 fg=Foreground bg=Sidebar
+r26 c3..22 fg=Muted bg=Sidebar
+r26 c22..73 fg=Foreground bg=Sidebar
 r26 c73..75 fg=Foreground bg=Background
 r26 c75..76 fg=Border bg=Background
 r26 c76..112 fg=Foreground bg=Sidebar
-r27 c0..3 fg=Foreground bg=Background
-r27 c3..16 fg=Muted bg=Background
-r27 c16..26 fg=Foreground bg=Background
-r27 c26..40 fg=Muted bg=Background
-r27 c40..49 fg=Foreground bg=Background
-r27 c49..50 fg=Foreground bg=Selected
-r27 c50..66 fg=Muted bg=Selected
-r27 c66..73 fg=Foreground bg=Selected
+r27 c0..2 fg=Foreground bg=Background
+r27 c2..3 fg=Foreground bg=Sidebar
+r27 c3..71 fg=Live bg=Selected bold
+r27 c71..72 fg=Foreground bg=Sidebar
+r27 c72..73 fg=Live bg=Sidebar
 r27 c73..75 fg=Foreground bg=Background
 r27 c75..76 fg=Border bg=Background
 r27 c76..91 fg=Foreground bg=Sidebar
 r27 c91..93 fg=Primary bg=Sidebar
 r27 c93..112 fg=Foreground bg=Sidebar
-r28 c0..3 fg=Foreground bg=Background
-r28 c3..11 fg=Muted bg=Background
-r28 c11..26 fg=Foreground bg=Background
-r28 c26..36 fg=Muted bg=Background
-r28 c36..75 fg=Foreground bg=Background
+r28 c0..75 fg=Foreground bg=Background
 r28 c75..76 fg=Border bg=Background
 r28 c76..88 fg=Foreground bg=Sidebar
 r28 c88..96 fg=Primary bg=Sidebar
 r28 c96..97 fg=Foreground bg=Sidebar
 r28 c97..101 fg=Primary bg=Sidebar
 r28 c101..112 fg=Foreground bg=Sidebar
-r29 c0..3 fg=Foreground bg=Background
-r29 c3..8 fg=Foreground bg=Background bold
-r29 c8..26 fg=Foreground bg=Background
-r29 c26..27 fg=Foreground bg=Background bold
-r29 c27..75 fg=Foreground bg=Background
+r29 c0..75 fg=Foreground bg=Background
 r29 c75..76 fg=Border bg=Background
 r29 c76..87 fg=Foreground bg=Sidebar
 r29 c87..91 fg=idx75 bg=Sidebar
 r29 c91..93 fg=Foreground bg=Sidebar
 r29 c93..101 fg=idx75 bg=Sidebar
 r29 c101..112 fg=Foreground bg=Sidebar
-r30 c0..3 fg=Foreground bg=Background
-r30 c3..21 fg=Muted bg=Background
-r30 c21..26 fg=Foreground bg=Background
-r30 c26..40 fg=Muted bg=Background
-r30 c40..75 fg=Foreground bg=Background
+r30 c0..75 fg=Foreground bg=Background
 r30 c75..76 fg=Border bg=Background
 r30 c76..87 fg=Foreground bg=Sidebar
 r30 c87..90 fg=idx75 bg=Sidebar
@@ -1602,14 +1570,14 @@ r37 c90..112 fg=Foreground bg=Sidebar
   │ 2 output lines not fully shown                                      │  │  ▏ inspect first.
   └─────────────────────────────────────────────────────────────────────┘  │  ▏ Open visual review
                                                                            │
-  Workbar                                                                  │
   ───────────────────────────────────────────────────────────────────────  │
-   TODO  1                CONTEXT  2              GIT  3                   │
-   3 / 5 complete         28.4k                  ╸4 files changed          │
-   2 in progress          of 128k tokens          workspace-polish         │               ⣀⡀
-   PRICE  4               PLUGINS  5                                       │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
-   $0.38                  4                                                │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
-   reported this turn     enabled by you                                   │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc ×   │
+   Goal: Make the work dock reusable                                       │
+   TODO · 1/3 · 2 left                                                     │
+   1 · ✓ Read the existing component                          completed ┃  │               ⣀⡀
+                                                                           │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
+                                                                           │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
+                                                                           │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
                                                                            │           ⢾⣿⣷⣤⣤⣶⣾⣿⢿⣿⡿⠉⠉⡏
   codewhale-ratatui · workspace-polish · 3 attachments · +1 details        │           ⠘⢿⣿⣿⣿⣿⣿⣿⣶⠏  ⠌
   ───────────────────────────────────────────────────────────────────────  │            ⠈⠉⠛⣛⣽⣿⣟⣁⠤⠔
@@ -1831,79 +1799,71 @@ r22 c76..78 fg=Foreground bg=Sidebar
 r22 c78..110 bg=Selected
 r22 c110..112 fg=Foreground bg=Sidebar
 r23 c0..2 fg=Foreground bg=Background|Surface
-r23 c2..9 fg=Foreground bg=Background|Surface bold
-r23 c9..75 fg=Foreground bg=Background|Surface
+r23 c2..73 fg=Border bg=Sidebar
+r23 c73..75 fg=Foreground bg=Background|Surface
 r23 c75..76 fg=Border bg=Background|Surface
 r23 c76..78 fg=Foreground bg=Sidebar
 r23 c78..110 bg=Selected
 r23 c110..112 fg=Foreground bg=Sidebar
 r24 c0..2 fg=Foreground bg=Background|Surface
-r24 c2..73 fg=Border bg=Background|Surface
+r24 c2..3 fg=Foreground bg=Sidebar
+r24 c3..10 fg=Foreground bg=Selected bold
+r24 c10..12 fg=Foreground bg=Sidebar
+r24 c12..19 fg=Muted bg=Sidebar
+r24 c19..21 fg=Foreground bg=Sidebar
+r24 c21..27 fg=Muted bg=Sidebar
+r24 c27..29 fg=Foreground bg=Sidebar
+r24 c29..36 fg=Muted bg=Sidebar
+r24 c36..38 fg=Foreground bg=Sidebar
+r24 c38..45 fg=Muted bg=Sidebar
+r24 c45..47 fg=Foreground bg=Sidebar
+r24 c47..56 fg=Muted bg=Sidebar
+r24 c56..58 fg=Foreground bg=Sidebar
+r24 c58..63 fg=Muted bg=Sidebar
+r24 c63..66 fg=Foreground bg=Sidebar
+r24 c66..73 fg=Hint bg=Sidebar
 r24 c73..75 fg=Foreground bg=Background|Surface
 r24 c75..76 fg=Border bg=Background|Surface
 r24 c76..112 fg=Foreground bg=Sidebar
-r25 c0..3 fg=Foreground bg=Background|Surface
-r25 c3..10 fg=Muted bg=Background|Surface
-r25 c10..26 fg=Foreground bg=Background|Surface
-r25 c26..36 fg=Muted bg=Background|Surface
-r25 c36..49 fg=Foreground bg=Background|Surface
-r25 c49..50 fg=Foreground bg=Selected
-r25 c50..56 fg=Muted bg=Selected
-r25 c56..73 fg=Foreground bg=Selected
+r25 c0..2 fg=Foreground bg=Background|Surface
+r25 c2..3 fg=Foreground bg=Sidebar
+r25 c3..36 fg=Live bg=Sidebar bold
+r25 c36..73 fg=Foreground bg=Sidebar
 r25 c73..75 fg=Foreground bg=Background|Surface
 r25 c75..76 fg=Border bg=Background|Surface
 r25 c76..112 fg=Foreground bg=Sidebar
-r26 c0..3 fg=Foreground bg=Background|Surface
-r26 c3..17 fg=Foreground bg=Background|Surface bold
-r26 c17..26 fg=Foreground bg=Background|Surface
-r26 c26..31 fg=Foreground bg=Background|Surface bold
-r26 c31..49 fg=Foreground bg=Background|Surface
-r26 c49..50 fg=Primary bg=Selected
-r26 c50..65 fg=Foreground bg=Selected bold
-r26 c65..73 fg=Foreground bg=Selected
+r26 c0..2 fg=Foreground bg=Background|Surface
+r26 c2..3 fg=Foreground bg=Sidebar
+r26 c3..22 fg=Muted bg=Sidebar
+r26 c22..73 fg=Foreground bg=Sidebar
 r26 c73..75 fg=Foreground bg=Background|Surface
 r26 c75..76 fg=Border bg=Background|Surface
 r26 c76..112 fg=Foreground bg=Sidebar
-r27 c0..3 fg=Foreground bg=Background|Surface
-r27 c3..16 fg=Muted bg=Background|Surface
-r27 c16..26 fg=Foreground bg=Background|Surface
-r27 c26..40 fg=Muted bg=Background|Surface
-r27 c40..49 fg=Foreground bg=Background|Surface
-r27 c49..50 fg=Foreground bg=Selected
-r27 c50..66 fg=Muted bg=Selected
-r27 c66..73 fg=Foreground bg=Selected
+r27 c0..2 fg=Foreground bg=Background|Surface
+r27 c2..3 fg=Foreground bg=Sidebar
+r27 c3..71 fg=Live bg=Selected bold
+r27 c71..72 fg=Foreground bg=Sidebar
+r27 c72..73 fg=Live bg=Sidebar
 r27 c73..75 fg=Foreground bg=Background|Surface
 r27 c75..76 fg=Border bg=Background|Surface
 r27 c76..91 fg=Foreground bg=Sidebar
 r27 c91..93 fg=idx32 bg=Sidebar
 r27 c93..112 fg=Foreground bg=Sidebar
-r28 c0..3 fg=Foreground bg=Background|Surface
-r28 c3..11 fg=Muted bg=Background|Surface
-r28 c11..26 fg=Foreground bg=Background|Surface
-r28 c26..36 fg=Muted bg=Background|Surface
-r28 c36..75 fg=Foreground bg=Background|Surface
+r28 c0..75 fg=Foreground bg=Background|Surface
 r28 c75..76 fg=Border bg=Background|Surface
 r28 c76..88 fg=Foreground bg=Sidebar
 r28 c88..96 fg=idx32 bg=Sidebar
 r28 c96..97 fg=Foreground bg=Sidebar
 r28 c97..101 fg=idx32 bg=Sidebar
 r28 c101..112 fg=Foreground bg=Sidebar
-r29 c0..3 fg=Foreground bg=Background|Surface
-r29 c3..8 fg=Foreground bg=Background|Surface bold
-r29 c8..26 fg=Foreground bg=Background|Surface
-r29 c26..27 fg=Foreground bg=Background|Surface bold
-r29 c27..75 fg=Foreground bg=Background|Surface
+r29 c0..75 fg=Foreground bg=Background|Surface
 r29 c75..76 fg=Border bg=Background|Surface
 r29 c76..87 fg=Foreground bg=Sidebar
 r29 c87..91 fg=idx32 bg=Sidebar
 r29 c91..93 fg=Foreground bg=Sidebar
 r29 c93..101 fg=idx32 bg=Sidebar
 r29 c101..112 fg=Foreground bg=Sidebar
-r30 c0..3 fg=Foreground bg=Background|Surface
-r30 c3..21 fg=Muted bg=Background|Surface
-r30 c21..26 fg=Foreground bg=Background|Surface
-r30 c26..40 fg=Muted bg=Background|Surface
-r30 c40..75 fg=Foreground bg=Background|Surface
+r30 c0..75 fg=Foreground bg=Background|Surface
 r30 c75..76 fg=Border bg=Background|Surface
 r30 c76..87 fg=Foreground bg=Sidebar
 r30 c87..90 fg=idx26 bg=Sidebar
@@ -1991,14 +1951,14 @@ r37 c90..112 fg=Foreground bg=Sidebar
   │ 2 output lines not fully shown                                      │  │  ▏ inspect first.
   └─────────────────────────────────────────────────────────────────────┘  │  ▏ Open visual review
                                                                            │
-  Workbar                                                                  │
   ───────────────────────────────────────────────────────────────────────  │
-   TODO  1                CONTEXT  2              GIT  3                   │
-   3 / 5 complete         28.4k                  ╸4 files changed          │
-   2 in progress          of 128k tokens          workspace-polish         │               ⣀⡀
-   PRICE  4               PLUGINS  5                                       │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
-   $0.38                  4                                                │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
-   reported this turn     enabled by you                                   │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc ×   │
+   Goal: Make the work dock reusable                                       │
+   TODO · 1/3 · 2 left                                                     │
+   1 · ✓ Read the existing component                          completed ┃  │               ⣀⡀
+                                                                           │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
+                                                                           │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
+                                                                           │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
                                                                            │           ⢾⣿⣷⣤⣤⣶⣾⣿⢿⣿⡿⠉⠉⡏
   codewhale-ratatui · workspace-polish · 3 attachments · +1 details        │           ⠘⢿⣿⣿⣿⣿⣿⣿⣶⠏  ⠌
   ───────────────────────────────────────────────────────────────────────  │            ⠈⠉⠛⣛⣽⣿⣟⣁⠤⠔
@@ -2086,36 +2046,31 @@ r21 c75..76 dim
 r21 c78..79 fg=Primary
 r21 c80..98 fg=Primary
 r22 c75..76 dim
-r23 c2..9 bold
+r23 c2..73 dim
 r23 c75..76 dim
-r24 c2..73 dim
+r24 c3..10 bold
+r24 c12..19 dim
+r24 c21..27 dim
+r24 c29..36 dim
+r24 c38..45 dim
+r24 c47..56 dim
+r24 c58..63 dim
+r24 c66..73 dim
 r24 c75..76 dim
-r25 c3..10 dim
-r25 c26..36 dim
-r25 c50..56 dim
+r25 c3..36 fg=Live bold
 r25 c75..76 dim
-r26 c3..17 bold
-r26 c26..31 bold
-r26 c49..50 fg=Primary
-r26 c50..65 bold
+r26 c3..22 dim
 r26 c75..76 dim
-r27 c3..16 dim
-r27 c26..40 dim
-r27 c50..66 dim
+r27 c3..71 fg=Live bold
+r27 c72..73 fg=Live
 r27 c75..76 dim
 r27 c91..93 fg=Primary
-r28 c3..11 dim
-r28 c26..36 dim
 r28 c75..76 dim
 r28 c88..96 fg=Primary
 r28 c97..101 fg=Primary
-r29 c3..8 bold
-r29 c26..27 bold
 r29 c75..76 dim
 r29 c87..91 fg=Primary
 r29 c93..101 fg=Primary
-r30 c3..21 dim
-r30 c26..40 dim
 r30 c75..76 dim
 r30 c87..90 fg=Primary
 r30 c94..101 fg=Primary
@@ -2166,14 +2121,14 @@ r37 c2..90 dim
   │ 2 output lines not fully shown                                      │  │  ▏ inspect first.
   └─────────────────────────────────────────────────────────────────────┘  │  ▏ Open visual review
                                                                            │
-  Workbar                                                                  │
   ───────────────────────────────────────────────────────────────────────  │
-   TODO  1                CONTEXT  2              GIT  3                   │
-   3 / 5 complete         28.4k                  ╸4 files changed          │
-   2 in progress          of 128k tokens          workspace-polish         │               ⣀⡀
-   PRICE  4               PLUGINS  5                                       │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
-   $0.38                  4                                                │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
-   reported this turn     enabled by you                                   │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc ×   │
+   Goal: Make the work dock reusable                                       │
+   TODO · 1/3 · 2 left                                                     │
+   1 · ✓ Read the existing component                          completed ┃  │               ⣀⡀
+                                                                           │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
+                                                                           │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
+                                                                           │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
                                                                            │           ⢾⣿⣷⣤⣤⣶⣾⣿⢿⣿⡿⠉⠉⡏
   codewhale-ratatui · workspace-polish · 3 attachments · +1 details        │           ⠘⢿⣿⣿⣿⣿⣿⣿⣶⠏  ⠌
   ───────────────────────────────────────────────────────────────────────  │            ⠈⠉⠛⣛⣽⣿⣟⣁⠤⠔
@@ -2261,36 +2216,31 @@ r21 c75..76 dim
 r21 c78..79 fg=Primary
 r21 c80..98 fg=Primary
 r22 c75..76 dim
-r23 c2..9 bold
+r23 c2..73 dim
 r23 c75..76 dim
-r24 c2..73 dim
+r24 c3..10 bold
+r24 c12..19 dim
+r24 c21..27 dim
+r24 c29..36 dim
+r24 c38..45 dim
+r24 c47..56 dim
+r24 c58..63 dim
+r24 c66..73 dim
 r24 c75..76 dim
-r25 c3..10 dim
-r25 c26..36 dim
-r25 c50..56 dim
+r25 c3..36 fg=Live bold
 r25 c75..76 dim
-r26 c3..17 bold
-r26 c26..31 bold
-r26 c49..50 fg=Primary
-r26 c50..65 bold
+r26 c3..22 dim
 r26 c75..76 dim
-r27 c3..16 dim
-r27 c26..40 dim
-r27 c50..66 dim
+r27 c3..71 fg=Live bold
+r27 c72..73 fg=Live
 r27 c75..76 dim
 r27 c91..93 fg=Primary
-r28 c3..11 dim
-r28 c26..36 dim
 r28 c75..76 dim
 r28 c88..96 fg=Primary
 r28 c97..101 fg=Primary
-r29 c3..8 bold
-r29 c26..27 bold
 r29 c75..76 dim
 r29 c87..91 fg=Primary
 r29 c93..101 fg=Primary
-r30 c3..21 dim
-r30 c26..40 dim
 r30 c75..76 dim
 r30 c87..90 fg=Primary
 r30 c94..101 fg=Primary
@@ -2341,14 +2291,14 @@ r37 c2..90 dim
   │ 2 output lines not fully shown                                      │  │  ▏ inspect first.
   └─────────────────────────────────────────────────────────────────────┘  │  ▏ Open visual review
                                                                            │
-  Workbar                                                                  │
   ───────────────────────────────────────────────────────────────────────  │
-   TODO  1                CONTEXT  2              GIT  3                   │
-   3 / 5 complete         28.4k                  ╸4 files changed          │
-   2 in progress          of 128k tokens          workspace-polish         │               ⣀⡀
-   PRICE  4               PLUGINS  5                                       │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
-   $0.38                  4                                                │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
-   reported this turn     enabled by you                                   │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc ×   │
+   Goal: Make the work dock reusable                                       │
+   TODO · 1/3 · 2 left                                                     │
+   1 · ✓ Read the existing component                          completed ┃  │               ⣀⡀
+                                                                           │            ⢀⣴⣿⣿⣿⣿⣟⣉ ⢠⣴⣷⣦
+                                                                           │           ⢠⣿⡿⠋  ⠈⠛⠛⢋⠱⠟⠛⠁
+                                                                           │           ⣼⣿⡇    ⢀⣠⣤⣶⣶⣶⣶
                                                                            │           ⢾⣿⣷⣤⣤⣶⣾⣿⢿⣿⡿⠉⠉⡏
   codewhale-ratatui · workspace-polish · 3 attachments · +1 details        │           ⠘⢿⣿⣿⣿⣿⣿⣿⣶⠏  ⠌
   ───────────────────────────────────────────────────────────────────────  │            ⠈⠉⠛⣛⣽⣿⣟⣁⠤⠔
@@ -2418,30 +2368,25 @@ r20 c75..76 dim
 r21 c2..73 dim
 r21 c75..76 dim
 r22 c75..76 dim
-r23 c2..9 bold
+r23 c2..73 dim
 r23 c75..76 dim
-r24 c2..73 dim
+r24 c3..10 bold
+r24 c12..19 dim
+r24 c21..27 dim
+r24 c29..36 dim
+r24 c38..45 dim
+r24 c47..56 dim
+r24 c58..63 dim
+r24 c66..73 dim
 r24 c75..76 dim
-r25 c3..10 dim
-r25 c26..36 dim
-r25 c50..56 dim
+r25 c3..36 bold
 r25 c75..76 dim
-r26 c3..17 bold
-r26 c26..31 bold
-r26 c50..65 bold
+r26 c3..22 dim
 r26 c75..76 dim
-r27 c3..16 dim
-r27 c26..40 dim
-r27 c50..66 dim
+r27 c3..71 bold
 r27 c75..76 dim
-r28 c3..11 dim
-r28 c26..36 dim
 r28 c75..76 dim
-r29 c3..8 bold
-r29 c26..27 bold
 r29 c75..76 dim
-r30 c3..21 dim
-r30 c26..40 dim
 r30 c75..76 dim
 r31 c75..76 dim
 r32 c57..67 dim
@@ -2483,14 +2428,14 @@ r37 c2..90 dim
   | 2 output lines not fully shown                                      |  |  | inspect first.
   +---------------------------------------------------------------------+  |  | Open visual review
                                                                            |
-  Workbar                                                                  |
   -----------------------------------------------------------------------  |
-   TODO  1                CONTEXT  2              GIT  3                   |
-   3 / 5 complete         28.4k                  >4 files changed          |      . Working alongside you
-   2 in progress          of 128k tokens          workspace-polish         |
-   PRICE  4               PLUGINS  5                                       |
-   $0.38                  4                                                |
-   reported this turn     enabled by you                                   |
+    Tasks    Fleet    Jobs    Files    Notes    Context    Git     Esc X   |
+   Goal: Make the work dock reusable                                       |
+   TODO . 1/3 . 2 left                                                     |      . Working alongside you
+   1 . Y Read the existing component                          completed |  |
+                                                                           |
+                                                                           |
+                                                                           |
                                                                            |
   codewhale-ratatui / workspace-polish / 3 attachments / +1 details        |
   -----------------------------------------------------------------------  |
@@ -2560,30 +2505,25 @@ r20 c75..76 dim
 r21 c2..73 dim
 r21 c75..76 dim
 r22 c75..76 dim
-r23 c2..9 bold
+r23 c2..73 dim
 r23 c75..76 dim
-r24 c2..73 dim
+r24 c3..10 bold
+r24 c12..19 dim
+r24 c21..27 dim
+r24 c29..36 dim
+r24 c38..45 dim
+r24 c47..56 dim
+r24 c58..63 dim
+r24 c66..73 dim
 r24 c75..76 dim
-r25 c3..10 dim
-r25 c26..36 dim
-r25 c50..56 dim
+r25 c3..36 bold
 r25 c75..76 dim
-r26 c3..17 bold
-r26 c26..31 bold
-r26 c50..65 bold
+r26 c3..22 dim
 r26 c75..76 dim
-r27 c3..16 dim
-r27 c26..40 dim
-r27 c50..66 dim
+r27 c3..71 bold
 r27 c75..76 dim
-r28 c3..11 dim
-r28 c26..36 dim
 r28 c75..76 dim
-r29 c3..8 bold
-r29 c26..27 bold
 r29 c75..76 dim
-r30 c3..21 dim
-r30 c26..40 dim
 r30 c75..76 dim
 r31 c75..76 dim
 r32 c57..67 dim

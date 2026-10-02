@@ -92,3 +92,20 @@ pub use attention::*;
 pub use workbench::*;
 mod habitat;
 pub use habitat::*;
+
+mod pending_input;
+mod transcript;
+pub use pending_input::*;
+pub use transcript::*;
+
+mod workbar;
+pub use workbar::*;
+mod shell;
+pub use shell::*;
+mod native_chrome;
+pub use native_chrome::*;
+mod posture;
+pub use posture::*;
+
+mod instrument;
+pub use instrument::*;

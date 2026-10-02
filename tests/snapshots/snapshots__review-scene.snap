@@ -23,7 +23,7 @@ expression: dump(&entry)
                                                                            │  │                              │
                                                                            │  │   y Allow once · ▸ n Deny    │
                                                                            │  │                              │
-  Evidence for this change                                                 │  │ ←→ move · Enter choose       │
+  Run results                                                              │  │ ←→ move · Enter choose       │
                                                                            │  │ Esc cancel                   │
                                                                            │  │                              │
     Reported work         Outcome  Time  Tokens     Cost                   │  └──────────────────────────────┘
@@ -40,7 +40,7 @@ expression: dump(&entry)
   › Keep the changes local until I inspect them.                           │
                                                                            │
   Enter send · Tab details · / commands                                    │
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c0..2 fg=Foreground bg=Background
 r0 c2..11 fg=Primary bg=Background bold
@@ -233,8 +233,8 @@ r19 c79..109 bg=Surface
 r19 c109..110 fg=Primary bg=Surface
 r19 c110..112 fg=Foreground bg=Sidebar
 r20 c0..2 fg=Foreground bg=Background
-r20 c2..26 fg=Foreground bg=Background bold
-r20 c26..75 fg=Foreground bg=Background
+r20 c2..13 fg=Foreground bg=Background bold
+r20 c13..75 fg=Foreground bg=Background
 r20 c75..76 fg=Border bg=Background
 r20 c76..78 fg=Foreground bg=Sidebar
 r20 c78..79 fg=Primary bg=Surface
@@ -396,8 +396,8 @@ r36 c39..75 fg=Foreground bg=Background
 r36 c75..76 fg=Border bg=Background
 r36 c76..112 fg=Foreground bg=Sidebar
 r37 c0..2 fg=Foreground bg=Sidebar
-r37 c2..82 fg=Muted bg=Sidebar
-r37 c82..112 fg=Foreground bg=Sidebar
+r37 c2..44 fg=Muted bg=Sidebar
+r37 c44..112 fg=Foreground bg=Sidebar
 
 == dark-graphite
   Codewhale  /  codewhale-ratatui / workspace-polish                                                    Review
@@ -420,7 +420,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
                                                                            │  │                              │
                                                                            │  │   y Allow once · ▸ n Deny    │
                                                                            │  │                              │
-  Evidence for this change                                                 │  │ ←→ move · Enter choose       │
+  Run results                                                              │  │ ←→ move · Enter choose       │
                                                                            │  │ Esc cancel                   │
                                                                            │  │                              │
     Reported work         Outcome  Time  Tokens     Cost                   │  └──────────────────────────────┘
@@ -437,7 +437,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
   › Keep the changes local until I inspect them.                           │
                                                                            │
   Enter send · Tab details · / commands                                    │
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c0..2 fg=Foreground bg=Background
 r0 c2..11 fg=Primary bg=Background bold
@@ -630,8 +630,8 @@ r19 c79..109 bg=Surface
 r19 c109..110 fg=Primary bg=Surface
 r19 c110..112 fg=Foreground bg=Sidebar
 r20 c0..2 fg=Foreground bg=Background
-r20 c2..26 fg=Foreground bg=Background bold
-r20 c26..75 fg=Foreground bg=Background
+r20 c2..13 fg=Foreground bg=Background bold
+r20 c13..75 fg=Foreground bg=Background
 r20 c75..76 fg=Border bg=Background
 r20 c76..78 fg=Foreground bg=Sidebar
 r20 c78..79 fg=Primary bg=Surface
@@ -793,8 +793,8 @@ r36 c39..75 fg=Foreground bg=Background
 r36 c75..76 fg=Border bg=Background
 r36 c76..112 fg=Foreground bg=Sidebar
 r37 c0..2 fg=Foreground bg=Sidebar
-r37 c2..82 fg=Muted bg=Sidebar
-r37 c82..112 fg=Foreground bg=Sidebar
+r37 c2..44 fg=Muted bg=Sidebar
+r37 c44..112 fg=Foreground bg=Sidebar
 
 == light-truecolor
   Codewhale  /  codewhale-ratatui / workspace-polish                                                    Review
@@ -817,7 +817,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
                                                                            │  │                              │
                                                                            │  │   y Allow once · ▸ n Deny    │
                                                                            │  │                              │
-  Evidence for this change                                                 │  │ ←→ move · Enter choose       │
+  Run results                                                              │  │ ←→ move · Enter choose       │
                                                                            │  │ Esc cancel                   │
                                                                            │  │                              │
     Reported work         Outcome  Time  Tokens     Cost                   │  └──────────────────────────────┘
@@ -834,7 +834,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
   › Keep the changes local until I inspect them.                           │
                                                                            │
   Enter send · Tab details · / commands                                    │
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c0..2 fg=Foreground bg=Background
 r0 c2..11 fg=Primary bg=Background bold
@@ -1027,8 +1027,8 @@ r19 c79..109 bg=Surface
 r19 c109..110 fg=Primary bg=Surface
 r19 c110..112 fg=Foreground bg=Sidebar
 r20 c0..2 fg=Foreground bg=Background
-r20 c2..26 fg=Foreground bg=Background bold
-r20 c26..75 fg=Foreground bg=Background
+r20 c2..13 fg=Foreground bg=Background bold
+r20 c13..75 fg=Foreground bg=Background
 r20 c75..76 fg=Border bg=Background
 r20 c76..78 fg=Foreground bg=Sidebar
 r20 c78..79 fg=Primary bg=Surface
@@ -1190,8 +1190,8 @@ r36 c39..75 fg=Foreground bg=Background
 r36 c75..76 fg=Border bg=Background
 r36 c76..112 fg=Foreground bg=Sidebar
 r37 c0..2 fg=Foreground bg=Sidebar
-r37 c2..82 fg=Muted bg=Sidebar
-r37 c82..112 fg=Foreground bg=Sidebar
+r37 c2..44 fg=Muted bg=Sidebar
+r37 c44..112 fg=Foreground bg=Sidebar
 
 == dark-256
   Codewhale  /  codewhale-ratatui / workspace-polish                                                    Review
@@ -1214,7 +1214,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
                                                                            │  │                              │
                                                                            │  │   y Allow once · ▸ n Deny    │
                                                                            │  │                              │
-  Evidence for this change                                                 │  │ ←→ move · Enter choose       │
+  Run results                                                              │  │ ←→ move · Enter choose       │
                                                                            │  │ Esc cancel                   │
                                                                            │  │                              │
     Reported work         Outcome  Time  Tokens     Cost                   │  └──────────────────────────────┘
@@ -1231,7 +1231,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
   › Keep the changes local until I inspect them.                           │
                                                                            │
   Enter send · Tab details · / commands                                    │
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c0..2 fg=Foreground bg=Background
 r0 c2..11 fg=Primary bg=Background bold
@@ -1424,8 +1424,8 @@ r19 c79..109 bg=Surface|Hover
 r19 c109..110 fg=Primary bg=Surface|Hover
 r19 c110..112 fg=Foreground bg=Sidebar
 r20 c0..2 fg=Foreground bg=Background
-r20 c2..26 fg=Foreground bg=Background bold
-r20 c26..75 fg=Foreground bg=Background
+r20 c2..13 fg=Foreground bg=Background bold
+r20 c13..75 fg=Foreground bg=Background
 r20 c75..76 fg=Border bg=Background
 r20 c76..78 fg=Foreground bg=Sidebar
 r20 c78..79 fg=Primary bg=Surface|Hover
@@ -1575,8 +1575,8 @@ r36 c39..75 fg=Foreground bg=Background
 r36 c75..76 fg=Border bg=Background
 r36 c76..112 fg=Foreground bg=Sidebar
 r37 c0..2 fg=Foreground bg=Sidebar
-r37 c2..82 fg=Muted bg=Sidebar
-r37 c82..112 fg=Foreground bg=Sidebar
+r37 c2..44 fg=Muted bg=Sidebar
+r37 c44..112 fg=Foreground bg=Sidebar
 
 == light-256
   Codewhale  /  codewhale-ratatui / workspace-polish                                                    Review
@@ -1599,7 +1599,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
                                                                            │  │                              │
                                                                            │  │   y Allow once · ▸ n Deny    │
                                                                            │  │                              │
-  Evidence for this change                                                 │  │ ←→ move · Enter choose       │
+  Run results                                                              │  │ ←→ move · Enter choose       │
                                                                            │  │ Esc cancel                   │
                                                                            │  │                              │
     Reported work         Outcome  Time  Tokens     Cost                   │  └──────────────────────────────┘
@@ -1616,7 +1616,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
   › Keep the changes local until I inspect them.                           │
                                                                            │
   Enter send · Tab details · / commands                                    │
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c0..2 fg=Foreground bg=Background|Surface
 r0 c2..11 fg=Primary bg=Background|Surface bold
@@ -1809,8 +1809,8 @@ r19 c79..109 bg=Background|Surface
 r19 c109..110 fg=Primary bg=Background|Surface
 r19 c110..112 fg=Foreground bg=Sidebar
 r20 c0..2 fg=Foreground bg=Background|Surface
-r20 c2..26 fg=Foreground bg=Background|Surface bold
-r20 c26..75 fg=Foreground bg=Background|Surface
+r20 c2..13 fg=Foreground bg=Background|Surface bold
+r20 c13..75 fg=Foreground bg=Background|Surface
 r20 c75..76 fg=Border bg=Background|Surface
 r20 c76..78 fg=Foreground bg=Sidebar
 r20 c78..79 fg=Primary bg=Background|Surface
@@ -1960,8 +1960,8 @@ r36 c39..75 fg=Foreground bg=Background|Surface
 r36 c75..76 fg=Border bg=Background|Surface
 r36 c76..112 fg=Foreground bg=Sidebar
 r37 c0..2 fg=Foreground bg=Sidebar
-r37 c2..82 fg=Muted bg=Sidebar
-r37 c82..112 fg=Foreground bg=Sidebar
+r37 c2..44 fg=Muted bg=Sidebar
+r37 c44..112 fg=Foreground bg=Sidebar
 
 == ansi-16
   Codewhale  /  codewhale-ratatui / workspace-polish                                                    Review
@@ -1984,7 +1984,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
                                                                            │  │                              │
                                                                            │  │   y Allow once · ▸ n Deny    │
                                                                            │  │                              │
-  Evidence for this change                                                 │  │ ←→ move · Enter choose       │
+  Run results                                                              │  │ ←→ move · Enter choose       │
                                                                            │  │ Esc cancel                   │
                                                                            │  │                              │
     Reported work         Outcome  Time  Tokens     Cost                   │  └──────────────────────────────┘
@@ -2001,7 +2001,7 @@ r37 c82..112 fg=Foreground bg=Sidebar
   › Keep the changes local until I inspect them.                           │
                                                                            │
   Enter send · Tab details · / commands                                    │
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c2..11 fg=Primary bold
 r0 c16..52 dim
@@ -2089,7 +2089,7 @@ r18 c109..110 fg=Primary
 r19 c75..76 dim
 r19 c78..79 fg=Primary
 r19 c109..110 fg=Primary
-r20 c2..26 bold
+r20 c2..13 bold
 r20 c75..76 dim
 r20 c78..79 fg=Primary
 r20 c80..82 bold
@@ -2154,7 +2154,7 @@ r36 c19..29 dim
 r36 c29..30 bold
 r36 c31..39 dim
 r36 c75..76 dim
-r37 c2..82 dim
+r37 c2..44 dim
 
 == unknown-ground
   Codewhale  /  codewhale-ratatui / workspace-polish                                                    Review
@@ -2177,7 +2177,7 @@ r37 c2..82 dim
                                                                            │  │                              │
                                                                            │  │   y Allow once · ▸ n Deny    │
                                                                            │  │                              │
-  Evidence for this change                                                 │  │ ←→ move · Enter choose       │
+  Run results                                                              │  │ ←→ move · Enter choose       │
                                                                            │  │ Esc cancel                   │
                                                                            │  │                              │
     Reported work         Outcome  Time  Tokens     Cost                   │  └──────────────────────────────┘
@@ -2194,7 +2194,7 @@ r37 c2..82 dim
   › Keep the changes local until I inspect them.                           │
                                                                            │
   Enter send · Tab details · / commands                                    │
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c2..11 fg=Primary bold
 r0 c16..52 dim
@@ -2282,7 +2282,7 @@ r18 c109..110 fg=Primary
 r19 c75..76 dim
 r19 c78..79 fg=Primary
 r19 c109..110 fg=Primary
-r20 c2..26 bold
+r20 c2..13 bold
 r20 c75..76 dim
 r20 c78..79 fg=Primary
 r20 c80..82 bold
@@ -2347,7 +2347,7 @@ r36 c19..29 dim
 r36 c29..30 bold
 r36 c31..39 dim
 r36 c75..76 dim
-r37 c2..82 dim
+r37 c2..44 dim
 
 == no-color
   Codewhale  /  codewhale-ratatui / workspace-polish                                                    Review
@@ -2370,7 +2370,7 @@ r37 c2..82 dim
                                                                            │  │                              │
                                                                            │  │   y Allow once · ▸ n Deny    │
                                                                            │  │                              │
-  Evidence for this change                                                 │  │ ←→ move · Enter choose       │
+  Run results                                                              │  │ ←→ move · Enter choose       │
                                                                            │  │ Esc cancel                   │
                                                                            │  │                              │
     Reported work         Outcome  Time  Tokens     Cost                   │  └──────────────────────────────┘
@@ -2387,7 +2387,7 @@ r37 c2..82 dim
   › Keep the changes local until I inspect them.                           │
                                                                            │
   Enter send · Tab details · / commands                                    │
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c2..11 bold
 r0 c16..52 dim
@@ -2447,7 +2447,7 @@ r18 c97..98 bold
 r18 c99..100 bold
 r18 c101..105 bold
 r19 c75..76 dim
-r20 c2..26 bold
+r20 c2..13 bold
 r20 c75..76 dim
 r20 c80..82 bold
 r20 c83..90 dim
@@ -2500,7 +2500,7 @@ r36 c19..29 dim
 r36 c29..30 bold
 r36 c31..39 dim
 r36 c75..76 dim
-r37 c2..82 dim
+r37 c2..44 dim
 
 == ascii
   Codewhale  /  codewhale-ratatui / workspace-polish                                                    Review
@@ -2523,7 +2523,7 @@ r37 c2..82 dim
                                                                            |  |                              |
                                                                            |  |   y Allow once  > n Deny     |
                                                                            |  |                              |
-  Evidence for this change                                                 |  | Left/Right move              |
+  Run results                                                              |  | Left/Right move              |
                                                                            |  | Enter choose  Esc cancel     |
                                                                            |  |                              |
     Reported work         Outcome  Time  Tokens      Cost                  |  +------------------------------+
@@ -2540,7 +2540,7 @@ r37 c2..82 dim
   > Keep the changes local until I inspect them.                           |
                                                                            |
   Enter send  Tab details  / commands                                      |
-  Illustrative review / local evidence is distinct from hosted CI / no publication
+  Review changes / Enter inspect / Esc close
 ---
 r0 c2..11 bold
 r0 c16..52 dim
@@ -2599,7 +2599,7 @@ r18 c96..97 bold
 r18 c98..99 bold
 r18 c100..104 bold
 r19 c75..76 dim
-r20 c2..26 bold
+r20 c2..13 bold
 r20 c75..76 dim
 r20 c80..90 bold
 r20 c91..95 dim
@@ -2652,4 +2652,4 @@ r36 c18..25 dim
 r36 c27..28 bold
 r36 c29..37 dim
 r36 c75..76 dim
-r37 c2..82 dim
+r37 c2..44 dim

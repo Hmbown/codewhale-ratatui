@@ -47,3 +47,15 @@ jobs:
         run: |
           python3 tools/check-animation.py target/motion-frames assets/readme/motion-demo.gif
           python3 tools/check-animation.py target/motion-light-frames assets/readme/motion-demo-light.gif
+      - name: Studio interaction and scheduling tests
+        run: cargo test --locked --example showcase
+      - name: Render the native studio and all seventeen performances
+        run: |
+          cargo run --locked --example showcase -- --frames target/showcase-frames
+          cargo run --locked --example showcase -- --frames target/showcase-light-frames --profile light-truecolor
+          cargo run --locked --example showcase -- --frames target/whale-action-frames --section life
+      - name: Studio animations match the actual buffers
+        run: |
+          python3 tools/check-animation.py target/showcase-frames assets/readme/showcase.gif
+          python3 tools/check-animation.py target/showcase-light-frames assets/readme/showcase-light.gif
+          python3 tools/check-animation.py target/whale-action-frames assets/readme/whale-performance.gif

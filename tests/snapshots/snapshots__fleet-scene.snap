@@ -35,11 +35,11 @@ expression: dump(&entry)
                                                           ▏ Open narrow preview
 
 
-  Workbar
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                ╸4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc ×
+   ● Builder   running    Extract the dock and keep the native layout      12m 34s · ↓ 111.9k tokens · 2 left
+   ✓ Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c0..2 fg=Foreground bg=Background
@@ -188,50 +188,46 @@ r30 c58..110 bg=Background
 r30 c110..112 fg=Foreground bg=Background
 r31 c0..112 fg=Foreground bg=Background
 r32 c0..2 fg=Foreground bg=Background
-r32 c2..9 fg=Foreground bg=Background bold
-r32 c9..112 fg=Foreground bg=Background
+r32 c2..110 fg=Border bg=Sidebar
+r32 c110..112 fg=Foreground bg=Background
 r33 c0..2 fg=Foreground bg=Background
-r33 c2..110 fg=Border bg=Background
+r33 c2..3 fg=Foreground bg=Sidebar
+r33 c3..12 fg=Muted bg=Sidebar
+r33 c12..14 fg=Foreground bg=Sidebar
+r33 c14..23 fg=Foreground bg=Selected bold
+r33 c23..25 fg=Foreground bg=Sidebar
+r33 c25..33 fg=Muted bg=Sidebar
+r33 c33..35 fg=Foreground bg=Sidebar
+r33 c35..44 fg=Muted bg=Sidebar
+r33 c44..46 fg=Foreground bg=Sidebar
+r33 c46..55 fg=Muted bg=Sidebar
+r33 c55..57 fg=Foreground bg=Sidebar
+r33 c57..66 fg=Muted bg=Sidebar
+r33 c66..68 fg=Foreground bg=Sidebar
+r33 c68..73 fg=Muted bg=Sidebar
+r33 c73..75 fg=Foreground bg=Sidebar
+r33 c75..81 fg=Muted bg=Sidebar
+r33 c81..103 fg=Foreground bg=Sidebar
+r33 c103..110 fg=Hint bg=Sidebar
 r33 c110..112 fg=Foreground bg=Background
-r34 c0..3 fg=Foreground bg=Background
-r34 c3..10 fg=Muted bg=Background
-r34 c10..24 fg=Foreground bg=Background
-r34 c24..34 fg=Muted bg=Background
-r34 c34..45 fg=Foreground bg=Background
-r34 c45..46 fg=Foreground bg=Selected
-r34 c46..52 fg=Muted bg=Selected
-r34 c52..66 fg=Foreground bg=Selected
-r34 c66..67 fg=Foreground bg=Background
-r34 c67..75 fg=Muted bg=Background
-r34 c75..89 fg=Foreground bg=Background
-r34 c89..99 fg=Muted bg=Background
-r34 c99..112 fg=Foreground bg=Background
-r35 c0..3 fg=Foreground bg=Background
-r35 c3..17 fg=Foreground bg=Background bold
-r35 c17..24 fg=Foreground bg=Background
-r35 c24..29 fg=Foreground bg=Background bold
-r35 c29..45 fg=Foreground bg=Background
-r35 c45..46 fg=Primary bg=Selected
-r35 c46..61 fg=Foreground bg=Selected bold
-r35 c61..66 fg=Foreground bg=Selected
-r35 c66..67 fg=Foreground bg=Background
-r35 c67..72 fg=Foreground bg=Background bold
-r35 c72..89 fg=Foreground bg=Background
-r35 c89..90 fg=Foreground bg=Background bold
-r35 c90..112 fg=Foreground bg=Background
-r36 c0..3 fg=Foreground bg=Background
-r36 c3..16 fg=Muted bg=Background
-r36 c16..24 fg=Foreground bg=Background
-r36 c24..38 fg=Muted bg=Background
-r36 c38..45 fg=Foreground bg=Background
-r36 c45..46 fg=Foreground bg=Selected
-r36 c46..62 fg=Muted bg=Selected
-r36 c62..66 fg=Foreground bg=Selected
-r36 c66..67 fg=Foreground bg=Background
-r36 c67..85 fg=Muted bg=Background
-r36 c85..89 fg=Foreground bg=Background
-r36 c89..103 fg=Muted bg=Background
-r36 c103..112 fg=Foreground bg=Background
+r34 c0..2 fg=Foreground bg=Background
+r34 c2..3 fg=Foreground bg=Sidebar
+r34 c3..5 fg=Foreground bg=Selected bold
+r34 c5..26 fg=Muted bg=Selected bold
+r34 c26..69 fg=Foreground bg=Selected bold
+r34 c69..109 fg=Muted bg=Selected bold
+r34 c109..110 fg=Foreground bg=Sidebar
+r34 c110..112 fg=Foreground bg=Background
+r35 c0..2 fg=Foreground bg=Background
+r35 c2..5 fg=Foreground bg=Sidebar
+r35 c5..26 fg=Muted bg=Sidebar
+r35 c26..60 fg=Foreground bg=Sidebar
+r35 c60..109 fg=Muted bg=Sidebar
+r35 c109..110 fg=Foreground bg=Sidebar
+r35 c110..112 fg=Foreground bg=Background
+r36 c0..2 fg=Foreground bg=Background
+r36 c2..110 fg=Foreground bg=Sidebar
+r36 c110..112 fg=Foreground bg=Background
 r37 c0..2 fg=Foreground bg=Sidebar
 r37 c2..92 fg=Muted bg=Sidebar
 r37 c92..112 fg=Foreground bg=Sidebar
@@ -269,11 +265,11 @@ r37 c92..112 fg=Foreground bg=Sidebar
                                                           ▏ Open narrow preview
 
 
-  Workbar
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                ╸4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc ×
+   ● Builder   running    Extract the dock and keep the native layout      12m 34s · ↓ 111.9k tokens · 2 left
+   ✓ Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c0..2 fg=Foreground bg=Background
@@ -422,50 +418,46 @@ r30 c58..110 bg=Background
 r30 c110..112 fg=Foreground bg=Background
 r31 c0..112 fg=Foreground bg=Background
 r32 c0..2 fg=Foreground bg=Background
-r32 c2..9 fg=Foreground bg=Background bold
-r32 c9..112 fg=Foreground bg=Background
+r32 c2..110 fg=Border bg=Sidebar
+r32 c110..112 fg=Foreground bg=Background
 r33 c0..2 fg=Foreground bg=Background
-r33 c2..110 fg=Border bg=Background
+r33 c2..3 fg=Foreground bg=Sidebar
+r33 c3..12 fg=Muted bg=Sidebar
+r33 c12..14 fg=Foreground bg=Sidebar
+r33 c14..23 fg=Foreground bg=Selected bold
+r33 c23..25 fg=Foreground bg=Sidebar
+r33 c25..33 fg=Muted bg=Sidebar
+r33 c33..35 fg=Foreground bg=Sidebar
+r33 c35..44 fg=Muted bg=Sidebar
+r33 c44..46 fg=Foreground bg=Sidebar
+r33 c46..55 fg=Muted bg=Sidebar
+r33 c55..57 fg=Foreground bg=Sidebar
+r33 c57..66 fg=Muted bg=Sidebar
+r33 c66..68 fg=Foreground bg=Sidebar
+r33 c68..73 fg=Muted bg=Sidebar
+r33 c73..75 fg=Foreground bg=Sidebar
+r33 c75..81 fg=Muted bg=Sidebar
+r33 c81..103 fg=Foreground bg=Sidebar
+r33 c103..110 fg=Hint bg=Sidebar
 r33 c110..112 fg=Foreground bg=Background
-r34 c0..3 fg=Foreground bg=Background
-r34 c3..10 fg=Muted bg=Background
-r34 c10..24 fg=Foreground bg=Background
-r34 c24..34 fg=Muted bg=Background
-r34 c34..45 fg=Foreground bg=Background
-r34 c45..46 fg=Foreground bg=Selected
-r34 c46..52 fg=Muted bg=Selected
-r34 c52..66 fg=Foreground bg=Selected
-r34 c66..67 fg=Foreground bg=Background
-r34 c67..75 fg=Muted bg=Background
-r34 c75..89 fg=Foreground bg=Background
-r34 c89..99 fg=Muted bg=Background
-r34 c99..112 fg=Foreground bg=Background
-r35 c0..3 fg=Foreground bg=Background
-r35 c3..17 fg=Foreground bg=Background bold
-r35 c17..24 fg=Foreground bg=Background
-r35 c24..29 fg=Foreground bg=Background bold
-r35 c29..45 fg=Foreground bg=Background
-r35 c45..46 fg=Primary bg=Selected
-r35 c46..61 fg=Foreground bg=Selected bold
-r35 c61..66 fg=Foreground bg=Selected
-r35 c66..67 fg=Foreground bg=Background
-r35 c67..72 fg=Foreground bg=Background bold
-r35 c72..89 fg=Foreground bg=Background
-r35 c89..90 fg=Foreground bg=Background bold
-r35 c90..112 fg=Foreground bg=Background
-r36 c0..3 fg=Foreground bg=Background
-r36 c3..16 fg=Muted bg=Background
-r36 c16..24 fg=Foreground bg=Background
-r36 c24..38 fg=Muted bg=Background
-r36 c38..45 fg=Foreground bg=Background
-r36 c45..46 fg=Foreground bg=Selected
-r36 c46..62 fg=Muted bg=Selected
-r36 c62..66 fg=Foreground bg=Selected
-r36 c66..67 fg=Foreground bg=Background
-r36 c67..85 fg=Muted bg=Background
-r36 c85..89 fg=Foreground bg=Background
-r36 c89..103 fg=Muted bg=Background
-r36 c103..112 fg=Foreground bg=Background
+r34 c0..2 fg=Foreground bg=Background
+r34 c2..3 fg=Foreground bg=Sidebar
+r34 c3..5 fg=Foreground bg=Selected bold
+r34 c5..26 fg=Muted bg=Selected bold
+r34 c26..69 fg=Foreground bg=Selected bold
+r34 c69..109 fg=Muted bg=Selected bold
+r34 c109..110 fg=Foreground bg=Sidebar
+r34 c110..112 fg=Foreground bg=Background
+r35 c0..2 fg=Foreground bg=Background
+r35 c2..5 fg=Foreground bg=Sidebar
+r35 c5..26 fg=Muted bg=Sidebar
+r35 c26..60 fg=Foreground bg=Sidebar
+r35 c60..109 fg=Muted bg=Sidebar
+r35 c109..110 fg=Foreground bg=Sidebar
+r35 c110..112 fg=Foreground bg=Background
+r36 c0..2 fg=Foreground bg=Background
+r36 c2..110 fg=Foreground bg=Sidebar
+r36 c110..112 fg=Foreground bg=Background
 r37 c0..2 fg=Foreground bg=Sidebar
 r37 c2..92 fg=Muted bg=Sidebar
 r37 c92..112 fg=Foreground bg=Sidebar
@@ -503,11 +495,11 @@ r37 c92..112 fg=Foreground bg=Sidebar
                                                           ▏ Open narrow preview
 
 
-  Workbar
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                ╸4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc ×
+   ● Builder   running    Extract the dock and keep the native layout      12m 34s · ↓ 111.9k tokens · 2 left
+   ✓ Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c0..2 fg=Foreground bg=Background
@@ -656,50 +648,46 @@ r30 c58..110 bg=Background
 r30 c110..112 fg=Foreground bg=Background
 r31 c0..112 fg=Foreground bg=Background
 r32 c0..2 fg=Foreground bg=Background
-r32 c2..9 fg=Foreground bg=Background bold
-r32 c9..112 fg=Foreground bg=Background
+r32 c2..110 fg=Border bg=Sidebar
+r32 c110..112 fg=Foreground bg=Background
 r33 c0..2 fg=Foreground bg=Background
-r33 c2..110 fg=Border bg=Background
+r33 c2..3 fg=Foreground bg=Sidebar
+r33 c3..12 fg=Muted bg=Sidebar
+r33 c12..14 fg=Foreground bg=Sidebar
+r33 c14..23 fg=Foreground bg=Selected bold
+r33 c23..25 fg=Foreground bg=Sidebar
+r33 c25..33 fg=Muted bg=Sidebar
+r33 c33..35 fg=Foreground bg=Sidebar
+r33 c35..44 fg=Muted bg=Sidebar
+r33 c44..46 fg=Foreground bg=Sidebar
+r33 c46..55 fg=Muted bg=Sidebar
+r33 c55..57 fg=Foreground bg=Sidebar
+r33 c57..66 fg=Muted bg=Sidebar
+r33 c66..68 fg=Foreground bg=Sidebar
+r33 c68..73 fg=Muted bg=Sidebar
+r33 c73..75 fg=Foreground bg=Sidebar
+r33 c75..81 fg=Muted bg=Sidebar
+r33 c81..103 fg=Foreground bg=Sidebar
+r33 c103..110 fg=Hint bg=Sidebar
 r33 c110..112 fg=Foreground bg=Background
-r34 c0..3 fg=Foreground bg=Background
-r34 c3..10 fg=Muted bg=Background
-r34 c10..24 fg=Foreground bg=Background
-r34 c24..34 fg=Muted bg=Background
-r34 c34..45 fg=Foreground bg=Background
-r34 c45..46 fg=Foreground bg=Selected
-r34 c46..52 fg=Muted bg=Selected
-r34 c52..66 fg=Foreground bg=Selected
-r34 c66..67 fg=Foreground bg=Background
-r34 c67..75 fg=Muted bg=Background
-r34 c75..89 fg=Foreground bg=Background
-r34 c89..99 fg=Muted bg=Background
-r34 c99..112 fg=Foreground bg=Background
-r35 c0..3 fg=Foreground bg=Background
-r35 c3..17 fg=Foreground bg=Background bold
-r35 c17..24 fg=Foreground bg=Background
-r35 c24..29 fg=Foreground bg=Background bold
-r35 c29..45 fg=Foreground bg=Background
-r35 c45..46 fg=Primary bg=Selected
-r35 c46..61 fg=Foreground bg=Selected bold
-r35 c61..66 fg=Foreground bg=Selected
-r35 c66..67 fg=Foreground bg=Background
-r35 c67..72 fg=Foreground bg=Background bold
-r35 c72..89 fg=Foreground bg=Background
-r35 c89..90 fg=Foreground bg=Background bold
-r35 c90..112 fg=Foreground bg=Background
-r36 c0..3 fg=Foreground bg=Background
-r36 c3..16 fg=Muted bg=Background
-r36 c16..24 fg=Foreground bg=Background
-r36 c24..38 fg=Muted bg=Background
-r36 c38..45 fg=Foreground bg=Background
-r36 c45..46 fg=Foreground bg=Selected
-r36 c46..62 fg=Muted bg=Selected
-r36 c62..66 fg=Foreground bg=Selected
-r36 c66..67 fg=Foreground bg=Background
-r36 c67..85 fg=Muted bg=Background
-r36 c85..89 fg=Foreground bg=Background
-r36 c89..103 fg=Muted bg=Background
-r36 c103..112 fg=Foreground bg=Background
+r34 c0..2 fg=Foreground bg=Background
+r34 c2..3 fg=Foreground bg=Sidebar
+r34 c3..5 fg=Foreground bg=Selected bold
+r34 c5..26 fg=Muted bg=Selected bold
+r34 c26..69 fg=Foreground bg=Selected bold
+r34 c69..109 fg=Muted bg=Selected bold
+r34 c109..110 fg=Foreground bg=Sidebar
+r34 c110..112 fg=Foreground bg=Background
+r35 c0..2 fg=Foreground bg=Background
+r35 c2..5 fg=Foreground bg=Sidebar
+r35 c5..26 fg=Muted bg=Sidebar
+r35 c26..60 fg=Foreground bg=Sidebar
+r35 c60..109 fg=Muted bg=Sidebar
+r35 c109..110 fg=Foreground bg=Sidebar
+r35 c110..112 fg=Foreground bg=Background
+r36 c0..2 fg=Foreground bg=Background
+r36 c2..110 fg=Foreground bg=Sidebar
+r36 c110..112 fg=Foreground bg=Background
 r37 c0..2 fg=Foreground bg=Sidebar
 r37 c2..92 fg=Muted bg=Sidebar
 r37 c92..112 fg=Foreground bg=Sidebar
@@ -737,11 +725,11 @@ r37 c92..112 fg=Foreground bg=Sidebar
                                                           ▏ Open narrow preview
 
 
-  Workbar
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                ╸4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc ×
+   ● Builder   running    Extract the dock and keep the native layout      12m 34s · ↓ 111.9k tokens · 2 left
+   ✓ Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c0..2 fg=Foreground bg=Background
@@ -890,50 +878,46 @@ r30 c58..110 bg=Background
 r30 c110..112 fg=Foreground bg=Background
 r31 c0..112 fg=Foreground bg=Background
 r32 c0..2 fg=Foreground bg=Background
-r32 c2..9 fg=Foreground bg=Background bold
-r32 c9..112 fg=Foreground bg=Background
+r32 c2..110 fg=Border bg=Sidebar
+r32 c110..112 fg=Foreground bg=Background
 r33 c0..2 fg=Foreground bg=Background
-r33 c2..110 fg=Border bg=Background
+r33 c2..3 fg=Foreground bg=Sidebar
+r33 c3..12 fg=Muted bg=Sidebar
+r33 c12..14 fg=Foreground bg=Sidebar
+r33 c14..23 fg=Foreground bg=Selected bold
+r33 c23..25 fg=Foreground bg=Sidebar
+r33 c25..33 fg=Muted bg=Sidebar
+r33 c33..35 fg=Foreground bg=Sidebar
+r33 c35..44 fg=Muted bg=Sidebar
+r33 c44..46 fg=Foreground bg=Sidebar
+r33 c46..55 fg=Muted bg=Sidebar
+r33 c55..57 fg=Foreground bg=Sidebar
+r33 c57..66 fg=Muted bg=Sidebar
+r33 c66..68 fg=Foreground bg=Sidebar
+r33 c68..73 fg=Muted bg=Sidebar
+r33 c73..75 fg=Foreground bg=Sidebar
+r33 c75..81 fg=Muted bg=Sidebar
+r33 c81..103 fg=Foreground bg=Sidebar
+r33 c103..110 fg=Hint bg=Sidebar
 r33 c110..112 fg=Foreground bg=Background
-r34 c0..3 fg=Foreground bg=Background
-r34 c3..10 fg=Muted bg=Background
-r34 c10..24 fg=Foreground bg=Background
-r34 c24..34 fg=Muted bg=Background
-r34 c34..45 fg=Foreground bg=Background
-r34 c45..46 fg=Foreground bg=Selected
-r34 c46..52 fg=Muted bg=Selected
-r34 c52..66 fg=Foreground bg=Selected
-r34 c66..67 fg=Foreground bg=Background
-r34 c67..75 fg=Muted bg=Background
-r34 c75..89 fg=Foreground bg=Background
-r34 c89..99 fg=Muted bg=Background
-r34 c99..112 fg=Foreground bg=Background
-r35 c0..3 fg=Foreground bg=Background
-r35 c3..17 fg=Foreground bg=Background bold
-r35 c17..24 fg=Foreground bg=Background
-r35 c24..29 fg=Foreground bg=Background bold
-r35 c29..45 fg=Foreground bg=Background
-r35 c45..46 fg=Primary bg=Selected
-r35 c46..61 fg=Foreground bg=Selected bold
-r35 c61..66 fg=Foreground bg=Selected
-r35 c66..67 fg=Foreground bg=Background
-r35 c67..72 fg=Foreground bg=Background bold
-r35 c72..89 fg=Foreground bg=Background
-r35 c89..90 fg=Foreground bg=Background bold
-r35 c90..112 fg=Foreground bg=Background
-r36 c0..3 fg=Foreground bg=Background
-r36 c3..16 fg=Muted bg=Background
-r36 c16..24 fg=Foreground bg=Background
-r36 c24..38 fg=Muted bg=Background
-r36 c38..45 fg=Foreground bg=Background
-r36 c45..46 fg=Foreground bg=Selected
-r36 c46..62 fg=Muted bg=Selected
-r36 c62..66 fg=Foreground bg=Selected
-r36 c66..67 fg=Foreground bg=Background
-r36 c67..85 fg=Muted bg=Background
-r36 c85..89 fg=Foreground bg=Background
-r36 c89..103 fg=Muted bg=Background
-r36 c103..112 fg=Foreground bg=Background
+r34 c0..2 fg=Foreground bg=Background
+r34 c2..3 fg=Foreground bg=Sidebar
+r34 c3..5 fg=Foreground bg=Selected bold
+r34 c5..26 fg=Muted bg=Selected bold
+r34 c26..69 fg=Foreground bg=Selected bold
+r34 c69..109 fg=Muted bg=Selected bold
+r34 c109..110 fg=Foreground bg=Sidebar
+r34 c110..112 fg=Foreground bg=Background
+r35 c0..2 fg=Foreground bg=Background
+r35 c2..5 fg=Foreground bg=Sidebar
+r35 c5..26 fg=Muted bg=Sidebar
+r35 c26..60 fg=Foreground bg=Sidebar
+r35 c60..109 fg=Muted bg=Sidebar
+r35 c109..110 fg=Foreground bg=Sidebar
+r35 c110..112 fg=Foreground bg=Background
+r36 c0..2 fg=Foreground bg=Background
+r36 c2..110 fg=Foreground bg=Sidebar
+r36 c110..112 fg=Foreground bg=Background
 r37 c0..2 fg=Foreground bg=Sidebar
 r37 c2..92 fg=Muted bg=Sidebar
 r37 c92..112 fg=Foreground bg=Sidebar
@@ -971,11 +955,11 @@ r37 c92..112 fg=Foreground bg=Sidebar
                                                           ▏ Open narrow preview
 
 
-  Workbar
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                ╸4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc ×
+   ● Builder   running    Extract the dock and keep the native layout      12m 34s · ↓ 111.9k tokens · 2 left
+   ✓ Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c0..2 fg=Foreground bg=Background|Surface
@@ -1124,50 +1108,46 @@ r30 c58..110 bg=Background|Surface
 r30 c110..112 fg=Foreground bg=Background|Surface
 r31 c0..112 fg=Foreground bg=Background|Surface
 r32 c0..2 fg=Foreground bg=Background|Surface
-r32 c2..9 fg=Foreground bg=Background|Surface bold
-r32 c9..112 fg=Foreground bg=Background|Surface
+r32 c2..110 fg=Border bg=Sidebar
+r32 c110..112 fg=Foreground bg=Background|Surface
 r33 c0..2 fg=Foreground bg=Background|Surface
-r33 c2..110 fg=Border bg=Background|Surface
+r33 c2..3 fg=Foreground bg=Sidebar
+r33 c3..12 fg=Muted bg=Sidebar
+r33 c12..14 fg=Foreground bg=Sidebar
+r33 c14..23 fg=Foreground bg=Selected bold
+r33 c23..25 fg=Foreground bg=Sidebar
+r33 c25..33 fg=Muted bg=Sidebar
+r33 c33..35 fg=Foreground bg=Sidebar
+r33 c35..44 fg=Muted bg=Sidebar
+r33 c44..46 fg=Foreground bg=Sidebar
+r33 c46..55 fg=Muted bg=Sidebar
+r33 c55..57 fg=Foreground bg=Sidebar
+r33 c57..66 fg=Muted bg=Sidebar
+r33 c66..68 fg=Foreground bg=Sidebar
+r33 c68..73 fg=Muted bg=Sidebar
+r33 c73..75 fg=Foreground bg=Sidebar
+r33 c75..81 fg=Muted bg=Sidebar
+r33 c81..103 fg=Foreground bg=Sidebar
+r33 c103..110 fg=Hint bg=Sidebar
 r33 c110..112 fg=Foreground bg=Background|Surface
-r34 c0..3 fg=Foreground bg=Background|Surface
-r34 c3..10 fg=Muted bg=Background|Surface
-r34 c10..24 fg=Foreground bg=Background|Surface
-r34 c24..34 fg=Muted bg=Background|Surface
-r34 c34..45 fg=Foreground bg=Background|Surface
-r34 c45..46 fg=Foreground bg=Selected
-r34 c46..52 fg=Muted bg=Selected
-r34 c52..66 fg=Foreground bg=Selected
-r34 c66..67 fg=Foreground bg=Background|Surface
-r34 c67..75 fg=Muted bg=Background|Surface
-r34 c75..89 fg=Foreground bg=Background|Surface
-r34 c89..99 fg=Muted bg=Background|Surface
-r34 c99..112 fg=Foreground bg=Background|Surface
-r35 c0..3 fg=Foreground bg=Background|Surface
-r35 c3..17 fg=Foreground bg=Background|Surface bold
-r35 c17..24 fg=Foreground bg=Background|Surface
-r35 c24..29 fg=Foreground bg=Background|Surface bold
-r35 c29..45 fg=Foreground bg=Background|Surface
-r35 c45..46 fg=Primary bg=Selected
-r35 c46..61 fg=Foreground bg=Selected bold
-r35 c61..66 fg=Foreground bg=Selected
-r35 c66..67 fg=Foreground bg=Background|Surface
-r35 c67..72 fg=Foreground bg=Background|Surface bold
-r35 c72..89 fg=Foreground bg=Background|Surface
-r35 c89..90 fg=Foreground bg=Background|Surface bold
-r35 c90..112 fg=Foreground bg=Background|Surface
-r36 c0..3 fg=Foreground bg=Background|Surface
-r36 c3..16 fg=Muted bg=Background|Surface
-r36 c16..24 fg=Foreground bg=Background|Surface
-r36 c24..38 fg=Muted bg=Background|Surface
-r36 c38..45 fg=Foreground bg=Background|Surface
-r36 c45..46 fg=Foreground bg=Selected
-r36 c46..62 fg=Muted bg=Selected
-r36 c62..66 fg=Foreground bg=Selected
-r36 c66..67 fg=Foreground bg=Background|Surface
-r36 c67..85 fg=Muted bg=Background|Surface
-r36 c85..89 fg=Foreground bg=Background|Surface
-r36 c89..103 fg=Muted bg=Background|Surface
-r36 c103..112 fg=Foreground bg=Background|Surface
+r34 c0..2 fg=Foreground bg=Background|Surface
+r34 c2..3 fg=Foreground bg=Sidebar
+r34 c3..5 fg=Foreground bg=Selected bold
+r34 c5..26 fg=Muted bg=Selected bold
+r34 c26..69 fg=Foreground bg=Selected bold
+r34 c69..109 fg=Muted bg=Selected bold
+r34 c109..110 fg=Foreground bg=Sidebar
+r34 c110..112 fg=Foreground bg=Background|Surface
+r35 c0..2 fg=Foreground bg=Background|Surface
+r35 c2..5 fg=Foreground bg=Sidebar
+r35 c5..26 fg=Muted bg=Sidebar
+r35 c26..60 fg=Foreground bg=Sidebar
+r35 c60..109 fg=Muted bg=Sidebar
+r35 c109..110 fg=Foreground bg=Sidebar
+r35 c110..112 fg=Foreground bg=Background|Surface
+r36 c0..2 fg=Foreground bg=Background|Surface
+r36 c2..110 fg=Foreground bg=Sidebar
+r36 c110..112 fg=Foreground bg=Background|Surface
 r37 c0..2 fg=Foreground bg=Sidebar
 r37 c2..92 fg=Muted bg=Sidebar
 r37 c92..112 fg=Foreground bg=Sidebar
@@ -1205,11 +1185,11 @@ r37 c92..112 fg=Foreground bg=Sidebar
                                                           ▏ Open narrow preview
 
 
-  Workbar
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                ╸4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc ×
+   ● Builder   running    Extract the dock and keep the native layout      12m 34s · ↓ 111.9k tokens · 2 left
+   ✓ Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c2..11 fg=Primary bold
@@ -1262,24 +1242,22 @@ r27 c58..59 fg=Primary
 r28 c58..59 fg=Primary
 r29 c58..59 fg=Primary
 r29 c60..79 fg=Primary
-r32 c2..9 bold
-r33 c2..110 dim
-r34 c3..10 dim
-r34 c24..34 dim
-r34 c46..52 dim
-r34 c67..75 dim
-r34 c89..99 dim
-r35 c3..17 bold
-r35 c24..29 bold
-r35 c45..46 fg=Primary
-r35 c46..61 bold
-r35 c67..72 bold
-r35 c89..90 bold
-r36 c3..16 dim
-r36 c24..38 dim
-r36 c46..62 dim
-r36 c67..85 dim
-r36 c89..103 dim
+r32 c2..110 dim
+r33 c3..12 dim
+r33 c14..23 bold
+r33 c25..33 dim
+r33 c35..44 dim
+r33 c46..55 dim
+r33 c57..66 dim
+r33 c68..73 dim
+r33 c75..81 dim
+r33 c103..110 dim
+r34 c3..5 bold
+r34 c5..26 bold dim
+r34 c26..69 bold
+r34 c69..109 bold dim
+r35 c5..26 dim
+r35 c60..109 dim
 r37 c2..92 dim
 
 == unknown-ground
@@ -1315,11 +1293,11 @@ r37 c2..92 dim
                                                           ▏ Open narrow preview
 
 
-  Workbar
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                ╸4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc ×
+   ● Builder   running    Extract the dock and keep the native layout      12m 34s · ↓ 111.9k tokens · 2 left
+   ✓ Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c2..11 fg=Primary bold
@@ -1372,24 +1350,22 @@ r27 c58..59 fg=Primary
 r28 c58..59 fg=Primary
 r29 c58..59 fg=Primary
 r29 c60..79 fg=Primary
-r32 c2..9 bold
-r33 c2..110 dim
-r34 c3..10 dim
-r34 c24..34 dim
-r34 c46..52 dim
-r34 c67..75 dim
-r34 c89..99 dim
-r35 c3..17 bold
-r35 c24..29 bold
-r35 c45..46 fg=Primary
-r35 c46..61 bold
-r35 c67..72 bold
-r35 c89..90 bold
-r36 c3..16 dim
-r36 c24..38 dim
-r36 c46..62 dim
-r36 c67..85 dim
-r36 c89..103 dim
+r32 c2..110 dim
+r33 c3..12 dim
+r33 c14..23 bold
+r33 c25..33 dim
+r33 c35..44 dim
+r33 c46..55 dim
+r33 c57..66 dim
+r33 c68..73 dim
+r33 c75..81 dim
+r33 c103..110 dim
+r34 c3..5 bold
+r34 c5..26 bold dim
+r34 c26..69 bold
+r34 c69..109 bold dim
+r35 c5..26 dim
+r35 c60..109 dim
 r37 c2..92 dim
 
 == no-color
@@ -1425,11 +1401,11 @@ r37 c2..92 dim
                                                           ▏ Open narrow preview
 
 
-  Workbar
   ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                ╸4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc ×
+   ● Builder   running    Extract the dock and keep the native layout      12m 34s · ↓ 111.9k tokens · 2 left
+   ✓ Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c2..11 bold
@@ -1465,23 +1441,22 @@ r26 c33..37 bold
 r26 c38..45 bold
 r26 c60..79 bold
 r27 c4..47 dim
-r32 c2..9 bold
-r33 c2..110 dim
-r34 c3..10 dim
-r34 c24..34 dim
-r34 c46..52 dim
-r34 c67..75 dim
-r34 c89..99 dim
-r35 c3..17 bold
-r35 c24..29 bold
-r35 c46..61 bold
-r35 c67..72 bold
-r35 c89..90 bold
-r36 c3..16 dim
-r36 c24..38 dim
-r36 c46..62 dim
-r36 c67..85 dim
-r36 c89..103 dim
+r32 c2..110 dim
+r33 c3..12 dim
+r33 c14..23 bold
+r33 c25..33 dim
+r33 c35..44 dim
+r33 c46..55 dim
+r33 c57..66 dim
+r33 c68..73 dim
+r33 c75..81 dim
+r33 c103..110 dim
+r34 c3..5 bold
+r34 c5..26 bold dim
+r34 c26..69 bold
+r34 c69..109 bold dim
+r35 c5..26 dim
+r35 c60..109 dim
 r37 c2..92 dim
 
 == ascii
@@ -1517,11 +1492,11 @@ r37 c2..92 dim
                                                           | Open narrow preview
 
 
-  Workbar
   ------------------------------------------------------------------------------------------------------------
-   TODO  1              CONTEXT  2            GIT  3               PRICE  4              PLUGINS  5
-   3 / 5 complete       28.4k                >4 files changed      $0.38                 4
-   2 in progress        of 128k tokens        workspace-polish     reported this turn    enabled by you
+    Tasks 3    Fleet 2    Jobs 1    Files 3    Notes 2    Context    Git    Cost                        Esc X
+   . Builder   running    Extract the dock and keep the native layout      12m 34s . v 111.9k tokens . 2 left
+   Y Reviewer  completed  Review tab and keyboard navigation                                           3m 03s
+
   Illustrative / settled work keeps its receipt / host controls order, selection and actions
 ---
 r0 c2..11 bold
@@ -1557,21 +1532,20 @@ r26 c33..37 bold
 r26 c38..46 bold
 r26 c60..79 bold
 r27 c4..47 dim
-r32 c2..9 bold
-r33 c2..110 dim
-r34 c3..10 dim
-r34 c24..34 dim
-r34 c46..52 dim
-r34 c67..75 dim
-r34 c89..99 dim
-r35 c3..17 bold
-r35 c24..29 bold
-r35 c46..61 bold
-r35 c67..72 bold
-r35 c89..90 bold
-r36 c3..16 dim
-r36 c24..38 dim
-r36 c46..62 dim
-r36 c67..85 dim
-r36 c89..103 dim
+r32 c2..110 dim
+r33 c3..12 dim
+r33 c14..23 bold
+r33 c25..33 dim
+r33 c35..44 dim
+r33 c46..55 dim
+r33 c57..66 dim
+r33 c68..73 dim
+r33 c75..81 dim
+r33 c103..110 dim
+r34 c3..5 bold
+r34 c5..26 bold dim
+r34 c26..69 bold
+r34 c69..109 bold dim
+r35 c5..26 dim
+r35 c60..109 dim
 r37 c2..92 dim

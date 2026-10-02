@@ -65,6 +65,9 @@ fn the_runtime_dependencies_are_the_current_ones() {
             "crossterm",
             "libc",
             "ratatui",
+            // Native character export decoding and owner context values.
+            "serde",
+            "serde_json",
             "unicode-segmentation",
             "unicode-width"
         ],
