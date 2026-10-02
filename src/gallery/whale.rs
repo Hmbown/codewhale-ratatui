@@ -11,13 +11,17 @@ fn whale(state: WhaleState) -> impl Fn(Rect, &mut Buffer, &Theme) {
 
 /// All 17 actions of the v2 whale at the compact size, three to a row.
 fn whale_actions(area: Rect, buf: &mut Buffer, theme: &Theme) {
+    let area = area.intersection(buf.area);
+    if area.is_empty() {
+        return;
+    }
     const CELL_W: u16 = 28;
     const CELL_H: u16 = 11;
     for (i, state) in WhaleState::ALL.into_iter().enumerate() {
         let i = u16::try_from(i).unwrap_or(u16::MAX);
         let cell = Rect {
-            x: area.x + (i % 3) * CELL_W,
-            y: area.y + (i / 3) * CELL_H,
+            x: area.x.saturating_add((i % 3) * CELL_W),
+            y: area.y.saturating_add((i / 3) * CELL_H),
             width: CELL_W,
             height: CELL_H,
         }

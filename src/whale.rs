@@ -482,10 +482,29 @@ impl Whale {
             _ => theme.fg(Role::Primary),
         }
     }
+
+    fn paint_label(label: Line<'_>, area: Rect, buf: &mut Buffer) {
+        if area.right() != u16::MAX || label.width() <= usize::from(area.width) {
+            label.render(area, buf);
+            return;
+        }
+        // ratatui 0.30 saturates a truncated Span's cursor at u16::MAX,
+        // then tries to write that exclusive edge. Local coordinates preserve
+        // its ordinary centered clipping without reaching the invalid index.
+        let mut row = Buffer::empty(Rect::new(0, 0, area.width, 1));
+        for x in 0..area.width {
+            row[(x, 0)] = buf[(area.x + x, area.y)].clone();
+        }
+        label.render(row.area, &mut row);
+        for x in 0..area.width {
+            buf[(area.x + x, area.y)] = row[(x, 0)].clone();
+        }
+    }
 }
 
 impl Paint for Whale {
     fn paint(&self, area: Rect, buf: &mut Buffer, theme: &Theme) {
+        let area = area.intersection(buf.area);
         if area.is_empty() {
             return;
         }
@@ -500,11 +519,11 @@ impl Paint for Whale {
             Self::viewport(area)
         };
         let Some((cols, rows)) = viewport else {
-            label.render(Rect { height: 1, ..area }, buf);
+            Self::paint_label(label, Rect { height: 1, ..area }, buf);
             return;
         };
         let Some(grid) = frame(self.state, cols, rows) else {
-            label.render(Rect { height: 1, ..area }, buf);
+            Self::paint_label(label, Rect { height: 1, ..area }, buf);
             return;
         };
         let x0 = area.x + (area.width - cols) / 2;
@@ -522,7 +541,8 @@ impl Paint for Whale {
                     .set_style(style);
             }
         }
-        label.render(
+        Self::paint_label(
+            label,
             Rect {
                 y: y0 + rows,
                 height: 1,
