@@ -12,15 +12,21 @@
 //! authored dark field is available only on known dark truecolor Ocean
 //! grounds. Graphite, light, unknown grounds and lower depths keep the theme.
 //! Native chrome can join the same column with [`OceanColumn::apply_matching`]
-//! over its own region and explicit base ground.
+//! over its own region and explicit base ground. Native cached-row painting,
+//! semantic-surface projection and sparse caustics are adapted from the same
+//! MIT-licensed Engine at `e7de150f3621740c982e7e6c90d69ac48ccc80d5`;
+//! capability facts, palette adaptation, cache and redraw lifecycle stay host-owned.
 
 use std::time::Duration;
 
 use ratatui::{
-    buffer::Buffer,
-    layout::Rect,
+    buffer::{Buffer, Cell},
+    layout::{Alignment, Rect},
     style::{Color, Modifier},
+    text::Line,
 };
+
+use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{
     Ground, MotionMode, Paint, Role, Theme,
@@ -247,6 +253,7 @@ pub struct OceanColumn {
     viewport: Option<Rect>,
     context_percent: u8,
     presence: u16,
+    contrast_inks: Option<OceanContrastInks>,
 }
 
 impl OceanColumn {
@@ -261,6 +268,7 @@ impl OceanColumn {
             viewport: None,
             context_percent: 0,
             presence: 1000,
+            contrast_inks: None,
         }
     }
 
@@ -388,6 +396,30 @@ impl OceanColumn {
         self.apply_grounds(area, buf, theme, &[Some(ground)]);
     }
 
+    /// Native finishing inputs: cached samples and semantic rectangles are
+    /// caller facts, while capability, clipping, reverse and contrast guards
+    /// are the same guard kernel used by `apply` and `apply_matching`.
+    /// `project_ink` returns the host backend's actual proposed visible ink;
+    /// it never mutates the source cell, symbols or modifiers.
+    pub fn apply_native(
+        &self,
+        area: Rect,
+        buf: &mut Buffer,
+        theme: &Theme,
+        facts: &OceanPaintFacts<'_>,
+        project_ink: impl Fn(&Cell, Color) -> Color,
+    ) {
+        self.apply_grounds_with(area, buf, theme, &[Some(facts.ground)], facts, project_ink);
+    }
+
+    /// Map the three decorative/supporting floors to exact live host colors.
+    /// Other inks keep the text floor, including unrecognized custom colors.
+    #[must_use]
+    pub const fn contrast_inks(mut self, inks: OceanContrastInks) -> Self {
+        self.contrast_inks = Some(inks);
+        self
+    }
+
     fn apply_grounds(
         &self,
         area: Rect,
@@ -395,34 +427,121 @@ impl OceanColumn {
         theme: &Theme,
         grounds: &[Option<Color>],
     ) {
+        self.apply_grounds_with(
+            area,
+            buf,
+            theme,
+            grounds,
+            &OceanPaintFacts::new(Color::Reset),
+            |cell, _| cell.fg,
+        );
+    }
+
+    fn apply_grounds_with(
+        &self,
+        area: Rect,
+        buf: &mut Buffer,
+        theme: &Theme,
+        grounds: &[Option<Color>],
+        facts: &OceanPaintFacts<'_>,
+        project_ink: impl Fn(&Cell, Color) -> Color,
+    ) {
         let Some(ramp) = OceanRamp::for_theme(theme) else {
             return;
         };
         let viewport = self.viewport.unwrap_or(area);
         let area = area.intersection(buf.area);
         for y in area.top()..area.bottom() {
-            let water = self.color_at_y_with_ramp(y, viewport, ramp);
-            // Text runs repeat the same ink on one shared row ground. Reuse
-            // its contrast verdict without allocating or caching theme state
-            // across frames; custom colors still take the same safety path.
+            let water = facts
+                .samples
+                .get(usize::from(y.saturating_sub(facts.sample_top)))
+                .filter(|_| y >= facts.sample_top)
+                .copied()
+                .unwrap_or_else(|| self.color_at_y_with_ramp(y, viewport, ramp));
             let mut previous_ink = None;
             for x in area.left()..area.right() {
+                if facts
+                    .protected
+                    .iter()
+                    .any(|rect| rect.contains((x, y).into()))
+                {
+                    continue;
+                }
                 let cell = &mut buf[(x, y)];
                 if grounds.contains(&Some(cell.bg)) && !cell.modifier.contains(Modifier::REVERSED) {
                     let safe = cell.symbol() == " " || {
-                        if let Some((ink, safe)) = previous_ink
-                            && ink == cell.fg
+                        let ink = project_ink(cell, water);
+                        if let Some((previous, safe)) = previous_ink
+                            && previous == ink
                         {
                             safe
                         } else {
-                            let safe = ink_is_safe(cell.fg, water, theme);
-                            previous_ink = Some((cell.fg, safe));
+                            let safe = ink_is_safe(ink, water, theme, self.contrast_inks);
+                            previous_ink = Some((ink, safe));
                             safe
                         }
                     };
                     if safe {
                         cell.set_bg(water);
                     }
+                }
+            }
+        }
+    }
+
+    /// Sparse caustics can finish only already painted ordinary water.
+    /// They share the same capability/motion guard and never cross a semantic
+    /// rectangle, a different ground, visible ink or a reversed cell.
+    pub fn apply_caustics(
+        &self,
+        area: Rect,
+        buf: &mut Buffer,
+        theme: &Theme,
+        facts: &OceanCausticFacts<'_>,
+    ) {
+        if !self.motion.animates() || area.width < 40 || area.height < 10 {
+            return;
+        }
+        let Some(ramp) = OceanRamp::for_theme(theme) else {
+            return;
+        };
+        let viewport = self.viewport.unwrap_or(area);
+        let clipped = area.intersection(buf.area);
+        let band = facts.band_rows.min(area.height);
+        for y in clipped.y..clipped.bottom().min(area.y.saturating_add(band)) {
+            let local_y = y.saturating_sub(area.y);
+            let water = facts
+                .paint
+                .samples
+                .get(usize::from(y.saturating_sub(facts.paint.sample_top)))
+                .filter(|_| y >= facts.paint.sample_top)
+                .copied()
+                .unwrap_or_else(|| self.color_at_y_with_ramp(y, viewport, ramp));
+            let depth = 1.0 - f32::from(local_y) / f32::from(band.max(1));
+            for x in clipped.x..clipped.right() {
+                let local_x = x.saturating_sub(area.x);
+                if local_x % 3 != 0
+                    || facts
+                        .paint
+                        .protected
+                        .iter()
+                        .any(|r| r.contains((x, y).into()))
+                {
+                    continue;
+                }
+                let cell = &mut buf[(x, y)];
+                if cell.bg != water
+                    || cell.modifier.contains(Modifier::REVERSED)
+                    || !(cell.symbol() == " " || cell.symbol().is_empty())
+                {
+                    continue;
+                }
+                let brightness =
+                    ocean_caustic_brightness(facts.elapsed, local_x, local_y, depth * depth);
+                if let Color::Rgb(r, g, b) = water {
+                    let scale =
+                        |value| (f32::from(value) * brightness).round().clamp(0.0, 255.0) as u8;
+                    cell.set_bg(Color::Rgb(scale(r), scale(g), scale(b)));
                 }
             }
         }
@@ -435,7 +554,17 @@ impl Paint for OceanColumn {
     }
 }
 
-fn ink_is_safe(ink: Color, water: Color, theme: &Theme) -> bool {
+fn ink_is_safe(ink: Color, water: Color, theme: &Theme, live: Option<OceanContrastInks>) -> bool {
+    if let Some(live) = live {
+        let floor = if live.border == Some(ink) {
+            1.0
+        } else if live.border_strong == Some(ink) || live.dim == Some(ink) {
+            3.0
+        } else {
+            4.5
+        };
+        return contrast_ratio(ink, water).is_some_and(|ratio| ratio >= floor);
+    }
     let floor = if [Role::Border, Role::BorderStrong, Role::Dim]
         .into_iter()
         .any(|role| theme.color(role) == Some(ink))
@@ -450,4 +579,106 @@ fn ink_is_safe(ink: Color, water: Color, theme: &Theme) -> bool {
         4.5
     };
     contrast_ratio(ink, water).is_some_and(|ratio| ratio >= floor)
+}
+
+/// Actual live host colors for the existing decorative/supporting floors.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct OceanContrastInks {
+    pub border: Option<Color>,
+    pub border_strong: Option<Color>,
+    pub dim: Option<Color>,
+}
+
+/// Bounded frame-derived presentation facts; no cache or surface store.
+#[derive(Clone, Copy, Debug)]
+pub struct OceanPaintFacts<'a> {
+    pub ground: Color,
+    pub sample_top: u16,
+    pub samples: &'a [Color],
+    pub protected: &'a [Rect],
+}
+impl OceanPaintFacts<'_> {
+    #[must_use]
+    pub const fn new(ground: Color) -> Self {
+        Self {
+            ground,
+            sample_top: 0,
+            samples: &[],
+            protected: &[],
+        }
+    }
+}
+
+/// The host reports elapsed time and its unoccupied surface-band height.
+#[derive(Clone, Copy, Debug)]
+pub struct OceanCausticFacts<'a> {
+    pub paint: OceanPaintFacts<'a>,
+    pub elapsed: Duration,
+    pub band_rows: u16,
+}
+
+/// The native continuous 960ms travelling crest; owns no clock or loop.
+#[must_use]
+pub fn ocean_caustic_brightness(
+    elapsed: Duration,
+    local_x: u16,
+    local_y: u16,
+    depth_fade: f32,
+) -> f32 {
+    let time = (elapsed.as_millis() % 960) as f64 / 960.0;
+    let slot = (u32::from(local_x / 3) + u32::from(local_y)) % 4;
+    let phase = (time + f64::from(slot) / 4.0) * std::f64::consts::TAU;
+    let crest = ((phase.cos() + 1.0) * 0.5).powi(8);
+    1.0 + 0.08 * (crest as f32) * depth_fade.clamp(0.0, 1.0)
+}
+
+/// Explicit styled grounds are semantic even when a custom theme aliases
+/// their RGB to an ordinary pane. Project guarded prewrapped source once;
+/// callers pass these frame-only rectangles to native finishing.
+#[must_use]
+pub fn ocean_semantic_surfaces(
+    rows: &[Line<'static>],
+    area: Rect,
+    measure_grapheme: impl Fn(&str) -> usize,
+) -> Vec<Rect> {
+    let measure = |value: &str| {
+        crate::text::display_safe(value)
+            .graphemes(true)
+            .fold(0usize, |width, g| width.saturating_add(measure_grapheme(g)))
+    };
+    let mut regions = Vec::new();
+    for (index, line) in rows.iter().take(usize::from(area.height)).enumerate() {
+        let y = area
+            .y
+            .saturating_add(u16::try_from(index).unwrap_or(u16::MAX));
+        if line.style.bg.is_some() {
+            if area.width > 0 {
+                regions.push(Rect::new(area.x, y, area.width, 1));
+            }
+            continue;
+        }
+        let width = line.spans.iter().fold(0usize, |width, span| {
+            width.saturating_add(measure(&span.content))
+        });
+        let padding = usize::from(area.width).saturating_sub(width);
+        let mut column = match line.alignment.unwrap_or(Alignment::Left) {
+            Alignment::Left => 0,
+            Alignment::Center => padding / 2,
+            Alignment::Right => padding,
+        };
+        for span in &line.spans {
+            let end = column.saturating_add(measure(&span.content));
+            let clipped_end = end.min(usize::from(area.width));
+            if span.style.bg.is_some() && column < clipped_end {
+                regions.push(Rect::new(
+                    area.x.saturating_add(column as u16),
+                    y,
+                    (clipped_end - column) as u16,
+                    1,
+                ));
+            }
+            column = end;
+        }
+    }
+    regions
 }

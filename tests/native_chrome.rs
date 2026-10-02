@@ -557,3 +557,67 @@ fn mounted_bounds_and_empty_frames_never_publish_stale_targets() {
         }
     }
 }
+
+#[test]
+fn mounted_prompt_separator_keeps_raw_ink_for_placeholder_input_and_selection() {
+    use ratatui::{
+        buffer::Cell,
+        style::{Color, Modifier, Style},
+        text::{Line, Span},
+    };
+    let theme = Profile::DarkTrue.theme();
+    let inherited = Color::Rgb(182, 192, 212);
+    let override_ink = Color::Rgb(210, 230, 250);
+    for enclosed in [false, true] {
+        for source in ["", "x", "xy"] {
+            let mut composer = rich_composer_fixture(&theme);
+            composer.enclosed = enclosed;
+            composer.text = source.to_string().into();
+            composer.cursor = 0;
+            composer.selection = (source == "xy").then_some((0, 1));
+            composer.placeholder = Line::from(vec![
+                Span::raw("hint"),
+                Span::styled(
+                    "!",
+                    Style::default()
+                        .fg(override_ink)
+                        .add_modifier(Modifier::ITALIC),
+                ),
+            ])
+            .style(Style::default().fg(inherited).add_modifier(Modifier::BOLD));
+            composer.styles.text = Style::default().fg(inherited);
+            composer.styles.selection = composer.styles.selection.fg(inherited);
+            let area = Rect::new(7, 5, 20, 4);
+            let guard = Rect::new(2, 3, 32, 11);
+            let mut buf = Buffer::filled(guard, Cell::new("~"));
+            let original = buf.clone();
+            let plan = composer.render(area, &mut buf);
+            let cursor = plan.cursor.unwrap();
+            let separator = &buf[(plan.geometry.inner.x + 1, cursor.y)];
+            assert_eq!(separator.symbol(), " ");
+            assert_eq!(separator.fg, Color::Reset, "separator {enclosed}/{source}");
+            assert_eq!(separator.modifier, Modifier::empty());
+            let body = &buf[(plan.geometry.text.x, cursor.y)];
+            assert_eq!(body.fg, inherited);
+            if source.is_empty() {
+                assert_eq!(body.symbol(), "h");
+                assert!(body.modifier.contains(Modifier::BOLD));
+                let own = &buf[(plan.geometry.text.x + 4, cursor.y)];
+                assert_eq!(own.fg, override_ink);
+                assert!(own.modifier.contains(Modifier::ITALIC | Modifier::BOLD));
+            } else {
+                assert_eq!(body.symbol(), "x");
+            }
+            if source == "xy" {
+                assert_eq!(body.bg, composer.styles.selection.bg.unwrap());
+            }
+            for y in guard.y..guard.bottom() {
+                for x in guard.x..guard.right() {
+                    if !area.contains((x, y).into()) {
+                        assert_eq!(buf[(x, y)], original[(x, y)]);
+                    }
+                }
+            }
+        }
+    }
+}

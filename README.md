@@ -283,7 +283,7 @@ Sixteen source presets with their actual backgrounds, status, permission and mod
 
 <a id="codewhale-water-and-ombres"></a>
 <details>
-<summary>Codewhale water and ombres · 9 examples</summary>
+<summary>Codewhale water and ombres · 10 examples</summary>
 
 The current TUI ocean, plus optional Lagoon, Dusk, Coral and Graphite treatments.
 
@@ -305,6 +305,8 @@ The current TUI ocean, plus optional Lagoon, Dusk, Coral and Graphite treatments
 
 ![Ocean reduced — dark truecolor](<assets/readme/water.dark-truecolor-9.svg>)
 
+![Ocean native guarded — dark truecolor](<assets/readme/water.dark-truecolor-10.svg>)
+
 <details>
 <summary>Light appearance</summary>
 
@@ -325,6 +327,8 @@ The current TUI ocean, plus optional Lagoon, Dusk, Coral and Graphite treatments
 ![Ocean context — light truecolor](<assets/readme/water.light-truecolor-8.svg>)
 
 ![Ocean reduced — light truecolor](<assets/readme/water.light-truecolor-9.svg>)
+
+![Ocean native guarded — light truecolor](<assets/readme/water.light-truecolor-10.svg>)
 
 </details>
 
@@ -996,3 +1000,19 @@ Staged content/chrome paint lets a host retain semantic Ocean finishing between
 them. The actual `transcript-mounted` and `transcript-mounted-focus` gallery
 entries use this API. Existing authored `Transcript`/`TranscriptBlock` remain
 the structured content option; this viewport does not reparse native rows.
+
+
+`ocean::OceanPaintFacts` carries cached absolute-row colors and protected
+semantic rectangles into `OceanColumn::apply_native`; its ink callback returns
+the exact color the host backend would show over the proposed water without
+changing source cells. `OceanContrastInks` maps the same decorative/supporting
+contrast floors to actual live palette colors. `ocean_semantic_surfaces`
+projects display-safe prewrapped styled rows using the host's column grammar;
+`TranscriptViewportPlan::display_rows()` supplies its exact pinned/offset rows;
+explicit backgrounds remain semantic even if their RGB equals a pane base.
+`apply_caustics` finishes only already painted ordinary water, shares capability
+and reduced-motion gates, and spares visible symbols, reversed cells and
+semantic padding. Both methods retain the existing measured dark truecolor
+Ocean gate; facts and an explicit ramp do not grant terminal capability. The
+`ocean-native-guarded` gallery entry exercises cached water, caustics, selected
+source, blank semantic padding and reverse protection across all profiles.

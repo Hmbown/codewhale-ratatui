@@ -4,13 +4,17 @@ use codewhale_ratatui::{
     Caps, MotionMode, Paint, Role, Theme, TuiGround,
     color::{contrast_ratio, relative_luminance},
     gallery,
-    ocean::{OceanColumn, OceanPhase, OceanRamp},
+    ocean::{
+        OceanCausticFacts, OceanColumn, OceanContrastInks, OceanPaintFacts, OceanPhase, OceanRamp,
+        ocean_caustic_brightness, ocean_semantic_surfaces,
+    },
     testing::{Profile, assert_frames_keep_the_rules, frames_for},
 };
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
     style::{Color, Modifier, Style},
+    text::{Line, Span},
 };
 
 const PHASES: [OceanPhase; 8] = [
@@ -641,7 +645,7 @@ fn native_gallery_scenes_keep_the_nine_profile_rules_at_narrow_widths() {
         .into_iter()
         .filter(|entry| entry.name.starts_with("ocean-"))
         .collect();
-    assert_eq!(entries.len(), 4);
+    assert_eq!(entries.len(), 5);
     for entry in entries {
         assert_frames_keep_the_rules(&frames_for(
             entry.name,
@@ -838,4 +842,322 @@ fn explicit_non_rgb_tints_leave_the_existing_water_unchanged() {
             Color::Rgb(12, 34, 56)
         );
     }
+}
+
+#[test]
+fn native_guard_uses_cached_absolute_rows_live_floor_and_projected_ink_without_mutation() {
+    let theme = Profile::DarkTrue.theme();
+    let buffer_area = Rect::new(7, 5, 10, 4);
+    let requested = Rect::new(9, 6, 5, 2);
+    let ground = theme.bg(Role::Background).bg.unwrap();
+    let samples = [Color::Rgb(9, 20, 31), Color::Rgb(10, 21, 32)];
+    let protected = [Rect::new(11, 6, 1, 1)];
+    let facts = OceanPaintFacts {
+        ground,
+        sample_top: 6,
+        samples: &samples,
+        protected: &protected,
+    };
+    let column = OceanColumn::new(Duration::ZERO, MotionMode::Still)
+        .viewport(buffer_area)
+        .contrast_inks(OceanContrastInks {
+            border: Some(samples[0]),
+            ..Default::default()
+        });
+    let mut buf = ordinary(buffer_area, &theme);
+    buf[(9, 6)]
+        .set_symbol("|")
+        .set_fg(samples[0])
+        .modifier
+        .insert(Modifier::ITALIC);
+    buf[(10, 6)].set_symbol("x").set_fg(Color::White);
+    buf[(12, 6)].set_symbol("x").set_fg(Color::Reset);
+    buf[(13, 6)].modifier.insert(Modifier::REVERSED);
+    let before = buf.clone();
+    column.apply_native(requested, &mut buf, &theme, &facts, |cell, _| {
+        if cell.fg == Color::White {
+            Color::Rgb(255, 255, 255)
+        } else {
+            cell.fg
+        }
+    });
+    for y in buffer_area.y..buffer_area.bottom() {
+        for x in buffer_area.x..buffer_area.right() {
+            let old = &before[(x, y)];
+            let new = &buf[(x, y)];
+            assert_eq!(old.symbol(), new.symbol());
+            assert_eq!(old.fg, new.fg);
+            assert_eq!(old.modifier, new.modifier);
+            if !requested.contains((x, y).into()) || (y == 6 && x >= 11) {
+                assert_eq!(old, new, "guard at {x},{y}");
+            } else {
+                assert_eq!(new.bg, samples[usize::from(y - 6)]);
+            }
+        }
+    }
+    let mut unclassified = before;
+    OceanColumn::new(Duration::ZERO, MotionMode::Still).apply_native(
+        requested,
+        &mut unclassified,
+        &theme,
+        &facts,
+        |cell, _| cell.fg,
+    );
+    assert_eq!(
+        unclassified[(9, 6)].bg,
+        ground,
+        "unclassified text keeps 4.5 floor"
+    );
+    assert_eq!(
+        unclassified[(10, 6)].bg,
+        ground,
+        "named ink has no RGB evidence"
+    );
+}
+
+#[test]
+fn native_samples_masks_and_caustics_cannot_bypass_existing_theme_or_capability_gates() {
+    let area = Rect::new(7, 5, 40, 10);
+    let samples = vec![Color::Rgb(12, 34, 56); usize::from(area.height)];
+    let column =
+        OceanColumn::new(Duration::from_millis(480), MotionMode::Full).ramp(explicit_ramp());
+    let themes: Vec<_> = Profile::ALL
+        .into_iter()
+        .map(Profile::theme)
+        .chain([
+            Profile::DarkTrue.theme().without_base_ground(),
+            Profile::DarkTrue
+                .theme()
+                .tui_palette(codewhale_ratatui::TuiPalette::Whale),
+        ])
+        .collect();
+    for theme in themes {
+        if OceanRamp::for_theme(&theme).is_some() {
+            continue;
+        }
+        let ground = theme.bg(Role::Background).bg.unwrap_or(Color::Reset);
+        let paint = OceanPaintFacts {
+            ground,
+            sample_top: area.y,
+            samples: &samples,
+            protected: &[],
+        };
+        let mut buf = ordinary(area, &theme);
+        let before = buf.clone();
+        column.apply_native(area, &mut buf, &theme, &paint, |_, _| {
+            Color::Rgb(255, 255, 255)
+        });
+        column.apply_caustics(
+            area,
+            &mut buf,
+            &theme,
+            &OceanCausticFacts {
+                paint,
+                elapsed: Duration::from_millis(480),
+                band_rows: 3,
+            },
+        );
+        assert_eq!(buf, before);
+    }
+}
+
+#[test]
+fn native_semantic_projection_preserves_explicit_blank_and_aliased_styled_grounds() {
+    use ratatui::layout::Alignment;
+    use unicode_width::UnicodeWidthStr;
+    let area = Rect::new(7, 5, 10, 4);
+    let style = Style::default().bg(Color::Rgb(12, 34, 56));
+    let rows = [
+        Line::from(vec![
+            Span::raw("ab"),
+            Span::styled("海\u{202e} e\u{301}", style),
+        ]),
+        Line::styled("", style),
+        Line::from(vec![Span::raw("a"), Span::styled("bc", style)]).alignment(Alignment::Right),
+        Line::from(vec![Span::raw(" "), Span::styled("abcdef", style)])
+            .alignment(Alignment::Center),
+    ];
+    assert_eq!(
+        ocean_semantic_surfaces(&rows, area, str::width),
+        vec![
+            Rect::new(9, 5, 4, 1),
+            Rect::new(7, 6, 10, 1),
+            Rect::new(15, 7, 2, 1),
+            Rect::new(9, 8, 6, 1),
+        ]
+    );
+    assert!(ocean_semantic_surfaces(&rows, Rect::new(7, 5, 0, 0), str::width).is_empty());
+    let narrow = ocean_semantic_surfaces(&rows, Rect::new(65532, 65532, 3, 3), str::width);
+    assert_eq!(
+        narrow,
+        vec![
+            Rect::new(65534, 65532, 1, 1),
+            Rect::new(65532, 65533, 3, 1),
+            Rect::new(65533, 65534, 2, 1)
+        ]
+    );
+    let hostile = [Line::from(vec![
+        Span::raw("a\u{1b}\u{202e}b"),
+        Span::styled("x", style),
+    ])];
+    assert_eq!(
+        ocean_semantic_surfaces(&hostile, area, str::width),
+        vec![Rect::new(9, 5, 1, 1)]
+    );
+}
+
+#[test]
+fn native_caustics_match_frozen_travelling_math_and_guard_every_nonwater_surface() {
+    let theme = Profile::DarkTrue.theme();
+    for (width, height) in [(40, 10), (80, 24), (120, 32)] {
+        let area = Rect::new(7, 5, width, height);
+        for elapsed in [0, 240, 480, 959, 960, 999_999] {
+            let column =
+                OceanColumn::new(Duration::from_millis(elapsed), MotionMode::Full).viewport(area);
+            let samples: Vec<_> = (area.y..area.bottom())
+                .map(|y| column.color_at_y(y, area, &theme).unwrap())
+                .collect();
+            let mut actual = ordinary(area, &theme);
+            column.apply(area, &mut actual, &theme);
+            actual[(area.x, area.y)].set_bg(Color::Rgb(73, 89, 107));
+            actual[(area.x + 3, area.y)]
+                .modifier
+                .insert(Modifier::REVERSED);
+            actual[(area.x + 6, area.y)].set_symbol("x");
+            let protected = [Rect::new(area.x + 9, area.y, 3, 1)];
+            let mut expected = actual.clone();
+            let band = (height / 3).max(2);
+            for local_y in 0..band {
+                let water = samples[usize::from(local_y)];
+                let depth = 1.0 - f32::from(local_y) / f32::from(band);
+                for local_x in (0..width).step_by(3) {
+                    let x = area.x + local_x;
+                    let y = area.y + local_y;
+                    let cell = &mut expected[(x, y)];
+                    if protected.iter().any(|r| r.contains((x, y).into()))
+                        || cell.bg != water
+                        || cell.modifier.contains(Modifier::REVERSED)
+                        || !(cell.symbol() == " " || cell.symbol().is_empty())
+                    {
+                        continue;
+                    }
+                    let time = (u128::from(elapsed) % 960) as f64 / 960.0;
+                    let slot = (u32::from(local_x / 3) + u32::from(local_y)) % 4;
+                    let phase = (time + f64::from(slot) / 4.0) * std::f64::consts::TAU;
+                    let depth_fade = depth * depth;
+                    let brightness =
+                        1.0 + 0.08 * (((phase.cos() + 1.0) * 0.5).powi(8) as f32) * depth_fade;
+                    let Color::Rgb(r, g, b) = water else {
+                        unreachable!()
+                    };
+                    let scale = |v| (f32::from(v) * brightness).round().clamp(0.0, 255.0) as u8;
+                    cell.set_bg(Color::Rgb(scale(r), scale(g), scale(b)));
+                }
+            }
+            column.apply_caustics(
+                area,
+                &mut actual,
+                &theme,
+                &OceanCausticFacts {
+                    paint: OceanPaintFacts {
+                        ground: samples[0],
+                        sample_top: area.y,
+                        samples: &samples,
+                        protected: &protected,
+                    },
+                    elapsed: Duration::from_millis(elapsed),
+                    band_rows: band,
+                },
+            );
+            assert_eq!(actual, expected, "{width}x{height} at {elapsed}");
+            for motion in [MotionMode::Still, MotionMode::Reduced] {
+                let before = actual.clone();
+                OceanColumn::new(Duration::from_millis(elapsed), motion).apply_caustics(
+                    area,
+                    &mut actual,
+                    &theme,
+                    &OceanCausticFacts {
+                        paint: OceanPaintFacts::new(samples[0]),
+                        elapsed: Duration::from_millis(elapsed),
+                        band_rows: band,
+                    },
+                );
+                assert_eq!(actual, before);
+            }
+        }
+    }
+    assert_eq!(ocean_caustic_brightness(Duration::ZERO, 0, 0, 1.0), 1.08);
+    assert_eq!(ocean_caustic_brightness(Duration::ZERO, 0, 0, -1.0), 1.0);
+    assert_eq!(ocean_caustic_brightness(Duration::ZERO, 0, 0, 2.0), 1.08);
+}
+
+#[test]
+fn native_semantic_mask_uses_actual_pinned_and_offset_transcript_plan_rows() {
+    use unicode_width::UnicodeWidthStr;
+    let style = Style::default().bg(Color::Rgb(12, 34, 56));
+    let rows = vec![
+        Line::from("banner"),
+        Line::styled("old offscreen", style),
+        Line::styled("recent offscreen", style),
+        Line::from(vec![Span::raw("xy"), Span::styled("live", style)]),
+        Line::from("ordinary"),
+    ];
+    let area = Rect::new(7, 5, 10, 3);
+    let mut viewport = codewhale_ratatui::TranscriptViewport::new(&rows);
+    viewport.pinned_rows = 1;
+    viewport.offset = 2;
+    let plan = viewport.plan(area);
+    assert_eq!(
+        ocean_semantic_surfaces(plan.display_rows(), plan.area, str::width),
+        vec![Rect::new(9, 6, 4, 1)]
+    );
+    viewport.offset = usize::MAX;
+    let plan = viewport.plan(area);
+    assert_eq!(plan.display_rows().len(), 1);
+    assert!(ocean_semantic_surfaces(plan.display_rows(), plan.area, str::width).is_empty());
+}
+
+#[test]
+fn native_caustics_clip_to_buffer_without_changing_requested_phase_coordinates() {
+    let theme = Profile::DarkTrue.theme();
+    let buffer_area = Rect::new(7, 5, 45, 12);
+    let requested = Rect::new(2, 2, 80, 24);
+    let column = OceanColumn::new(Duration::ZERO, MotionMode::Full).viewport(requested);
+    let samples: Vec<_> = (buffer_area.y..buffer_area.bottom())
+        .map(|y| column.color_at_y(y, requested, &theme).unwrap())
+        .collect();
+    let mut actual = ordinary(buffer_area, &theme);
+    column.apply(buffer_area, &mut actual, &theme);
+    let before = actual.clone();
+    column.apply_caustics(
+        requested,
+        &mut actual,
+        &theme,
+        &OceanCausticFacts {
+            paint: OceanPaintFacts {
+                ground: samples[0],
+                sample_top: buffer_area.y,
+                samples: &samples,
+                protected: &[],
+            },
+            elapsed: Duration::ZERO,
+            band_rows: 8,
+        },
+    );
+    let mut changed = 0;
+    for y in buffer_area.y..buffer_area.bottom() {
+        for x in buffer_area.x..buffer_area.right() {
+            if y >= requested.y + 8 || !(x - requested.x).is_multiple_of(3) {
+                assert_eq!(
+                    actual[(x, y)],
+                    before[(x, y)],
+                    "ineligible coordinate {x},{y}"
+                );
+            }
+            if actual[(x, y)] != before[(x, y)] {
+                changed += 1;
+            }
+        }
+    }
+    assert!(changed > 0, "the clipped active caustic band was exercised");
 }
