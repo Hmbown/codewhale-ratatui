@@ -750,7 +750,7 @@ on their next paint; components hold roles rather than cached colors.
 |---|---|---|
 | Optional workspace composition | `WorkspaceFrame`, `WorkspaceAreas`, `PaneHeader`, `ContextRibbon`, `ContextItem` | Responsive conversation and dock regions, one quiet module header, composer-adjacent facts folded by priority with explicit counts |
 | Native shell | `TerminalShell`, `ShellAreas` | Current conversation → pending input → composer → posture → workflows → metrics → workbar ordering |
-| Native workbar | `Workbar`, `WorkbarPanel`, `WorkbarRow`, `WorkbarState`, `DockTabRow`, `DockTabPlan`, `DockTabStyles`, `DockTabTarget` | All eight panels, goals, row selection, keyboard outcomes, scrolling, hitboxes and bottom/top/side placement |
+| Native workbar | `Workbar`, `WorkbarPanel`, `WorkbarRow`, `WorkbarState`, `WorkbarLayout`, `WorkbarScrollbar`, `DockTabRow`, `DockTabPlan`, `DockTabStyles`, `DockTabTarget` | All eight panels, goals, row selection, keyboard outcomes, scrolling, hitboxes and bottom/top/side placement |
 | Native composer and workflow rows | `NativeComposer`, `WorkflowProgress`, `WorkflowRun` | Rounded input enclosure, prompt, submit control, target chip and borderless workflow progress |
 | Native footer | `PostureBar`, `MetricsLine`, `MetricSegment` | Permission and mode, clocks, live counts, context warnings and width-aware model/usage facts |
 | Native views | `InstrumentSurface`, `SessionList`, `SessionRow` | TUI title/action rails, quiet gutters, session selection, ranges, search and rename presentation |
@@ -1049,3 +1049,10 @@ The guarded Ocean gallery uses `OceanPaintFacts`, `OceanCausticFacts` and
 native finishing through the existing guarded
 `OceanColumn` methods. Their facts preserve host protection and ink roles;
 terminal capability, motion and semantic contrast guards still apply.
+
+`WorkbarLayout::for_body` fits the already-admitted body viewport from current
+row counts and header facts. `WorkbarScrollbar` paints its rail using the same
+current offset/counts and caller-supplied symbols/styles. Both Workbar and the
+Engine body use these calculations. No remembered selection, focus or scrolling
+state lives in the kit; native row composition and action receipts stay with
+the host.

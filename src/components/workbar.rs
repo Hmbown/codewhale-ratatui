@@ -289,6 +289,96 @@ pub struct WorkbarLayout {
     pub progress_height: u16,
 }
 
+impl WorkbarLayout {
+    #[must_use]
+    pub const fn progress_shares_goal_row(width: u16, has_goal: bool) -> bool {
+        has_goal && width >= 72
+    }
+
+    /// Fit headers, visible rows, overflow reserve and offset inside the caller's
+    /// existing body viewport. Placement/focus/action policy is not inferred.
+    #[must_use]
+    pub fn for_body(
+        body: Rect,
+        total_rows: usize,
+        offset: usize,
+        has_goal: bool,
+        has_progress: bool,
+    ) -> Self {
+        let goal_height = u16::from(has_goal && body.height >= 2);
+        let fold = Self::progress_shares_goal_row(body.width, goal_height > 0);
+        let progress_height =
+            u16::from(has_progress && !fold && body.height.saturating_sub(goal_height) >= 2);
+        let header = goal_height.saturating_add(progress_height);
+        let list_height = body.height.saturating_sub(header);
+        let overflow = total_rows > usize::from(list_height);
+        let more_row = overflow && list_height >= 2;
+        let visible_rows = usize::from(list_height).saturating_sub(usize::from(more_row));
+        let offset = offset.min(total_rows.saturating_sub(visible_rows.max(1)));
+        let inset = u16::from(body.width >= 16);
+        let content = Rect {
+            x: body.x.saturating_add(inset),
+            y: body.y.saturating_add(header),
+            width: body
+                .width
+                .saturating_sub(inset.saturating_mul(2))
+                .saturating_sub(u16::from(overflow)),
+            height: list_height,
+        };
+        Self {
+            body,
+            content,
+            visible_rows,
+            offset,
+            overflow,
+            more_row,
+            goal_height,
+            progress_height,
+        }
+    }
+}
+
+/// The fitted body rail, over caller-supplied symbols and live styles.
+/// Both the native Engine and Workbar use this paint path. No scroll state is
+/// retained; the current admitted offset/row counts enter on each draw.
+#[derive(Clone, Copy, Debug)]
+pub struct WorkbarScrollbar<'a> {
+    pub offset: usize,
+    pub visible: usize,
+    pub total: usize,
+    pub thumb: &'a str,
+    pub track: &'a str,
+    pub thumb_style: Style,
+    pub track_style: Style,
+}
+
+impl WorkbarScrollbar<'_> {
+    pub fn paint(&self, area: Rect, buf: &mut Buffer) {
+        if area.is_empty() || self.total == 0 {
+            return;
+        }
+        let height = usize::from(area.height);
+        let thumb_height = height.saturating_mul(self.visible) / self.total;
+        let thumb_height = thumb_height.max(1).min(height);
+        let start = self
+            .offset
+            .saturating_mul(height.saturating_sub(thumb_height))
+            / self.total.saturating_sub(self.visible).max(1);
+        let x = area.right().saturating_sub(1);
+        for row in 0..height {
+            let active = row >= start && row < start.saturating_add(thumb_height);
+            if let Some(cell) = buf.cell_mut((x, area.y.saturating_add(row as u16))) {
+                cell.set_symbol(if active { self.thumb } else { self.track })
+                    .set_style(if active {
+                        self.thumb_style
+                    } else {
+                        self.track_style
+                    });
+            }
+        }
+    }
+}
+
 /// The actual Codewhale dock, with application projections replaced by rows.
 #[derive(Clone, Debug)]
 pub struct Workbar {
@@ -431,7 +521,9 @@ impl Workbar {
             return 0;
         }
         let goal = u16::from(self.goal_text().is_some());
-        let progress = u16::from(self.progress.is_some() && !(goal > 0 && width >= 72));
+        let progress = u16::from(
+            self.progress.is_some() && !WorkbarLayout::progress_shares_goal_row(width, goal > 0),
+        );
         (u16::try_from(self.rows.len().max(usize::from(self.explicit)))
             .unwrap_or(u16::MAX)
             .saturating_add(goal)
@@ -569,43 +661,13 @@ impl Workbar {
             },
             WorkbarPlacement::Off => Rect { height: 0, ..area },
         };
-        let goal_height =
-            u16::from(self.placement.is_strip() && self.goal_text().is_some() && body.height >= 2);
-        let fold = goal_height > 0 && body.width >= 72;
-        let progress_height = u16::from(
-            self.placement.is_strip()
-                && self.progress.is_some()
-                && !fold
-                && body.height.saturating_sub(goal_height) >= 2,
-        );
-        let header = goal_height + progress_height;
-        let list_height = usize::from(body.height.saturating_sub(header));
-        let overflow = self.rows.len() > list_height;
-        let more_row = overflow && list_height >= 2;
-        let visible_rows = list_height.saturating_sub(usize::from(more_row));
-        let offset = self
-            .offset
-            .min(self.rows.len().saturating_sub(visible_rows.max(1)));
-        let inset = u16::from(body.width >= 16);
-        let content = Rect {
-            x: body.x.saturating_add(inset),
-            y: body.y.saturating_add(header),
-            width: body
-                .width
-                .saturating_sub(inset * 2)
-                .saturating_sub(u16::from(overflow)),
-            height: list_height as u16,
-        };
-        WorkbarLayout {
+        WorkbarLayout::for_body(
             body,
-            content,
-            visible_rows,
-            offset,
-            overflow,
-            more_row,
-            goal_height,
-            progress_height,
-        }
+            self.rows.len(),
+            self.offset,
+            self.placement.is_strip() && self.goal_text().is_some(),
+            self.placement.is_strip() && self.progress.is_some(),
+        )
     }
 
     fn dock_tab_row(&self, area: Rect, theme: Option<&Theme>) -> super::DockTabRow<'_> {
@@ -764,7 +826,12 @@ impl Paint for Workbar {
             let receipt = self
                 .progress
                 .as_deref()
-                .filter(|_| layout.body.width >= 72)
+                .filter(|_| {
+                    WorkbarLayout::progress_shares_goal_row(
+                        layout.body.width,
+                        layout.goal_height > 0,
+                    )
+                })
                 .map(|value| decorative(value, theme));
             let reserved = receipt
                 .as_deref()
@@ -1011,42 +1078,24 @@ impl Paint for Workbar {
             );
         }
         if layout.overflow && layout.content.height > 0 && layout.body.width > 0 {
-            let height = usize::from(layout.content.height);
-            let thumb_height = (height.saturating_mul(layout.visible_rows)
-                / self.rows.len().max(1))
-            .max(1)
-            .min(height);
-            let start = layout
-                .offset
-                .saturating_mul(height.saturating_sub(thumb_height))
-                / self.rows.len().saturating_sub(layout.visible_rows).max(1);
-            for index in 0..height {
-                let active = index >= start && index < start + thumb_height;
-                let mark = if theme.ascii() {
-                    "|"
-                } else if active {
-                    "┃"
-                } else {
-                    "│"
-                };
-                row(
-                    Rect::new(
-                        layout.body.right().saturating_sub(1),
-                        layout.content.y.saturating_add(index as u16),
-                        1,
-                        1,
-                    ),
-                    buf,
-                    &Line::styled(
-                        mark,
-                        if active {
-                            theme.tui_ink(TuiInk::Working)
-                        } else {
-                            theme.fg(Role::Border)
-                        },
-                    ),
-                );
+            WorkbarScrollbar {
+                offset: layout.offset,
+                visible: layout.visible_rows,
+                total: self.rows.len(),
+                thumb: if theme.ascii() { "|" } else { "┃" },
+                track: if theme.ascii() { "|" } else { "│" },
+                thumb_style: theme.tui_ink(TuiInk::Working),
+                track_style: theme.fg(Role::Border),
             }
+            .paint(
+                Rect::new(
+                    layout.body.right().saturating_sub(1),
+                    layout.content.y,
+                    1,
+                    layout.content.height,
+                ),
+                buf,
+            );
         }
     }
 
