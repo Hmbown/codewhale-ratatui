@@ -5,10 +5,11 @@ individual `/ratatui/<gallery-name>` pages. Its source is in
 [`Hmbown/CodeWhale/web`](https://github.com/Hmbown/CodeWhale/tree/wave/0.10.1-next/web).
 Website deployment follows that repository's manual Cloudflare workflow.
 
-Visitors can search all 199 catalogue entries by name or public API, choose a
-collection, compare nine terminal profiles and four column widths, inspect
-the exact Rust rendering source, download an SVG, and follow build and release
-checks. The native motion player has pause, restart, speed and frame controls.
+Visitors can choose a task, search the complete catalogue by name, public API
+or familiar terms, choose a collection, compare terminal profiles and column
+widths, inspect the exact Rust rendering source, download an SVG, and follow
+build and release checks. The native motion player has pause, restart, speed
+and frame controls.
 It starts paused and stops when the page is hidden.
 
 The previews are actual Ratatui buffers with example data. The website does
@@ -16,6 +17,27 @@ not run the Engine or dispatch terminal input; use the interactive Cargo
 examples for those host interactions. A source fixture can call private
 gallery helpers. Each page links the complete source file, and the getting
 started example uses the public `NativeComposer` API.
+
+The **Use** tab explains where a component fits and what its host app owns.
+Composer, workbar, ocean and whale entries also offer complete public drawing
+functions from [`examples/recipes.rs`](examples/recipes.rs). The **Gallery
+source** tab keeps the rendering fixture and its helpers available separately.
+[`GETTING-STARTED.md`](GETTING-STARTED.md) covers input, state, themes, clipping
+and motion from the first working app onward.
+
+## Update the learning examples
+
+After committing the guide and recipes, export the marked public functions to
+the website. The export records the exact commit and source line so copied
+examples, dependency pins and source links stay together.
+
+```sh
+python3 -B tools/export-recipes.py --output /path/to/CodeWhale/web/lib/ratatui/recipes.generated.json
+python3 -B tools/export-recipes.py --output /path/to/CodeWhale/web/lib/ratatui/recipes.generated.json --check
+```
+
+The exporter reads committed source. Commit recipe changes before regenerating;
+never edit the generated JSON to maintain a second version of an example.
 
 ## Update the catalogue
 

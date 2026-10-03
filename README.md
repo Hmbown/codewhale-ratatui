@@ -18,7 +18,7 @@ composer, sessions, settings, approvals and results share the same native
 colors and backgrounds. All 16 TUI themes, fish, jellyfish, spinners and whale
 actions are included. Your app owns the state and clock.
 
-[Components](#explore-the-components) · [Terminal view guide](VIEWS.md) ·
+[Get started](GETTING-STARTED.md) · [Components](#explore-the-components) · [Terminal view guide](VIEWS.md) ·
 [Design](DESIGN.md) · [Quality](QUALITY.md) · [Benchmarks](BENCHMARKS.md)
 
 The [website explorer](WEBSITE.md) separates every catalogue entry into a
@@ -27,10 +27,25 @@ Rust rendering source and controlled animation playback.
 
 ## Get started
 
+Run an editable app first:
+
+```sh
+git clone https://github.com/Hmbown/codewhale-ratatui
+cd codewhale-ratatui
+cargo run --locked --example starter
+```
+
+Type a message, press **Enter** to echo it, and **Esc** to exit. Then run
+`cargo run --locked --example recipes` for five small pieces you can copy:
+the composer, Tasks workbar, native water, a still whale and a live whale.
+
+To add components to your own Ratatui app:
+
 ```toml
 [dependencies]
 codewhale-ratatui = { git = "https://github.com/Hmbown/codewhale-ratatui" }
-ratatui = "0.30.2"
+ratatui = { version = "0.30.2", default-features = false, features = ["std", "crossterm_0_29"] }
+crossterm = "0.29"
 ```
 
 ```rust
@@ -42,14 +57,25 @@ let composer = NativeComposer::new("Review the changes")
 frame.render_widget(composer.themed(&theme), frame.area());
 ```
 
-Rust 1.89+. Your app chooses the terminal backend.
-Try `cargo run --example starter` for a small editable app, or
-`cargo run --example showcase` to explore the native layout.
+Rust 1.89+. The example dependencies use Crossterm; an existing app can retain
+its own backend. Keep your theme and input state between frames.
+The [getting-started guide](GETTING-STARTED.md) covers state, actions, colors,
+animation and common questions. The run commands above apply to this cloned
+repository; adding a dependency does not install its example apps.
+
+| You want to… | Start here |
+| --- | --- |
+| Build the native terminal layout | [Editable starter](examples/starter.rs), `TerminalShell`, `NativeComposer`, `Workbar` |
+| Accept input and choices | `TextInputState`, `TextInput`, `Picker`, `List`, `Form` |
+| Show conversation and work | `Message`, `Transcript`, `PendingInputPreview`, `AgentCard` |
+| Review changes and results | `Diff`, `ApprovalCard`, `Receipt`, `ArtifactShelf` |
+| Use Codewhale colors and depth | `Theme::tui`, `TuiPalette`, `OceanColumn` |
+| Add motion, whales and marine life | [Small recipes](examples/recipes.rs), [motion](examples/motion.rs), [habitat](examples/habitat.rs) |
 
 ## Explore the components
 
 Open a collection to see its full dark and light previews. Every one of the
-199 gallery entries is here, rendered from actual Ratatui buffers. The
+204 gallery entries is here, rendered from actual Ratatui buffers. The
 [component guide](COMPONENTS.md) maps them to Codewhale's terminal views.
 Run `cargo run --example gallery` to try every variation yourself.
 
