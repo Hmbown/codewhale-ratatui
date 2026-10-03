@@ -17,7 +17,7 @@ def committed_recipes():
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
     ).strip()
     source = subprocess.check_output(
-        ["git", "show", f"{revision}:examples/recipes.rs"], cwd=ROOT, text=True
+        ["git", "show", f"{revision}:examples/recipes.rs"], cwd=ROOT, encoding="utf-8"
     )
     pattern = re.compile(
         r"^// recipe:([a-z-]+):start\n(.*?)^// recipe:\1:end$",
