@@ -26,6 +26,7 @@ include = [
     "/CONTRIBUTING-COMPONENTS.md",
     "/QUALITY.md",
     "/WEBSITE.md",
+    "/GETTING-STARTED.md",
     "/BENCHMARKS.md",
     "/CHANGELOG.md",
     "/LICENSE",
